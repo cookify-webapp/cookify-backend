@@ -1,9 +1,42 @@
-import mongoose from "mongoose";
+import { model, Schema, Model, Document, Callback } from "mongoose";
+
+//---------------------
+//   INTERFACE
+//---------------------
+export interface AccountInterface extends Document {
+  username: string;
+  email: string;
+  password: string;
+  accountType: "user" | "admin";
+  imagePath: string;
+  following: Schema.Types.ObjectId[];
+  allergy: Schema.Types.ObjectId[];
+  bookmark: Schema.Types.ObjectId[];
+}
+
+export interface AccountInstanceInterface extends AccountInterface {
+  // declare any instance methods here
+}
+
+export interface AccountModelInterface extends Model<AccountInstanceInterface> {
+  // declare any static methods here
+  findByUsername(
+    username: string,
+    callback: Callback<AccountInterface>,
+    projection?: string | Object
+  ): void;
+  findByUsernameAndPassword(
+    username: string,
+    password: string,
+    callback: Callback<AccountInterface>,
+    projection?: string | Object
+  ): void;
+}
 
 //---------------------
 //   SCHEMA
 //---------------------
-const accountSchema = new mongoose.Schema({
+const accountSchema = new Schema({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -14,14 +47,42 @@ const accountSchema = new mongoose.Schema({
     default: "user",
   },
   imagePath: String,
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "Account" }],
-  allergy: [{ type: mongoose.Schema.Types.ObjectId, ref: "Ingredient" }],
-  bookmark: [{ type: mongoose.Schema.Types.ObjectId, ref: "Recipe" }],
+  following: [{ type: Schema.Types.ObjectId, ref: "Account" }],
+  allergy: [{ type: Schema.Types.ObjectId, ref: "Ingredient" }],
+  bookmark: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
 });
 
-//---------------------
-//   METHODS
-//---------------------
-accountSchema.statics.findByName = () => mongoose.model("Account").find({});
+accountSchema.statics.findByUsername = function (
+  username: string,
+  callback: Callback,
+  projection?: string | Object
+) {
+  const query = this.findOne({
+    username: username,
+  });
+  if (projection) {
+    query.select(projection);
+  }
+  query.exec(callback);
+};
 
-export const Account = mongoose.model("Account", accountSchema);
+accountSchema.statics.findByUsernameAndPassword = function (
+  username: string,
+  password: string,
+  callback: Callback,
+  projection?: string | Object
+) {
+  const query = this.findOne({
+    username: username,
+    password: password,
+  });
+  if (projection) {
+    query.select(projection);
+  }
+  query.exec(callback);
+};
+
+export const Account: AccountModelInterface = model<
+  AccountInstanceInterface,
+  AccountModelInterface
+>("Account", accountSchema);
