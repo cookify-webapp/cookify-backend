@@ -23,13 +23,15 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface> {
   findByUsername(
     username: string,
     callback: Callback<AccountInterface>,
-    projection?: string | Object
+    projection?: string | Object,
+    populate?: string
   ): void;
   findByUsernameAndPassword(
     username: string,
     password: string,
     callback: Callback<AccountInterface>,
-    projection?: string | Object
+    projection?: string | Object,
+    populate?: string
   ): void;
 }
 
@@ -55,11 +57,15 @@ const accountSchema = new Schema({
 accountSchema.statics.findByUsername = function (
   username: string,
   callback: Callback,
-  projection?: string | Object
+  projection?: string | Object,
+  populate?: string
 ) {
   const query = this.findOne({
     username: username,
   });
+  if (populate) {
+    query.populate(populate);
+  }
   if (projection) {
     query.select(projection);
   }
@@ -70,12 +76,16 @@ accountSchema.statics.findByUsernameAndPassword = function (
   username: string,
   password: string,
   callback: Callback,
-  projection?: string | Object
+  projection?: string | Object,
+  populate?: string
 ) {
   const query = this.findOne({
     username: username,
     password: password,
   });
+  if (populate) {
+    query.populate(populate);
+  }
   if (projection) {
     query.select(projection);
   }
