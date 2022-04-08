@@ -72,11 +72,17 @@ export const register = (req: Request, res: Response, next: NextFunction) => {
     accountType: "user",
     allergy: data.allergy,
   });
-  account.save((err: CallbackError) => {
+  account.validate((err: CallbackError) => {
     if (err) {
       next(err);
     } else {
-      res.status(200).send({ message: "success" });
+      account.save((saveErr: CallbackError) => {
+        if (saveErr) {
+          next(saveErr);
+        } else {
+          res.status(200).send({ message: "success" });
+        }
+      });
     }
   });
 };

@@ -1,4 +1,4 @@
-import createError from "http-errors";
+import createError, { HttpError } from "http-errors";
 import express, {
   json,
   NextFunction,
@@ -7,7 +7,7 @@ import express, {
   urlencoded,
 } from "express";
 import cookieParser from "cookie-parser";
-import mongoose from "mongoose";
+import mongoose, { NativeError } from "mongoose";
 
 import indexRouter from "./routes/indexRouter";
 import accountRouter from "./routes/accountRouter";
@@ -32,9 +32,19 @@ app.use(function (_req, _res, next) {
 });
 
 // error handler
-app.use(function (err: any, _req: Request, res: Response, _next: NextFunction) {
-  res.status(err.status || 500);
-  res.send({ err });
+app.use(function (
+  err: NativeError | HttpError,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) {
+  if (err instanceof NativeError) {
+    res.status(500).send({ name: err.name, message: err.message });
+  } else if (err instanceof HttpError) {
+    res.status(err.status || 500).send({ message: err.message });
+  } else {
+    res.status(500).send({ message: "Internal server error" });
+  }
 });
 
 export default app;

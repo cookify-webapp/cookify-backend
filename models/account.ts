@@ -22,14 +22,14 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface> {
   // declare any static methods here
   findByUsername(
     username: string,
-    callback: Callback<AccountInterface>,
+    callback: Callback<AccountInstanceInterface>,
     projection?: string | Object,
     populate?: string
   ): void;
   findByUsernameAndPassword(
     username: string,
     password: string,
-    callback: Callback<AccountInterface>,
+    callback: Callback<AccountInstanceInterface>,
     projection?: string | Object,
     populate?: string
   ): void;
@@ -38,7 +38,10 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface> {
 //---------------------
 //   SCHEMA
 //---------------------
-const accountSchema = new Schema({
+const accountSchema = new Schema<
+  AccountInstanceInterface,
+  AccountModelInterface
+>({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
@@ -92,7 +95,7 @@ accountSchema.statics.findByUsernameAndPassword = function (
   query.exec(callback);
 };
 
-export const Account: AccountModelInterface = model<
-  AccountInstanceInterface,
-  AccountModelInterface
->("Account", accountSchema);
+export const Account = model<AccountInstanceInterface, AccountModelInterface>(
+  "Account",
+  accountSchema
+);
