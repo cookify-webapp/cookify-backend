@@ -14,7 +14,7 @@ import accountRouter from "./routes/accountRouter";
 
 const app = express();
 
-mongoose.connect("url");
+mongoose.connect(process.env.MONGODB_URL as string);
 
 app.use(json());
 app.use(urlencoded({ extended: false }));

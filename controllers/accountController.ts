@@ -1,18 +1,18 @@
 import createError from "http-errors";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
-import { Account, AccountInterface } from "./../models/account";
+import { Account, AccountInstanceInterface } from "./../models/account";
 import { CallbackError } from "mongoose";
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
   Account.findByUsernameAndPassword(
     req.body?.username,
     req.body?.password,
-    (err: CallbackError, account: AccountInterface) => {
+    (err: CallbackError, account: AccountInstanceInterface) => {
       if (err) {
         next(createError(500, err.message));
       } else if (!account) {
-        next(createError(401, "Invalid username or password"));
+        next(createError(403, "Invalid username or password"));
       } else {
         const token = jwt.sign(
           { username: account.username },
@@ -33,7 +33,7 @@ export const getAllAccounts = (
 ) => {
   Account.find(
     {},
-    (err: CallbackError, accounts: AccountInterface[]) => {
+    (err: CallbackError, accounts: AccountInstanceInterface[]) => {
       if (err) {
         next(err);
       } else {
@@ -43,26 +43,40 @@ export const getAllAccounts = (
   );
 };
 
-export const getAccount = (req: Request, res: Response, next: NextFunction) => {
-  const authHeader = req.headers["Authorization"] as string;
-  const token = authHeader.split(" ")[1];
+export const getMyProfile = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const acc = req.account;
+  if (acc) {
+    res.status(200).send({
+      account: {
+        username: acc?.username,
+        email: acc?.email,
+        accountType: acc?.accountType,
+        image: acc?.imagePath,
+      },
+    });
+  } else {
+    next(createError(401, "Please authenticate"));
+  }
+};
 
-  const decoded = jwt.verify(
-    token,
-    process.env.JWT_SECRET as string
-  ) as JwtPayload;
-
-  Account.findByUsername(
-    decoded.username,
-    (err: CallbackError, account: AccountInterface) => {
-      if (err) {
-        throw err;
-      } else if (!account) {
-        next(createError(401, "Please authenticate"));
-      } else {
-        res.status(200).send({ account });
-      }
-    },
-    { username: 1, email: 1, accountType: 1, imagePath: "image" }
-  );
+export const register = (req: Request, res: Response, next: NextFunction) => {
+  const data = req.body?.data;
+  const account = new Account({
+    username: data.username,
+    password: data.password,
+    email: data.email,
+    accountType: "user",
+    allergy: data.allergy,
+  });
+  account.save((err: CallbackError) => {
+    if (err) {
+      next(err);
+    } else {
+      res.status(200).send({ message: "success" });
+    }
+  });
 };
