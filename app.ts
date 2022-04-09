@@ -14,8 +14,14 @@ import accountRouter from "./routes/accountRouter";
 
 const app = express();
 
+//---------------------
+//   DATABASE
+//---------------------
 mongoose.connect(process.env.MONGODB_URL as string);
 
+//---------------------
+//   MODULES
+//---------------------
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -26,8 +32,11 @@ app.use(cookieParser());
 app.use("/", indexRouter);
 app.use("/users", accountRouter);
 
+//---------------------
+//   ERROR HANDLER
+//---------------------
 // catch 404 and forward to error handler
-app.use(function (_req, _res, next) {
+app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
 

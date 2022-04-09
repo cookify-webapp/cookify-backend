@@ -13,14 +13,14 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
         next(createError(500, err.message));
       } else if (!account) {
         next(createError(403, "Invalid username or password"));
+      } else if (!process.env.JWT_SECRET) {
+        next(createError(500, "Missing or invalid token secret in environment"));
       } else {
         const token = jwt.sign(
           { username: account.username },
-          process.env.JWT_SECRET as string
+          process.env.JWT_SECRET
         );
-        res.status(200).send({
-          token: token,
-        });
+        res.status(200).send({ token });
       }
     }
   );

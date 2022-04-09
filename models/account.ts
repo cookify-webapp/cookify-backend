@@ -57,6 +57,9 @@ const accountSchema = new Schema<
   bookmark: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
 });
 
+//---------------------
+//   METHODS
+//---------------------
 accountSchema.statics.findByUsername = function (
   username: string,
   callback: Callback,
@@ -74,6 +77,7 @@ accountSchema.statics.findByUsername = function (
   }
   query.exec(callback);
 };
+
 
 accountSchema.statics.findByUsernameAndPassword = function (
   username: string,
