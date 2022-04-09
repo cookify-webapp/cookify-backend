@@ -2,44 +2,38 @@ import createError from "http-errors";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { Account, AccountInstanceInterface } from "./../models/account";
-import { CallbackError } from "mongoose";
+import { Account } from "./../models/account";
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-  Account.findByUsername(
-    req.body?.username,
-    (err: CallbackError, account: AccountInstanceInterface) => {
-      if (err) {
-        next(createError(500, err.message));
-      } else if (!account) {
-        next(createError(403, "Incorrect username"));
-      } else if (!process.env.JWT_SECRET) {
-        next(
-          createError(500, "Missing or invalid token secret in environment")
-        );
-      } else {
-        bcrypt.compare(
-          req.body?.password,
-          account.password,
-          function (compareErr, result) {
-            if (compareErr) {
-              next(compareErr);
+  Account.findByUsername(req.body?.username, (err, account) => {
+    if (err) {
+      next(createError(500, err.message));
+    } else if (!account) {
+      next(createError(403, "Incorrect username"));
+    } else if (!process.env.JWT_SECRET) {
+      next(createError(500, "Missing or invalid token secret in environment"));
+    } else {
+      bcrypt.compare(
+        req.body?.password,
+        account.password,
+        function (compareErr, result) {
+          if (compareErr) {
+            next(compareErr);
+          } else {
+            if (result) {
+              const token = jwt.sign(
+                { username: account.username },
+                process.env.JWT_SECRET as string
+              );
+              res.status(200).send({ token });
             } else {
-              if (result) {
-                const token = jwt.sign(
-                  { username: account.username },
-                  process.env.JWT_SECRET as string
-                );
-                res.status(200).send({ token });
-              } else {
-                next(createError(403, "Incorrect password"));
-              }
+              next(createError(403, "Incorrect password"));
             }
           }
-        );
-      }
+        }
+      );
     }
-  );
+  });
 };
 
 export const getAllAccounts = (
@@ -47,16 +41,13 @@ export const getAllAccounts = (
   res: Response,
   next: NextFunction
 ) => {
-  Account.find(
-    {},
-    (err: CallbackError, accounts: AccountInstanceInterface[]) => {
-      if (err) {
-        next(err);
-      } else {
-        res.status(200).send({ accounts });
-      }
+  Account.find({}, (err, accounts) => {
+    if (err) {
+      next(err);
+    } else {
+      res.status(200).send({ accounts });
     }
-  );
+  });
 };
 
 export const getMyProfile = (
@@ -93,11 +84,11 @@ export const register = (req: Request, res: Response, next: NextFunction) => {
         accountType: "user",
         allergy: data.allergy,
       });
-      account.validate((valErr: CallbackError) => {
+      account.validate((valErr) => {
         if (valErr) {
           next(valErr);
         } else {
-          account.save((saveErr: CallbackError) => {
+          account.save((saveErr) => {
             if (saveErr) {
               next(saveErr);
             } else {

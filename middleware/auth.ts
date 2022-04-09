@@ -1,9 +1,8 @@
 import createError from "http-errors";
 import { NextFunction, Request, Response } from "express";
-import { CallbackError } from "mongoose";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Account, AccountInstanceInterface } from "../models/account";
+import { Account } from "../models/account";
 
 export const auth = async function (
   req: Request,
@@ -18,17 +17,14 @@ export const auth = async function (
     process.env.JWT_SECRET as string
   ) as JwtPayload;
 
-  Account.findByUsername(
-    decoded.username,
-    (err: CallbackError, account: AccountInstanceInterface) => {
-      if (err) {
-        next(err);
-      } else if (!account) {
-        next(createError(401, "Please authenticate"));
-      } else {
-        req.account = account;
-        next();
-      }
+  Account.findByUsername(decoded.username, (err, account) => {
+    if (err) {
+      next(err);
+    } else if (!account) {
+      next(createError(401, "Please authenticate"));
+    } else {
+      req.account = account;
+      next();
     }
-  );
+  });
 };
