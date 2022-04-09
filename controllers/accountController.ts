@@ -1,26 +1,42 @@
 import createError from "http-errors";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { Account, AccountInstanceInterface } from "./../models/account";
 import { CallbackError } from "mongoose";
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-  Account.findByUsernameAndPassword(
+  Account.findByUsername(
     req.body?.username,
-    req.body?.password,
     (err: CallbackError, account: AccountInstanceInterface) => {
       if (err) {
         next(createError(500, err.message));
       } else if (!account) {
-        next(createError(403, "Invalid username or password"));
+        next(createError(403, "Incorrect username"));
       } else if (!process.env.JWT_SECRET) {
-        next(createError(500, "Missing or invalid token secret in environment"));
-      } else {
-        const token = jwt.sign(
-          { username: account.username },
-          process.env.JWT_SECRET
+        next(
+          createError(500, "Missing or invalid token secret in environment")
         );
-        res.status(200).send({ token });
+      } else {
+        bcrypt.compare(
+          req.body?.password,
+          account.password,
+          function (compareErr, result) {
+            if (compareErr) {
+              next(compareErr);
+            } else {
+              if (result) {
+                const token = jwt.sign(
+                  { username: account.username },
+                  process.env.JWT_SECRET as string
+                );
+                res.status(200).send({ token });
+              } else {
+                next(createError(403, "Incorrect password"));
+              }
+            }
+          }
+        );
       }
     }
   );
@@ -65,22 +81,29 @@ export const getMyProfile = (
 
 export const register = (req: Request, res: Response, next: NextFunction) => {
   const data = req.body?.data;
-  const account = new Account({
-    username: data.username,
-    password: data.password,
-    email: data.email,
-    accountType: "user",
-    allergy: data.allergy,
-  });
-  account.validate((err: CallbackError) => {
-    if (err) {
-      next(err);
+  const saltRounds = 10;
+  bcrypt.hash(data.password, saltRounds, (hashErr, hash) => {
+    if (hashErr) {
+      next(hashErr);
     } else {
-      account.save((saveErr: CallbackError) => {
-        if (saveErr) {
-          next(saveErr);
+      const account = new Account({
+        username: data.username,
+        password: hash,
+        email: data.email,
+        accountType: "user",
+        allergy: data.allergy,
+      });
+      account.validate((valErr: CallbackError) => {
+        if (valErr) {
+          next(valErr);
         } else {
-          res.status(200).send({ message: "success" });
+          account.save((saveErr: CallbackError) => {
+            if (saveErr) {
+              next(saveErr);
+            } else {
+              res.status(200).send({ message: "success" });
+            }
+          });
         }
       });
     }
