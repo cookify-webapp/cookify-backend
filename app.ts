@@ -7,7 +7,7 @@ import express, {
   urlencoded,
 } from "express";
 import cookieParser from "cookie-parser";
-import mongoose, { NativeError } from "mongoose";
+import mongoose from "mongoose";
 
 import indexRouter from "./routes/indexRouter";
 import accountRouter from "./routes/accountRouter";
@@ -42,15 +42,15 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 
 // error handler
 app.use(function (
-  err: NativeError | HttpError,
+  err: Error,
   _req: Request,
   res: Response,
   _next: NextFunction
 ) {
-  if (err instanceof NativeError) {
-    res.status(500).send({ name: err.name, message: err.message });
-  } else if (err instanceof HttpError) {
+  if (err instanceof HttpError) {
     res.status(err.status || 500).send({ message: err.message });
+  } else if (err instanceof Error) {
+    res.status(500).send({ name: err.name, message: err.message });
   } else {
     res.status(500).send({ message: "Internal server error" });
   }
