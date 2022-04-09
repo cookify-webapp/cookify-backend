@@ -5,45 +5,41 @@ import { NextFunction, Request, Response } from "express";
 import { Account } from "./../models/account";
 import { errorText } from "../types/core";
 
-export const login = (req: Request, res: Response, next: NextFunction) => {
-  const secret = process.env.JWT_SECRET;
-
-  Account.findByUsername(req.body?.username, (err, account) => {
-    if (err) return next(createError(500, err.message));
-    if (!account) return next(createError(403, errorText.USERNAME));
-    if (!secret) return next(createError(500, errorText.SECRET));
-
-    bcrypt.compare(
+export const login = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw createError(500, errorText.SECRET);
+    const account = await Account.findByUsername(req.body?.username).exec();
+    if (!account) throw createError(403, errorText.USERNAME);
+    const result = await bcrypt.compare(
       req.body?.password,
-      decodeURIComponent(account.password),
-      (compareErr, result) => {
-        if (compareErr) return next(compareErr);
-        if (!result) return next(createError(403, errorText.PASSWORD));
-        jwt.sign(
-          { username: account.username },
-          secret,
-          {
-            expiresIn: "24h",
-          },
-          (signErr, token) => {
-            if (signErr) return next(signErr);
-            res.status(200).send({ token });
-          }
-        );
-      }
+      decodeURIComponent(account.password)
     );
-  });
+    if (!result) throw createError(403, errorText.PASSWORD);
+    const token = jwt.sign({ username: account.username }, secret, {
+      expiresIn: "24h",
+    });
+    res.status(200).send({ token });
+  } catch (err) {
+    return next(err);
+  }
 };
 
-export const getAllAccounts = (
+export const getAllAccounts = async (
   _req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  Account.find({}, (err, accounts) => {
-    if (err) return next(err);
+  try {
+    const accounts = await Account.find({}).exec();
     res.status(200).send({ accounts });
-  });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const getMe = (req: Request, res: Response, _next: NextFunction) => {
@@ -59,12 +55,16 @@ export const getMe = (req: Request, res: Response, _next: NextFunction) => {
   });
 };
 
-export const register = (req: Request, res: Response, next: NextFunction) => {
-  const data = req.body?.data;
-  const saltRounds = 10;
+export const register = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const data = req.body?.data;
+    const saltRounds = 10;
 
-  bcrypt.hash(data.password, saltRounds, (hashErr, hash) => {
-    if (hashErr) return next(hashErr);
+    const hash = await bcrypt.hash(data.password, saltRounds);
 
     const account = new Account({
       username: data.username,
@@ -74,13 +74,9 @@ export const register = (req: Request, res: Response, next: NextFunction) => {
       allergy: data.allergy,
     });
 
-    account.validate((valErr) => {
-      if (valErr) return next(valErr);
-
-      account.save((saveErr) => {
-        if (saveErr) return next(saveErr);
-        res.status(200).send({ message: "success" });
-      });
-    });
-  });
+    await account.save();
+    res.status(200).send({ message: "success" });
+  } catch (err) {
+    return next(err);
+  }
 };

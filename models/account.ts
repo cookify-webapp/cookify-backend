@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document, Callback } from "mongoose";
+import { model, Schema, Model, Document, Callback, Query } from "mongoose";
 
 //---------------------
 //   INTERFACE
@@ -22,17 +22,15 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface> {
   // declare any static methods here
   findByUsername(
     username: string,
-    callback: Callback<AccountInstanceInterface>,
     projection?: string | Object,
     populate?: string
-  ): void;
+  ): Query<AccountInstanceInterface, AccountInstanceInterface>;
   findByUsernameAndPassword(
     username: string,
     password: string,
-    callback: Callback<AccountInstanceInterface>,
     projection?: string | Object,
     populate?: string
-  ): void;
+  ): Query<AccountInstanceInterface, AccountInstanceInterface>;
 }
 
 //---------------------
@@ -60,9 +58,8 @@ const accountSchema = new Schema<
 //---------------------
 //   METHODS
 //---------------------
-accountSchema.statics.findByUsername = function (
+accountSchema.statics.findByUsername = async function (
   username: string,
-  callback: Callback,
   projection?: string | Object,
   populate?: string
 ) {
@@ -75,14 +72,13 @@ accountSchema.statics.findByUsername = function (
   if (projection) {
     query.select(projection);
   }
-  query.exec(callback);
+  return query;
 };
 
 
 accountSchema.statics.findByUsernameAndPassword = function (
   username: string,
   password: string,
-  callback: Callback,
   projection?: string | Object,
   populate?: string
 ) {
@@ -96,7 +92,7 @@ accountSchema.statics.findByUsernameAndPassword = function (
   if (projection) {
     query.select(projection);
   }
-  query.exec(callback);
+  return query;
 };
 
 export const Account = model<AccountInstanceInterface, AccountModelInterface>(
