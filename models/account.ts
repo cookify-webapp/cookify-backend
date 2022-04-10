@@ -23,7 +23,7 @@ export interface AccountInterface extends Document {
   bookmark: Types.Array<Types.ObjectId>;
 }
 
-export interface AccountInstanceInterface extends AccountInterface {
+export interface AccountInstanceMethods {
   // declare any instance methods here
   comparePassword(
     this: AccountInstanceInterface,
@@ -31,6 +31,8 @@ export interface AccountInstanceInterface extends AccountInterface {
   ): Promise<boolean>;
   signToken(this: AccountInstanceInterface, secret: string): string;
 }
+
+export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
 
 export interface AccountModelInterface
   extends Model<AccountInstanceInterface, AccountQueryHelpers> {
