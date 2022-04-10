@@ -5,4 +5,5 @@ export enum errorText {
   USERNAME = "Incorrect username",
   PASSWORD = "Incorrect password",
   AUTH = "Please authenticate",
+  DATA = 'Invalid data'
 }

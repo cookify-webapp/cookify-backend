@@ -1,4 +1,13 @@
-import { model, Schema, Model, Document, Callback, Query } from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import {
+  model,
+  Schema,
+  Model,
+  Document,
+  QueryWithHelpers,
+  Types,
+} from "mongoose";
 
 //---------------------
 //   INTERFACE
@@ -9,28 +18,34 @@ export interface AccountInterface extends Document {
   password: string;
   accountType: "user" | "admin";
   imagePath: string;
-  following: Schema.Types.ObjectId[];
-  allergy: Schema.Types.ObjectId[];
-  bookmark: Schema.Types.ObjectId[];
+  following: Types.Array<Types.ObjectId>;
+  allergy: Types.Array<Types.ObjectId>;
+  bookmark: Types.Array<Types.ObjectId>;
 }
 
 export interface AccountInstanceInterface extends AccountInterface {
   // declare any instance methods here
+  comparePassword(
+    this: AccountInstanceInterface,
+    password: string
+  ): Promise<boolean>;
+  signToken(this: AccountInstanceInterface, secret: string): string;
 }
 
-export interface AccountModelInterface extends Model<AccountInstanceInterface> {
+export interface AccountModelInterface
+  extends Model<AccountInstanceInterface, AccountQueryHelpers> {
   // declare any static methods here
-  findByUsername(
-    username: string,
-    projection?: string | Object,
-    populate?: string
-  ): Query<AccountInstanceInterface, AccountInstanceInterface>;
-  findByUsernameAndPassword(
-    username: string,
-    password: string,
-    projection?: string | Object,
-    populate?: string
-  ): Query<AccountInstanceInterface, AccountInstanceInterface>;
+}
+
+interface AccountQueryHelpers {
+  byName(
+    this: QueryWithHelpers<any, AccountInstanceInterface, AccountQueryHelpers>,
+    name: string
+  ): QueryWithHelpers<
+    AccountInstanceInterface,
+    AccountInstanceInterface,
+    AccountQueryHelpers
+  >;
 }
 
 //---------------------
@@ -38,7 +53,9 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface> {
 //---------------------
 const accountSchema = new Schema<
   AccountInstanceInterface,
-  AccountModelInterface
+  AccountModelInterface,
+  AccountInstanceInterface,
+  AccountQueryHelpers
 >({
   username: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
@@ -50,49 +67,37 @@ const accountSchema = new Schema<
     default: "user",
   },
   imagePath: String,
-  following: [{ type: Schema.Types.ObjectId, ref: "Account" }],
-  allergy: [{ type: Schema.Types.ObjectId, ref: "Ingredient" }],
-  bookmark: [{ type: Schema.Types.ObjectId, ref: "Recipe" }],
+  following: [{ type: "ObjectId", ref: "Account" }],
+  allergy: [{ type: "ObjectId", ref: "Ingredient" }],
+  bookmark: [{ type: "ObjectId", ref: "Recipe" }],
 });
 
 //---------------------
 //   METHODS
 //---------------------
-accountSchema.statics.findByUsername = async function (
-  username: string,
-  projection?: string | Object,
-  populate?: string
-) {
-  const query = this.findOne({
-    username: username,
-  });
-  if (populate) {
-    query.populate(populate);
-  }
-  if (projection) {
-    query.select(projection);
-  }
-  return query;
+accountSchema.methods.comparePassword = async function (
+  password: string
+): Promise<boolean> {
+  return bcrypt.compare(password, decodeURIComponent(this.password));
 };
 
-
-accountSchema.statics.findByUsernameAndPassword = function (
-  username: string,
-  password: string,
-  projection?: string | Object,
-  populate?: string
-) {
-  const query = this.findOne({
-    username: username,
-    password: password,
+accountSchema.methods.signToken = function (secret: string): string {
+  return jwt.sign({ username: this.username }, secret, {
+    expiresIn: "24h",
   });
-  if (populate) {
-    query.populate(populate);
-  }
-  if (projection) {
-    query.select(projection);
-  }
-  return query;
+};
+
+//---------------------
+//   QUERY HELPERS
+//---------------------
+accountSchema.query.byName = function (
+  name: string
+): QueryWithHelpers<
+  AccountInstanceInterface,
+  AccountInstanceInterface,
+  AccountQueryHelpers
+> {
+  return this.where({ name });
 };
 
 export const Account = model<AccountInstanceInterface, AccountModelInterface>(

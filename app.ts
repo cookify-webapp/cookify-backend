@@ -17,7 +17,7 @@ const app = express();
 //---------------------
 //   DATABASE
 //---------------------
-mongoose.connect(process.env.MONGODB_URL as string);
+await mongoose.connect(process.env.MONGODB_URL as string);
 
 //---------------------
 //   MODULES
@@ -32,15 +32,14 @@ app.use(cookieParser());
 app.use("/", indexRouter);
 app.use("/users", accountRouter);
 
-//---------------------
-//   ERROR HANDLER
-//---------------------
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
 
-// error handler
+//---------------------
+//   ERROR HANDLER
+//---------------------
 app.use(function (
   err: Error,
   _req: Request,

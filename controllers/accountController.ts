@@ -1,5 +1,4 @@
 import createError from "http-errors";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import { Account } from "./../models/account";
@@ -11,18 +10,16 @@ export const login = async (
   next: NextFunction
 ) => {
   try {
+    const username = req.body?.data?.username;
+    const password = req.body?.data?.password;
+    if (!username || !password) throw createError(400, errorText.DATA);
     const secret = process.env.JWT_SECRET;
     if (!secret) throw createError(500, errorText.SECRET);
-    const account = await Account.findByUsername(req.body?.username).exec();
+    const account = await Account.find().byName(username).exec();
     if (!account) throw createError(403, errorText.USERNAME);
-    const result = await bcrypt.compare(
-      req.body?.password,
-      decodeURIComponent(account.password)
-    );
+    const result = await account.comparePassword(password);
     if (!result) throw createError(403, errorText.PASSWORD);
-    const token = jwt.sign({ username: account.username }, secret, {
-      expiresIn: "24h",
-    });
+    const token = account.signToken(secret);
     res.status(200).send({ token });
   } catch (err) {
     return next(err);
@@ -35,7 +32,7 @@ export const getAllAccounts = async (
   next: NextFunction
 ) => {
   try {
-    const accounts = await Account.find({}).exec();
+    const accounts = await Account.find().exec();
     res.status(200).send({ accounts });
   } catch (err) {
     return next(err);
@@ -63,15 +60,13 @@ export const register = async (
   try {
     const data = req.body?.data;
     const saltRounds = 10;
-
-    const hash = await bcrypt.hash(data.password, saltRounds);
-
+    const hash = await bcrypt.hash(data?.password, saltRounds);
     const account = new Account({
-      username: data.username,
+      username: data?.username,
       password: encodeURIComponent(hash),
-      email: data.email,
+      email: data?.email,
       accountType: "user",
-      allergy: data.allergy,
+      allergy: data?.allergy,
     });
 
     await account.save();

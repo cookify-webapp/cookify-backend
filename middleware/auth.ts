@@ -22,13 +22,11 @@ export const auth = async (
 
     if (!secret) throw createError(500, errorText.SECRET);
 
-    const decoded = jwt.verify(token, secret);
-    if (!decoded) throw createError(500, errorText.TOKEN);
+    const decoded = jwt.verify(token, secret) as JwtPayload;
+    const account = await Account.find().byName(decoded.username).exec();
 
-    const castDecoded = decoded as JwtPayload;
-
-    const account = await Account.findByUsername(castDecoded.username).exec();
     if (!account) throw createError(401, errorText.AUTH);
+    
     req.account = account;
     return next();
   } catch (err) {
