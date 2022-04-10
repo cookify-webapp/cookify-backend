@@ -32,7 +32,7 @@ export const getAllAccounts = async (
   next: NextFunction
 ) => {
   try {
-    const accounts = await Account.find().exec();
+    const accounts = await Account.find().select("-password").exec();
     res.status(200).send({ accounts });
   } catch (err) {
     return next(err);
