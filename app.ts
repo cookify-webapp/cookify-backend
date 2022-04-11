@@ -7,6 +7,7 @@ import express, {
   urlencoded,
 } from "express";
 import cookieParser from "cookie-parser";
+import uniqueValidator from 'mongoose-unique-validator';
 import mongoose from "mongoose";
 
 import indexRouter from "./routes/indexRouter";
@@ -17,6 +18,7 @@ const app = express();
 //---------------------
 //   DATABASE
 //---------------------
+mongoose.plugin(uniqueValidator);
 await mongoose.connect(process.env.MONGODB_URL as string);
 
 //---------------------
