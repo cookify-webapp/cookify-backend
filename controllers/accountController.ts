@@ -13,12 +13,16 @@ export const login = async (
     const username = req.body?.data?.username;
     const password = req.body?.data?.password;
     if (!username || !password) throw createError(400, errorText.DATA);
+
     const secret = process.env.JWT_SECRET;
     if (!secret) throw createError(500, errorText.SECRET);
+
     const account = await Account.find().byName(username).exec();
     if (!account) throw createError(403, errorText.USERNAME);
+
     const result = await account.comparePassword(password);
     if (!result) throw createError(403, errorText.PASSWORD);
+
     const token = account.signToken(secret);
     res.status(200).send({ token });
   } catch (err) {
@@ -39,17 +43,25 @@ export const getAllAccounts = async (
   }
 };
 
-export const getMe = (req: Request, res: Response, _next: NextFunction) => {
-  const acc = req.account;
+export const getMe = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    if (!req.username) throw createError(401, errorText.AUTH);
 
-  res.status(200).send({
-    account: {
-      username: acc?.username,
-      email: acc?.email,
-      accountType: acc?.accountType,
-      image: acc?.imagePath,
-    },
-  });
+    const account = await Account.find()
+      .byName(req.username)
+      .select("username email accountType image")
+      .exec();
+
+    if (!account) throw createError(403, errorText.USERNAME);
+
+    res.status(200).send({ account });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 export const register = async (

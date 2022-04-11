@@ -17,7 +17,7 @@ export interface AccountInterface extends Document {
   email: string;
   password: string;
   accountType: "user" | "admin";
-  imagePath: string;
+  image: string;
   following: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
@@ -32,7 +32,9 @@ export interface AccountInstanceMethods {
   signToken(this: AccountInstanceInterface, secret: string): string;
 }
 
-export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
+export interface AccountInstanceInterface
+  extends AccountInterface,
+    AccountInstanceMethods {}
 
 export interface AccountModelInterface
   extends Model<AccountInstanceInterface, AccountQueryHelpers> {
@@ -58,21 +60,24 @@ const accountSchema = new Schema<
   AccountModelInterface,
   AccountInstanceInterface,
   AccountQueryHelpers
->({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  accountType: {
-    type: String,
-    required: true,
-    enum: ["user", "admin"],
-    default: "user",
+>(
+  {
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    accountType: {
+      type: String,
+      required: true,
+      enum: ["user", "admin"],
+      default: "user",
+    },
+    image: String,
+    following: [{ type: "ObjectId", ref: "Account" }],
+    allergy: [{ type: "ObjectId", ref: "Ingredient" }],
+    bookmark: [{ type: "ObjectId", ref: "Recipe" }],
   },
-  imagePath: String,
-  following: [{ type: "ObjectId", ref: "Account" }],
-  allergy: [{ type: "ObjectId", ref: "Ingredient" }],
-  bookmark: [{ type: "ObjectId", ref: "Recipe" }],
-});
+  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
 
 //---------------------
 //   METHODS
@@ -101,6 +106,21 @@ accountSchema.query.byName = function (
 > {
   return this.where({ name });
 };
+
+//---------------------
+//   VIRTUAL
+//---------------------
+accountSchema.virtual("recipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "author",
+});
+
+accountSchema.virtual("snapshots", {
+  ref: "Snapshot",
+  localField: "_id",
+  foreignField: "author",
+});
 
 export const Account = model<AccountInstanceInterface, AccountModelInterface>(
   "Account",
