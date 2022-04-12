@@ -13,11 +13,12 @@ import {
 //   INTERFACE
 //---------------------
 export interface AccountInterface extends Document {
+  _id: Types.ObjectId;
   username: string;
   email: string;
   password: string;
   accountType: "user" | "admin";
-  image: string;
+  image?: string;
   following: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
@@ -122,6 +123,9 @@ accountSchema.virtual("snapshots", {
   foreignField: "author",
 });
 
+//---------------------
+//   MODEL
+//---------------------
 export const Account = model<AccountInstanceInterface, AccountModelInterface>(
   "Account",
   accountSchema
