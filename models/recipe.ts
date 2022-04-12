@@ -130,11 +130,6 @@ recipeSchema.virtual("comments", {
 });
 
 //---------------------
-//   PLUGIN
-//---------------------
-recipeSchema.plugin(mongooseAutoPopulate);
-
-//---------------------
 //   MODEL
 //---------------------
 export const Recipe = model<RecipeInstanceInterface, RecipeModelInterface>(

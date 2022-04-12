@@ -12,6 +12,7 @@ import mongoose from "mongoose";
 
 import indexRouter from "./routes/indexRouter";
 import accountRouter from "./routes/accountRouter";
+import mongooseAutoPopulate from "mongoose-autopopulate";
 
 const app = express();
 
@@ -19,6 +20,7 @@ const app = express();
 //   DATABASE
 //---------------------
 mongoose.plugin(uniqueValidator);
+mongoose.plugin(mongooseAutoPopulate);
 await mongoose.connect(process.env.MONGODB_URL as string);
 
 //---------------------
