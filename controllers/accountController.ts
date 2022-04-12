@@ -55,7 +55,7 @@ export const getMe = async (
 
     const account = await Account.findOne()
       .byName(req.username)
-      .select("username email accountType image")
+      .select("username email accountType image bookmark")
       .lean()
       .exec();
 
