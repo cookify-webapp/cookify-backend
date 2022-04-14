@@ -100,7 +100,7 @@ snapshotSchema.query.byRecipe = function (
   SnapshotInstanceInterface,
   SnapshotQueryHelpers
 > {
-  return this.where({ recipe: new Types.ObjectId(recipeId) });
+  return this.where({ recipe: recipeId });
 };
 
 snapshotSchema.query.byRecipeName = function (

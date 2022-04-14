@@ -78,7 +78,7 @@ commentSchema.query.byPost = function (
   CommentInstanceInterface,
   CommentQueryHelpers
 > {
-  return this.where({ post: new Types.ObjectId(postId) });
+  return this.where({ post: postId });
 };
 
 //---------------------

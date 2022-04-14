@@ -65,7 +65,7 @@ ratingSchema.query.byPost = function (
   RatingInstanceInterface,
   RatingQueryHelpers
 > {
-  return this.where({ post: new Types.ObjectId(postId) });
+  return this.where({ post: postId });
 };
 
 //---------------------
