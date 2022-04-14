@@ -7,21 +7,25 @@ import express, {
   urlencoded,
 } from "express";
 import cookieParser from "cookie-parser";
-import uniqueValidator from 'mongoose-unique-validator';
+import uniqueValidator from "mongoose-unique-validator";
 import mongoose from "mongoose";
 
 import indexRouter from "./routes/indexRouter";
 import accountRouter from "./routes/accountRouter";
 import mongooseAutoPopulate from "mongoose-autopopulate";
+import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 const app = express();
 
 //---------------------
 //   DATABASE
 //---------------------
+await mongoose.connect(process.env.MONGODB_URL as string);
 mongoose.plugin(uniqueValidator);
 mongoose.plugin(mongooseAutoPopulate);
-await mongoose.connect(process.env.MONGODB_URL as string);
+mongoose.plugin(mongoosePaginate);
+mongoose.plugin(aggregatePaginate);
 
 //---------------------
 //   MODULES
@@ -36,7 +40,6 @@ app.use(cookieParser());
 app.use("/", indexRouter);
 app.use("/users", accountRouter);
 
-// Catch 404 and forward to error handler
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
@@ -51,11 +54,15 @@ app.use(function (
   _next: NextFunction
 ) {
   if (err instanceof HttpError) {
-    res.status(err.status || 500).send({ message: err.message });
+    res
+      .status(err.status || 500)
+      .send({ name: err.name, message: err.message });
   } else if (err instanceof Error) {
     res.status(500).send({ name: err.name, message: err.message });
   } else {
-    res.status(500).send({ message: "Internal server error" });
+    res
+      .status(500)
+      .send({ name: "Internal server error", message: "Something went wrong" });
   }
 });
 
