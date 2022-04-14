@@ -21,6 +21,7 @@ export interface IngredientQuantityInterface {
 export interface RecipeInterface extends Document {
   _id: Types.ObjectId;
   name: string;
+  desc: string;
   ingredients: Types.DocumentArray<IngredientQuantityInterface>;
   method: Types.ObjectId;
   types: Types.Array<Types.ObjectId>;
@@ -84,6 +85,7 @@ const recipeSchema = new Schema<
 >(
   {
     name: { type: String, required: true, unique: true },
+    desc: { type: String, required: true, unique: true },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
     method: {
       type: "ObjectId",
@@ -138,36 +140,44 @@ recipeSchema.statics.listRecipe = async function (
   ingredients: string[],
   method: string
 ): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
-  const aggregate = this.aggregate([
-    {
-      $match: {
-        $and: [
-          { name: { $regex: name, $options: "i" } },
-          { method: new Types.ObjectId(method) },
-          {
-            ingredients: {
-              $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
-            },
-          },
-        ],
-      },
-    },
-    {
-      $lookup: {
-        from: "ratings",
-        localField: "_id",
-        foreignField: "post",
-        as: "ratings",
-      },
-    },
-    {
-      $group: {
-        _id: "$_id",
-        average: { $avg: "$ratings.rating" },
-        count: { $count: "$ratings.rating" },
-      },
-    },
-  ]);
+  const aggregate = this.aggregate()
+    .match({
+      $and: [
+        { name: { $regex: name, $options: "i" } },
+        { method: new Types.ObjectId(method) },
+        {
+          "ingredients.ingredient": _.map(
+            ingredients,
+            (item) => new Types.ObjectId(item)
+          ),
+        },
+      ],
+    })
+    .lookup({
+      from: "ratings",
+      localField: "_id",
+      foreignField: "post",
+      as: "ratings",
+    })
+    .unwind("ratings")
+    .group({
+      _id: "$_id",
+      root: { $first: "$$ROOT" },
+      ratings: { $push: "$ratings" },
+      averageRating: { $avg: "$ratings.rating" },
+      countRating: { $count: 1 },
+    })
+    .replaceRoot({
+      $mergeObjects: [
+        "$root",
+        {
+          averageRating: "$averageRating",
+          countRating: "$countRating",
+          ratings: "$ratings",
+        },
+      ],
+    })
+    .sort("updatedAt");
 
   return Recipe.aggregatePaginate(aggregate, {
     page: page,

@@ -22,7 +22,7 @@ export const getRecipeList = async (
       method
     );
 
-    if (_.size(recipes.docs) > 0) {
+    if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
         recipes: recipes.docs,
         page: recipes.page,
