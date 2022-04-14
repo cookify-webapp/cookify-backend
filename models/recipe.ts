@@ -1,19 +1,20 @@
+import _ from "lodash";
 import {
   model,
   Schema,
-  Model,
   Document,
   Types,
   QueryWithHelpers,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
 } from "mongoose";
-import mongooseAutoPopulate from "mongoose-autopopulate";
 
 //---------------------
 //   INTERFACE
 //---------------------
 export interface IngredientQuantityInterface {
   _id: Types.ObjectId;
-  ingredient: string;
+  ingredient: Types.ObjectId;
   quantity: number;
 }
 
@@ -30,6 +31,12 @@ export interface RecipeInterface extends Document {
   // nutritionalDetail: Object;
 }
 
+export interface AverageCountInterface {
+  _id: string;
+  average: number;
+  count: number;
+}
+
 export interface RecipeInstanceMethods {
   // declare any instance methods here
 }
@@ -39,8 +46,15 @@ export interface RecipeInstanceInterface
     RecipeInstanceMethods {}
 
 export interface RecipeModelInterface
-  extends Model<RecipeInstanceInterface, RecipeQueryHelpers> {
+  extends AggregatePaginateModel<RecipeInstanceInterface> {
   // declare any static methods here
+  listRecipe(
+    page: number,
+    perPage: number,
+    name: string,
+    ingredients: string[],
+    method: string
+  ): Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 
 interface RecipeQueryHelpers {
@@ -58,7 +72,7 @@ interface RecipeQueryHelpers {
 //   SCHEMA
 //---------------------
 const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: String, required: true },
+  ingredient: { type: "ObjectId", ref: "Ingredient", required: true },
   quantity: { type: Number, required: true, min: 0 },
 });
 
@@ -112,6 +126,53 @@ recipeSchema.query.byName = function (
   RecipeQueryHelpers
 > {
   return this.where({ name });
+};
+
+//---------------------
+//   STATICS
+//---------------------
+recipeSchema.statics.listRecipe = async function (
+  page: number,
+  perPage: number,
+  name: string,
+  ingredients: string[],
+  method: string
+): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
+  const aggregate = this.aggregate([
+    {
+      $match: {
+        $and: [
+          { name: { $regex: name, $options: "i" } },
+          { method: new Types.ObjectId(method) },
+          {
+            ingredients: {
+              $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
+            },
+          },
+        ],
+      },
+    },
+    {
+      $lookup: {
+        from: "ratings",
+        localField: "_id",
+        foreignField: "post",
+        as: "ratings",
+      },
+    },
+    {
+      $group: {
+        _id: "$_id",
+        average: { $avg: "$ratings.rating" },
+        count: { $count: "$ratings.rating" },
+      },
+    },
+  ]);
+
+  return Recipe.aggregatePaginate(aggregate, {
+    page: page,
+    limit: perPage,
+  });
 };
 
 //---------------------
