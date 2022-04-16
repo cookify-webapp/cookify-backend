@@ -8,11 +8,11 @@ export const getRecipeList = async (
   next: NextFunction
 ) => {
   try {
-    const page = parseInt(req.params?.page);
-    const perPage = parseInt(req.params?.perPage);
-    const searchWord = req.params?.searchWord;
-    const ingredients = JSON.parse(req.params?.ingredients);
-    const method = req.params?.method;
+    const page = parseInt(req.query?.page as string);
+    const perPage = parseInt(req.query?.perPage as string);
+    const searchWord = req.query?.searchWord as string;
+    const ingredients = req.query?.ingredients as string[];
+    const method = req.query?.method as string;
 
     const recipes = await Recipe.listRecipe(
       page,

@@ -5,5 +5,7 @@ export enum errorText {
   USERNAME = "Incorrect username",
   PASSWORD = "Incorrect password",
   AUTH = "Please authenticate",
-  DATA = 'Invalid data'
+  DATA = "Invalid data",
+  PARAM = "Invalid request parameter(s)",
+  DELETE = "No documents were deleted, please check the request parameter(s)"
 }
