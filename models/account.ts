@@ -90,9 +90,13 @@ accountSchema.methods.comparePassword = async function (
 };
 
 accountSchema.methods.signToken = function (secret: string): string {
-  return jwt.sign({ username: this.username }, secret, {
-    expiresIn: "24h",
-  });
+  return jwt.sign(
+    { username: this.username, isAdmin: this.accountType === "admin" },
+    secret,
+    {
+      expiresIn: "24h",
+    }
+  );
 };
 
 //---------------------
