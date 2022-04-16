@@ -146,10 +146,9 @@ recipeSchema.statics.listRecipe = async function (
         { name: { $regex: name, $options: "i" } },
         { method: new Types.ObjectId(method) },
         {
-          "ingredients.ingredient": _.map(
-            ingredients,
-            (item) => new Types.ObjectId(item)
-          ),
+          "ingredients.ingredient": {
+            $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
+          },
         },
       ],
     })
