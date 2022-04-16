@@ -1,10 +1,12 @@
 import {
   model,
   Schema,
-  Model,
   Document,
   Types,
   QueryWithHelpers,
+  PaginateModel,
+  PaginateResult,
+  FilterQuery,
 } from "mongoose";
 
 //---------------------
@@ -23,9 +25,6 @@ export interface IngredientInterface extends Document {
 
 export interface IngredientInstanceMethods {
   // declare any instance methods here
-  findSameType(
-    this: IngredientInstanceInterface
-  ): QueryWithHelpers<any, IngredientInstanceInterface, IngredientQueryHelpers>;
 }
 
 export interface IngredientInstanceInterface
@@ -33,24 +32,19 @@ export interface IngredientInstanceInterface
     IngredientInstanceMethods {}
 
 export interface IngredientModelInterface
-  extends Model<IngredientInstanceInterface, IngredientQueryHelpers> {
+  extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
   // declare any static methods here
+  listAll(
+    page: number,
+    perPage: number,
+    searchWord: string,
+    type: string
+  ): Promise<PaginateResult<IngredientInstanceInterface>>;
+
+  findSameType(type: string): Promise<IngredientInstanceInterface[]>;
 }
 
-interface IngredientQueryHelpers {
-  byName(
-    this: QueryWithHelpers<
-      any,
-      IngredientInstanceInterface,
-      IngredientQueryHelpers
-    >,
-    name: string
-  ): QueryWithHelpers<
-    IngredientInstanceInterface,
-    IngredientInstanceInterface,
-    IngredientQueryHelpers
-  >;
-}
+interface IngredientQueryHelpers {}
 
 //---------------------
 //   SCHEMA
@@ -75,29 +69,40 @@ const ingredientSchema = new Schema<
 });
 
 //---------------------
-//   METHODS
+//   STATICS
 //---------------------
-ingredientSchema.methods.findSameType = function (): QueryWithHelpers<
-  IngredientInstanceInterface[],
-  IngredientInstanceInterface,
-  IngredientQueryHelpers
-> {
-  return Ingredient.find({
-    type: this.type,
+ingredientSchema.statics.listAll = async function (
+  page: number,
+  perPage: number,
+  searchWord: string,
+  type: string
+): Promise<PaginateResult<IngredientInstanceInterface>> {
+  const filter: FilterQuery<IngredientInstanceInterface> = {
+    name: { $regex: searchWord, $options: "i" },
+  };
+  if (type) filter["type._id"] = type;
+
+  return Ingredient.paginate(filter, {
+    page: page,
+    limit: perPage,
+    select: "name type image",
   });
 };
 
-//---------------------
-//   QUERY HELPERS
-//---------------------
-ingredientSchema.query.byName = function (
-  name: string
-): QueryWithHelpers<
-  IngredientInstanceInterface,
-  IngredientInstanceInterface,
-  IngredientQueryHelpers
-> {
-  return this.where({ name });
+ingredientSchema.statics.findSameType = function (
+  type: string
+): Promise<IngredientInstanceInterface[]> {
+  return Ingredient.aggregate()
+    .lookup({
+      from: "ingredientTypes",
+      localField: "type",
+      foreignField: "_id",
+      as: "type",
+    })
+    .match({ "type._id": type })
+    .project({ name: 1, type: 1, image: 1 })
+    .limit(4)
+    .exec();
 };
 
 //---------------------
