@@ -23,7 +23,7 @@ export interface RecipeInterface extends Document {
   name: string;
   desc: string;
   ingredients: Types.DocumentArray<IngredientQuantityInterface>;
-  method: Types.ObjectId;
+  methods: Types.Array<Types.ObjectId>;
   types: Types.Array<Types.ObjectId>;
   image?: string;
   author: Types.ObjectId;
@@ -54,7 +54,7 @@ export interface RecipeModelInterface
     perPage: number,
     name: string,
     ingredients: string[],
-    method: string
+    methods: string[]
   ): Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 
@@ -87,12 +87,14 @@ const recipeSchema = new Schema<
     name: { type: String, required: true, unique: true },
     desc: { type: String, required: true, unique: true },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
-    method: {
-      type: "ObjectId",
-      ref: "CookingMethod",
-      required: true,
-      autopopulate: true,
-    },
+    methods: [
+      {
+        type: "ObjectId",
+        ref: "CookingMethod",
+        required: true,
+        autopopulate: true,
+      },
+    ],
     types: [
       {
         type: "ObjectId",
@@ -138,13 +140,23 @@ recipeSchema.statics.listRecipe = async function (
   perPage: number,
   name: string,
   ingredients: string[],
-  method: string
+  methods: string
 ): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
   const aggregate = this.aggregate()
+    .lookup({
+      from: "cookingMethods",
+      localField: "methods",
+      foreignField: "_id",
+      as: "cookingMethods",
+    })
     .match({
       $and: [
         { name: { $regex: name, $options: "i" } },
-        { method: new Types.ObjectId(method) },
+        {
+          "methods._id": {
+            $all: _.map(methods, (item) => new Types.ObjectId(item)),
+          },
+        },
         {
           "ingredients.ingredient": {
             $all: _.map(ingredients, (item) => new Types.ObjectId(item)),

@@ -12,7 +12,7 @@ export const getRecipeList = async (
     const perPage = parseInt(req.query?.perPage as string);
     const searchWord = req.query?.searchWord as string;
     const ingredients = req.query?.ingredients as string[];
-    const method = req.query?.method as string;
+    const method = req.query?.method as string[];
 
     const recipes = await Recipe.listRecipe(
       page,
