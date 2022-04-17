@@ -1,8 +1,9 @@
+import { PaginateResult, FilterQuery } from "mongoose";
 import {
-  PaginateResult,
-  FilterQuery,
-} from "mongoose";
-import { Ingredient, IngredientInstanceInterface, ingredientSchema } from "@models/ingredient";
+  Ingredient,
+  IngredientInstanceInterface,
+  ingredientSchema,
+} from "@models/ingredient";
 
 //---------------------
 //   STATICS
@@ -28,7 +29,7 @@ ingredientSchema.statics.listAll = async function (
 ingredientSchema.statics.findSameType = function (
   type: string
 ): Promise<IngredientInstanceInterface[]> {
-  return Ingredient.aggregate()
+  return Ingredient.aggregate<IngredientInstanceInterface>()
     .lookup({
       from: "ingredientTypes",
       localField: "type",
@@ -37,6 +38,6 @@ ingredientSchema.statics.findSameType = function (
     })
     .match({ "type._id": type })
     .project({ name: 1, type: 1, image: 1 })
-    .limit(4)
+    .sample(4)
     .exec();
 };

@@ -44,7 +44,7 @@ export const getSameType = async (
   next: NextFunction
 ) => {
   try {
-    const id = req.params?.typeId;
+    const id = req.query?.typeId as string;
     if (!id) throw createError(400, errorText.PARAM);
 
     const results = await Ingredient.findSameType(id);
@@ -85,7 +85,7 @@ export const editIngredient = async (
   try {
     const id = req.query?.ingredientId;
     const ingredient = await Ingredient.findById(id).exec();
-    if (!ingredient) throw createError(400, errorText.QUERY);
+    if (!ingredient) throw createError(404, errorText.ID);
 
     const data = req.body?.data;
     if (!data) throw createError(400, errorText.DATA);

@@ -23,7 +23,9 @@ const app = express();
 //---------------------
 await mongoose.connect(process.env.MONGODB_URL as string);
 mongoose.plugin(uniqueValidator);
-mongoose.plugin(mongooseAutoPopulate);
+mongoose.plugin(mongooseAutoPopulate, {
+  functions: ["find", "findOne", "findOneAndUpdate", "aggregate"],
+});
 mongoose.plugin(mongoosePaginate);
 mongoose.plugin(aggregatePaginate);
 
