@@ -7,7 +7,7 @@ export enum errorText {
   AUTH = "Please authenticate",
   ADMIN = "This account is unauthorized as admin",
   DATA = "Invalid data",
-  QUERY = "Invalid query string(s)",
+  ID = "No documents found, please check the id",
   PARAM = "Invalid request parameter(s)",
   DELETE = "No documents were deleted, please check the request parameter(s)"
 }

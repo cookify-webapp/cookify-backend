@@ -1,8 +1,5 @@
 import _ from "lodash";
-import {
-  Types,
-  AggregatePaginateResult,
-} from "mongoose";
+import { Types, AggregatePaginateResult } from "mongoose";
 import { Recipe, RecipeInstanceInterface, recipeSchema } from "@models/recipe";
 
 //---------------------
@@ -15,7 +12,7 @@ recipeSchema.statics.listRecipe = async function (
   ingredients: string[],
   methods: string
 ): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
-  const aggregate = this.aggregate()
+  const aggregate = this.aggregate<RecipeInstanceInterface>()
     .lookup({
       from: "cookingMethods",
       localField: "methods",
@@ -68,7 +65,7 @@ recipeSchema.statics.listRecipe = async function (
       $mergeObjects: [
         "$root",
         {
-          averageRating: "$averageRating",
+          averageRating: { $round: ["$averageRating", 1] },
           countRating: "$countRating",
           ratings: "$ratings",
         },
@@ -80,4 +77,16 @@ recipeSchema.statics.listRecipe = async function (
     page: page,
     limit: perPage,
   });
+};
+
+recipeSchema.statics.getRecipeDetail = async function (
+  id: string
+): Promise<RecipeInstanceInterface | null> {
+  return this.findById(id)
+    .populate("ratings")
+    .populate("comments")
+    .populate("countRating")
+    .populate("countComment")
+    .sort("updatedAt")
+    .exec();
 };
