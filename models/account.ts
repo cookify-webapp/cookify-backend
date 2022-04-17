@@ -1,5 +1,3 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import {
   model,
   Schema,
@@ -56,7 +54,7 @@ interface AccountQueryHelpers {
 //---------------------
 //   SCHEMA
 //---------------------
-const accountSchema = new Schema<
+export const accountSchema = new Schema<
   AccountInstanceInterface,
   AccountModelInterface,
   AccountInstanceInterface,
@@ -79,25 +77,6 @@ const accountSchema = new Schema<
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
-
-//---------------------
-//   METHODS
-//---------------------
-accountSchema.methods.comparePassword = async function (
-  password: string
-): Promise<boolean> {
-  return bcrypt.compare(password, decodeURIComponent(this.password));
-};
-
-accountSchema.methods.signToken = function (secret: string): string {
-  return jwt.sign(
-    { username: this.username, isAdmin: this.accountType === "admin" },
-    secret,
-    {
-      expiresIn: "24h",
-    }
-  );
-};
 
 //---------------------
 //   QUERY HELPERS

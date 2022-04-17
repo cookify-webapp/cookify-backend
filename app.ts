@@ -10,8 +10,8 @@ import cookieParser from "cookie-parser";
 import uniqueValidator from "mongoose-unique-validator";
 import mongoose from "mongoose";
 
-import indexRouter from "./routes/indexRouter";
-import accountRouter from "./routes/accountRouter";
+import indexRouter from "@routes/indexRouter";
+import accountRouter from "@routes/accountRouter";
 import mongooseAutoPopulate from "mongoose-autopopulate";
 import mongoosePaginate from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";

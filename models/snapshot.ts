@@ -60,7 +60,7 @@ interface SnapshotQueryHelpers {
 //---------------------
 //   SCHEMA
 //---------------------
-const snapshotSchema = new Schema<
+export const snapshotSchema = new Schema<
   SnapshotInstanceInterface,
   SnapshotModelInterface,
   SnapshotInstanceMethods,

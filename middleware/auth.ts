@@ -2,7 +2,7 @@ import createError from "http-errors";
 import { NextFunction, Request, Response } from "express";
 
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { errorText } from "../types/core";
+import { errorText } from "@coreTypes/core";
 import _ from "lodash";
 
 const getPayload = (req: Request): JwtPayload => {

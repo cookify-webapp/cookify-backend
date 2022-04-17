@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import _ from "lodash";
-import { Recipe } from "../models/recipe";
+import { Recipe } from "@models/recipe";
 
 export const getRecipeList = async (
   req: Request,

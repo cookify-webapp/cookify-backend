@@ -1,6 +1,6 @@
 import express from "express";
-import { getMe, getAllAccounts } from '../controllers/accountController';
-import { auth } from "../middleware/auth";
+import { getMe, getAllAccounts } from '@controllers/accountController';
+import { auth } from "@middleware/auth";
 
 const accountRouter = express.Router();
 

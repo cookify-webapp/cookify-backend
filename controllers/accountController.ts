@@ -2,8 +2,8 @@ import { Types } from "mongoose";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
-import { Account } from "./../models/account";
-import { errorText } from "../types/core";
+import { Account } from "@models/account";
+import { errorText } from "@coreTypes/core";
 import _ from "lodash";
 
 export const login = async (
