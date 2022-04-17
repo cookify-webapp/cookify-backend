@@ -1,3 +1,5 @@
+import { CommentInstanceInterface } from "./comment";
+import { RatingInstanceInterface } from "./rating";
 import {
   model,
   Schema,
@@ -27,6 +29,11 @@ export interface RecipeInterface extends Document {
   image?: string;
   author: Types.ObjectId;
   likedBy: Types.Array<Types.ObjectId>;
+  ratings?: Types.DocumentArray<RatingInstanceInterface>;
+  comments?: Types.DocumentArray<CommentInstanceInterface>;
+  countRating?: number;
+  countComment?: number;
+  averageRating?: number;
   updatedAt: Date;
   // nutritionalDetail: Object;
 }
@@ -55,6 +62,8 @@ export interface RecipeModelInterface
     ingredients: string[],
     methods: string[]
   ): Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  getRecipeDetail(id: string): Promise<RecipeInstanceInterface | null>;
 }
 
 interface RecipeQueryHelpers {
@@ -71,10 +80,12 @@ interface RecipeQueryHelpers {
 //---------------------
 //   SCHEMA
 //---------------------
-export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: "ObjectId", ref: "Ingredient", required: true },
-  quantity: { type: Number, required: true, min: 0 },
-});
+export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
+  {
+    ingredient: { type: "ObjectId", ref: "Ingredient", required: true },
+    quantity: { type: Number, required: true, min: 0 },
+  }
+);
 
 export const recipeSchema = new Schema<
   RecipeInstanceInterface,
@@ -107,7 +118,7 @@ export const recipeSchema = new Schema<
       type: "ObjectId",
       ref: "Account",
       required: true,
-      autopopulate: { select: "username image" },
+      autopopulate: { select: "username" },
     },
     likedBy: [{ type: "ObjectId", ref: "Account" }],
   },
@@ -144,6 +155,20 @@ recipeSchema.virtual("comments", {
   ref: "Comment",
   localField: "_id",
   foreignField: "post",
+});
+
+recipeSchema.virtual("countRating", {
+  ref: "Rating",
+  localField: "_id",
+  foreignField: "post",
+  count: true,
+});
+
+recipeSchema.virtual("countComment", {
+  ref: "Comment",
+  localField: "_id",
+  foreignField: "post",
+  count: true,
 });
 
 //---------------------

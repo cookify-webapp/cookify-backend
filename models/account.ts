@@ -1,3 +1,5 @@
+import { SnapshotInstanceInterface } from '@models/snapshot';
+import { RecipeInstanceInterface } from '@models/recipe';
 import {
   model,
   Schema,
@@ -20,6 +22,9 @@ export interface AccountInterface extends Document {
   following: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
+  recipes?: Types.Array<RecipeInstanceInterface>;
+  likedRecipes?: Types.Array<RecipeInstanceInterface>;
+  snapshots?: Types.Array<SnapshotInstanceInterface>;
 }
 
 export interface AccountInstanceMethods {
@@ -98,6 +103,12 @@ accountSchema.virtual("recipes", {
   ref: "Recipe",
   localField: "_id",
   foreignField: "author",
+});
+
+accountSchema.virtual("likedRecipes", {
+  ref: "Recipe",
+  localField: "_id",
+  foreignField: "likedBy",
 });
 
 accountSchema.virtual("snapshots", {
