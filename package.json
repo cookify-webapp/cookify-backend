@@ -13,7 +13,8 @@
     "@middleware": "./middleware",
     "@routes": "./routes",
     "@services": "./services",
-    "@coreTypes": "./types"
+    "@coreTypes": "./types",
+    "@mock": "./mock"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

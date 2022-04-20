@@ -1,3 +1,4 @@
+import seedAccounts from "@mock/seedAccounts";
 import { Types } from "mongoose";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
@@ -94,5 +95,25 @@ export const register = async (
     res.status(200).send({ message: "success" });
   } catch (err) {
     return next(err);
+  }
+};
+
+export const seedAccount = async (
+  _req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const session = await Account.startSession();
+  try {
+    session.startTransaction();
+    await Account.deleteMany().session(session).exec();
+    await Account.insertMany(seedAccounts);
+    session.commitTransaction();
+    res.status(200).send({ message: "success" });
+  } catch (err) {
+    session.abortTransaction();
+    return next(err);
+  } finally {
+    session.endSession();
   }
 };

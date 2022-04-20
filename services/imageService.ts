@@ -8,10 +8,10 @@ import { errorText } from "@coreTypes/core";
 const maxSize = 5 * 1024 * 1024;
 
 const storage = multer.diskStorage({
-  destination: function (req, _file, cb) {
+  destination: (req, _file, cb) => {
     cb(null, `public/images/${req.baseUrl.substring(1)}`);
   },
-  filename: function (_req, file, cb) {
+  filename: (_req, file, cb) => {
     cb(null, file.originalname);
   },
 });
@@ -26,7 +26,6 @@ export const upload = multer({
     cb(null, true);
   },
   limits: {
-    fieldSize: maxSize,
     fileSize: maxSize,
   },
 });

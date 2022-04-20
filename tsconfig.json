@@ -20,7 +20,8 @@
       "@middleware/*": ["middleware/*"],
       "@routes/*": ["routes/*"],
       "@services/*": ["services/*"],
-      "@coreTypes/*": ["types/*"]
+      "@coreTypes/*": ["types/*"],
+      "@mock/*": ["mock/*"]
     }
   },
   "include": ["**/*.ts", "**/*.d.ts"],
