@@ -26,7 +26,7 @@ ingredientSchema.statics.listAll = async function (
   });
 };
 
-ingredientSchema.statics.findSameType = function (
+ingredientSchema.statics.findSameType = async function (
   type: string
 ): Promise<IngredientInstanceInterface[]> {
   return Ingredient.aggregate<IngredientInstanceInterface>()

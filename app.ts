@@ -9,12 +9,15 @@ import express, {
 import cookieParser from "cookie-parser";
 import uniqueValidator from "mongoose-unique-validator";
 import mongoose from "mongoose";
-
-import indexRouter from "@routes/indexRouter";
-import accountRouter from "@routes/accountRouter";
 import mongooseAutoPopulate from "mongoose-autopopulate";
 import mongoosePaginate from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
+import morgan from "morgan";
+import fs from "fs";
+import path from "path";
+
+import indexRouter from "@routes/indexRouter";
+import accountRouter from "@routes/accountRouter";
 
 const app = express();
 
@@ -35,6 +38,29 @@ mongoose.plugin(aggregatePaginate);
 app.use(json());
 app.use(urlencoded({ extended: false }));
 app.use(cookieParser());
+
+//---------------------
+//   LOGGER
+//---------------------
+const format =
+  ":date[web] == :remote-user :method :url :status :response-time ms == Username :req[username] == :res[content-length]";
+
+app.use(
+  morgan(format, {
+    skip: (_req, res) => res.statusCode < 400,
+    stream: fs.createWriteStream(path.resolve(__dirname, "log", "error.log"), {
+      flags: "a",
+    }),
+  })
+);
+
+app.use(
+  morgan(format, {
+    stream: fs.createWriteStream(path.resolve(__dirname, "log", "access.log"), {
+      flags: "a",
+    }),
+  })
+);
 
 //---------------------
 //   ROUTES

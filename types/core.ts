@@ -9,5 +9,6 @@ export enum errorText {
   DATA = "Invalid data",
   ID = "No documents found, please check the id",
   PARAM = "Invalid request parameter(s)",
-  DELETE = "No documents were deleted, please check the request parameter(s)"
+  DELETE = "No documents were deleted, please check the request parameter(s)",
+  IMG_EXT = "Invalid image extension, only images are allowed",
 }
