@@ -23,6 +23,9 @@ import "module-alias/register";
 import indexRouter from "@routes/indexRouter";
 import accountRouter from "@routes/accountRouter";
 
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 const app = express();
 
 //---------------------
@@ -49,8 +52,6 @@ app.use(cookieParser());
 const format =
   ":date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :req[username] == :res[content-length]";
 
-dayjs.extend(utc);
-dayjs.extend(timezone);
 morgan.token("date", (_req, _res, tz) => {
   return dayjs()
     .tz(tz as string)

@@ -1,5 +1,3 @@
-import { SnapshotInstanceInterface } from '@models/snapshot';
-import { RecipeInstanceInterface } from '@models/recipe';
 import {
   model,
   Schema,
@@ -8,6 +6,9 @@ import {
   QueryWithHelpers,
   Types,
 } from "mongoose";
+
+import { SnapshotInstanceInterface } from "@models/snapshot";
+import { RecipeInstanceInterface } from "@models/recipe";
 
 //---------------------
 //   INTERFACE

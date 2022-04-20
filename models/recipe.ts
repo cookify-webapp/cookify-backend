@@ -1,5 +1,3 @@
-import { CommentInstanceInterface } from "./comment";
-import { RatingInstanceInterface } from "./rating";
 import {
   model,
   Schema,
@@ -9,6 +7,9 @@ import {
   AggregatePaginateModel,
   AggregatePaginateResult,
 } from "mongoose";
+
+import { CommentInstanceInterface } from "@models/comment";
+import { RatingInstanceInterface } from "@models/rating";
 
 //---------------------
 //   INTERFACE

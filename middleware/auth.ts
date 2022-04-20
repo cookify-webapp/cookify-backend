@@ -1,9 +1,9 @@
 import createError from "http-errors";
 import { NextFunction, Request, Response } from "express";
-
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { errorText } from "@coreTypes/core";
 import _ from "lodash";
+
+import { errorText } from "@coreTypes/core";
 
 const getPayload = (req: Request): JwtPayload => {
   let authHeader = req.headers["Authorization"];

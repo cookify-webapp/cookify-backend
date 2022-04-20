@@ -2,9 +2,10 @@ import { Types } from "mongoose";
 import createError from "http-errors";
 import bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
+import _ from "lodash";
+
 import { Account } from "@models/account";
 import { errorText } from "@coreTypes/core";
-import _ from "lodash";
 
 export const login = async (
   req: Request,
@@ -80,7 +81,7 @@ export const register = async (
       data?.allergy,
       (item: string) => new Types.ObjectId(item)
     );
-    
+
     const account = new Account({
       username: data?.username,
       password: encodeURIComponent(hash),
