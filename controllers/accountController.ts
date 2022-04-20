@@ -107,7 +107,7 @@ export const seedAccount = async (
   try {
     session.startTransaction();
     await Account.deleteMany().session(session).exec();
-    await Account.insertMany(seedAccounts);
+    await Account.insertMany(seedAccounts, { session });
     session.commitTransaction();
     res.status(200).send({ message: "success" });
   } catch (err) {
