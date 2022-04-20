@@ -15,6 +15,9 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 import "module-alias/register";
 
 import indexRouter from "@routes/indexRouter";
@@ -44,7 +47,15 @@ app.use(cookieParser());
 //   LOGGER
 //---------------------
 const format =
-  ":date[web] == :remote-user :method :url :status :response-time ms == Username :req[username] == :res[content-length]";
+  ":date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :req[username] == :res[content-length]";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+morgan.token("date", (_req, _res, tz) => {
+  return dayjs()
+    .tz(tz as string)
+    .format("ddd, DD MMM YYYY HH:mm:ss");
+});
 
 app.use(
   morgan(format, {
