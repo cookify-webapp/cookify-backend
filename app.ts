@@ -15,6 +15,7 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import morgan from "morgan";
 import fs from "fs";
 import path from "path";
+import "module-alias/register";
 
 import indexRouter from "@routes/indexRouter";
 import accountRouter from "@routes/accountRouter";
@@ -24,7 +25,7 @@ const app = express();
 //---------------------
 //   DATABASE
 //---------------------
-await mongoose.connect(process.env.MONGODB_URL as string);
+mongoose.connect(process.env.MONGODB_URL as string);
 mongoose.plugin(uniqueValidator);
 mongoose.plugin(mongooseAutoPopulate, {
   functions: ["find", "findOne", "findOneAndUpdate", "aggregate"],
@@ -68,6 +69,10 @@ app.use(
 app.use("/", indexRouter);
 app.use("/users", accountRouter);
 
+app.get("/health", (_req, res) => {
+  res.send({ status: "This service is healthy." });
+});
+
 app.use(function (_req: Request, _res: Response, next: NextFunction) {
   next(createError(404));
 });
@@ -92,6 +97,15 @@ app.use(function (
       .status(500)
       .send({ name: "Internal server error", message: "Something went wrong" });
   }
+});
+
+//---------------------
+//   LISTENER
+//---------------------
+const port = process.env.PORT;
+
+app.listen(port, () => {
+  console.log("Server is up on port " + port);
 });
 
 export default app;

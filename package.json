@@ -3,8 +3,17 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./app.ts",
-    "dev": "ts-node ./app.ts"
+    "start": "ts-node app.ts",
+    "dev": "env-cmd -f .env.development nodemon app.ts"
+  },
+  "_moduleAliases": {
+    "@models": "./models",
+    "@controllers": "./controllers",
+    "@functions": "./functions",
+    "@middleware": "./middleware",
+    "@routes": "./routes",
+    "@services": "./services",
+    "@coreTypes": "./types"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -15,6 +24,7 @@
     "http-errors": "~1.6.3",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "module-alias": "^2.2.2",
     "mongoose": "^6.2.9",
     "mongoose-aggregate-paginate-v2": "^1.0.6",
     "mongoose-autopopulate": "^0.16.1",
@@ -37,6 +47,8 @@
     "@types/mongoose-unique-validator": "^1.0.5",
     "@types/morgan": "^1.9.3",
     "@types/multer": "^1.4.7",
-    "@types/node": "^17.0.23"
+    "@types/node": "^17.0.23",
+    "env-cmd": "^10.1.0",
+    "nodemon": "^2.0.15"
   }
 }

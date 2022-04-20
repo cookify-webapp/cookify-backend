@@ -1,14 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "es2022",
+    "target": "es5",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "allowJs": true,
-    "jsx": "preserve",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true,
+    "noEmit": true,
+    "isolatedModules": true,
     "typeRoots": ["types"],
     "baseUrl": ".",
     "paths": {
@@ -18,7 +19,7 @@
       "@middleware/*": ["middleware/*"],
       "@routes/*": ["routes/*"],
       "@services/*": ["services/*"],
-      "@coreTypes/*": ["types/*"],
+      "@coreTypes/*": ["types/*"]
     }
   },
   "include": ["**/*.ts", "**/*.d.ts"],
