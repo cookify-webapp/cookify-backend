@@ -1,4 +1,8 @@
+/// <reference path="../functions/ingredient.ts" />
+
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
+
+import { findSameType, listAll } from '@functions/ingredient';
 
 //---------------------
 //   INTERFACE
@@ -55,6 +59,12 @@ export const ingredientSchema = new Schema<
   image: String,
   shopUrl: String,
 });
+
+//---------------------
+//   STATICS
+//---------------------
+ingredientSchema.statics.listAll = listAll;
+ingredientSchema.statics.findSameType = findSameType;
 
 //---------------------
 //   MODEL

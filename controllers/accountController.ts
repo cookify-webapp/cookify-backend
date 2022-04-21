@@ -20,6 +20,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const account = await Account.findOne().byName(username).exec();
     if (!account) throw createError(403, errorText.USERNAME);
 
+    console.log(account.toObject())
     const result = await account.comparePassword(password);
     if (!result) throw createError(403, errorText.PASSWORD);
 
@@ -49,7 +50,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
       .lean()
       .exec();
 
-    if (!account) throw createError(403, errorText.USERNAME);
+    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
 
     res.status(200).send({ account });
   } catch (err) {
@@ -71,6 +72,25 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       accountType: 'user',
       allergy: allergyIds,
     });
+
+    await account.save();
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const editProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.username) throw createError(401, errorText.AUTH);
+
+    const data = req.body?.data;
+
+    const account = await Account.findOne().byName(req.username).exec();
+    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
+
+    account.username = data?.username;
+    account.email = data?.email;
 
     await account.save();
     res.status(200).send({ message: 'success' });

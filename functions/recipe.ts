@@ -1,18 +1,22 @@
 import _ from 'lodash';
 import { Types, AggregatePaginateResult } from 'mongoose';
 
-import { Recipe, RecipeInstanceInterface, recipeSchema } from '@models/recipe';
+import { Recipe, RecipeInstanceInterface, RecipeModelInterface, recipeSchema } from '@models/recipe';
 
-//---------------------
-//   STATICS
-//---------------------
-recipeSchema.statics.listRecipe = async function (
+export const listRecipe: (
+  this: RecipeModelInterface,
   page: number,
   perPage: number,
   name: string,
   ingredients: string[],
   methods: string
-): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
+) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
+  page,
+  perPage,
+  name,
+  ingredients,
+  methods
+) {
   const aggregate = this.aggregate<RecipeInstanceInterface>()
     .lookup({
       from: 'cookingMethods',
@@ -80,12 +84,13 @@ recipeSchema.statics.listRecipe = async function (
   });
 };
 
-recipeSchema.statics.getRecipeDetail = async function (id: string): Promise<RecipeInstanceInterface | null> {
-  return this.findById(id)
-    .populate('ratings')
-    .populate('comments')
-    .populate('countRating')
-    .populate('countComment')
-    .sort('updatedAt')
-    .exec();
-};
+export const getRecipeDetail: (this: RecipeModelInterface, id: string) => Promise<RecipeInstanceInterface | null> =
+  async function (id) {
+    return this.findById(id)
+      .populate('ratings')
+      .populate('comments')
+      .populate('countRating')
+      .populate('countComment')
+      .sort('updatedAt')
+      .exec();
+  };

@@ -1,16 +1,15 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
-import { accountSchema } from '@models/account';
+import { AccountInstanceInterface } from '@models/account';
 
-//---------------------
-//   METHODS
-//---------------------
-accountSchema.methods.comparePassword = async function (password: string): Promise<boolean> {
+export const comparePassword: (this: AccountInstanceInterface, password: string) => Promise<boolean> = function (
+  password
+) {
   return bcrypt.compare(password, decodeURIComponent(this.password));
 };
 
-accountSchema.methods.signToken = function (secret: string): string {
+export const signToken: (this: AccountInstanceInterface, secret: string) => string = function (secret) {
   return jwt.sign({ username: this.username, isAdmin: this.accountType === 'admin' }, secret, {
     expiresIn: '24h',
   });

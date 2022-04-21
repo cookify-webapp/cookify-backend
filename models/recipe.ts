@@ -1,3 +1,5 @@
+/// <reference path="../functions/recipe.ts" />
+
 import {
   model,
   Schema,
@@ -10,6 +12,7 @@ import {
 
 import { CommentInstanceInterface } from '@models/comment';
 import { RatingInstanceInterface } from '@models/rating';
+import { getRecipeDetail, listRecipe } from '@functions/recipe';
 
 //---------------------
 //   INTERFACE
@@ -129,6 +132,12 @@ recipeSchema.query.byName = function (
 ): QueryWithHelpers<RecipeInstanceInterface, RecipeInstanceInterface, RecipeQueryHelpers> {
   return this.where({ name });
 };
+
+//---------------------
+//   STATICS
+//---------------------
+recipeSchema.statics.listRecipe = listRecipe;
+recipeSchema.statics.getRecipeDetail = getRecipeDetail;
 
 //---------------------
 //   VIRTUAL

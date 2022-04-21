@@ -1,3 +1,5 @@
+import { comparePassword, signToken } from '@functions/account';
+
 import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
@@ -73,8 +75,14 @@ export const accountSchema = new Schema<
 accountSchema.query.byName = function (
   name: string
 ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers> {
-  return this.where({ name });
+  return this.where({ username: name });
 };
+
+//---------------------
+//   METHODS
+//---------------------
+accountSchema.methods.comparePassword = comparePassword;
+accountSchema.methods.signToken = signToken;
 
 //---------------------
 //   VIRTUAL

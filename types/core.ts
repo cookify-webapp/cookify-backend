@@ -4,6 +4,7 @@ export enum errorText {
   AUTH_HEADER = 'Multiple authentication headers detected',
   USERNAME = 'Incorrect username',
   PASSWORD = 'Incorrect password',
+  ACCOUNT_NOT_FOUND = 'Account not found',
   AUTH = 'Please authenticate',
   ADMIN = 'This account is unauthorized as admin',
   DATA = 'Invalid data',
