@@ -7,7 +7,6 @@ import { errorText } from '@coreTypes/core';
 
 const getPayload = (req: Request): JwtPayload => {
   let authHeader = req.headers['authorization'];
-  console.log(req.headers)
   if (!authHeader) throw createError(401, errorText.AUTH);
   if (_.isArray(authHeader)) throw createError(400, errorText.AUTH_HEADER);
 
