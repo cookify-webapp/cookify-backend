@@ -26,14 +26,14 @@ export interface IngredientInstanceInterface extends IngredientInterface, Ingred
 
 export interface IngredientModelInterface extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
   // declare any static methods here
-  listAll(
+  listAll: (
     page: number,
     perPage: number,
     searchWord: string,
     type: string
-  ): Promise<PaginateResult<IngredientInstanceInterface>>;
+  ) => Promise<PaginateResult<IngredientInstanceInterface>>;
 
-  findSameType(type: string): Promise<IngredientInstanceInterface[]>;
+  findSameType: (type: string) => Promise<IngredientInstanceInterface[]>;
 }
 
 interface IngredientQueryHelpers {}

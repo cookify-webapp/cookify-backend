@@ -56,15 +56,15 @@ export interface RecipeInstanceInterface extends RecipeInterface, RecipeInstance
 
 export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInstanceInterface> {
   // declare any static methods here
-  listRecipe(
+  listRecipe: (
     page: number,
     perPage: number,
     name: string,
     ingredients: string[],
     methods: string[]
-  ): Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 
-  getRecipeDetail(id: string): Promise<RecipeInstanceInterface | null>;
+  getRecipeDetail: (id: string) => Promise<RecipeInstanceInterface | null>;
 }
 
 interface RecipeQueryHelpers {

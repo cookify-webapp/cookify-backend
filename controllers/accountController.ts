@@ -20,7 +20,6 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const account = await Account.findOne().byName(username).exec();
     if (!account) throw createError(403, errorText.USERNAME);
 
-    console.log(account.toObject())
     const result = await account.comparePassword(password);
     if (!result) throw createError(403, errorText.PASSWORD);
 

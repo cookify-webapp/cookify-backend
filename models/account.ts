@@ -25,8 +25,8 @@ export interface AccountInterface extends Document {
 
 export interface AccountInstanceMethods {
   // declare any instance methods here
-  comparePassword(this: AccountInstanceInterface, password: string): Promise<boolean>;
-  signToken(this: AccountInstanceInterface, secret: string): string;
+  comparePassword: (this: AccountInstanceInterface, password: string) => Promise<boolean>;
+  signToken: (this: AccountInstanceInterface, secret: string) => string;
 }
 
 export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
