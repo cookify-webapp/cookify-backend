@@ -16,6 +16,7 @@ import 'module-alias/register';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
+import seedRouter from '@routes/seedRouter';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -73,7 +74,8 @@ app.use(
 //   ROUTES
 //---------------------
 app.use('/', indexRouter);
-app.use('/users', accountRouter);
+app.use('/account', accountRouter);
+app.use('/seed', seedRouter);
 
 app.get('/health', (_req, res) => {
   res.send({ status: 'This service is healthy.' });
