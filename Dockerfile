@@ -2,6 +2,11 @@ FROM node:16.14.2-alpine
 
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
+RUN mkdir log
+RUN cd log
+RUN touch access.log
+RUN touch error.log
+RUN cd ..
 
 COPY package*.json ./
 
