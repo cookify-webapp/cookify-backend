@@ -1,4 +1,4 @@
-import { AccountInstanceInterface } from "@models/account";
+import { AccountInstanceInterface } from '@models/account';
 
 declare global {
   declare namespace Express {

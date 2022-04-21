@@ -1,14 +1,7 @@
-import {
-  model,
-  Schema,
-  Model,
-  Document,
-  QueryWithHelpers,
-  Types,
-} from "mongoose";
+import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
 
-import { SnapshotInstanceInterface } from "@models/snapshot";
-import { RecipeInstanceInterface } from "@models/recipe";
+import { SnapshotInstanceInterface } from '@models/snapshot';
+import { RecipeInstanceInterface } from '@models/recipe';
 
 //---------------------
 //   INTERFACE
@@ -18,7 +11,7 @@ export interface AccountInterface extends Document {
   username: string;
   email: string;
   password: string;
-  accountType: "user" | "admin";
+  accountType: 'user' | 'admin';
   image?: string;
   following: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
@@ -30,19 +23,13 @@ export interface AccountInterface extends Document {
 
 export interface AccountInstanceMethods {
   // declare any instance methods here
-  comparePassword(
-    this: AccountInstanceInterface,
-    password: string
-  ): Promise<boolean>;
+  comparePassword(this: AccountInstanceInterface, password: string): Promise<boolean>;
   signToken(this: AccountInstanceInterface, secret: string): string;
 }
 
-export interface AccountInstanceInterface
-  extends AccountInterface,
-    AccountInstanceMethods {}
+export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
 
-export interface AccountModelInterface
-  extends Model<AccountInstanceInterface, AccountQueryHelpers> {
+export interface AccountModelInterface extends Model<AccountInstanceInterface, AccountQueryHelpers> {
   // declare any static methods here
 }
 
@@ -50,11 +37,7 @@ interface AccountQueryHelpers {
   byName(
     this: QueryWithHelpers<any, AccountInstanceInterface, AccountQueryHelpers>,
     name: string
-  ): QueryWithHelpers<
-    AccountInstanceInterface,
-    AccountInstanceInterface,
-    AccountQueryHelpers
-  >;
+  ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers>;
 }
 
 //---------------------
@@ -73,13 +56,13 @@ export const accountSchema = new Schema<
     accountType: {
       type: String,
       required: true,
-      enum: ["user", "admin"],
-      default: "user",
+      enum: ['user', 'admin'],
+      default: 'user',
     },
     image: String,
-    following: [{ type: "ObjectId", ref: "Account" }],
-    allergy: [{ type: "ObjectId", ref: "Ingredient" }],
-    bookmark: [{ type: "ObjectId", ref: "Recipe" }],
+    following: [{ type: 'ObjectId', ref: 'Account' }],
+    allergy: [{ type: 'ObjectId', ref: 'Ingredient' }],
+    bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],
   },
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -89,39 +72,32 @@ export const accountSchema = new Schema<
 //---------------------
 accountSchema.query.byName = function (
   name: string
-): QueryWithHelpers<
-  AccountInstanceInterface,
-  AccountInstanceInterface,
-  AccountQueryHelpers
-> {
+): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers> {
   return this.where({ name });
 };
 
 //---------------------
 //   VIRTUAL
 //---------------------
-accountSchema.virtual("recipes", {
-  ref: "Recipe",
-  localField: "_id",
-  foreignField: "author",
+accountSchema.virtual('recipes', {
+  ref: 'Recipe',
+  localField: '_id',
+  foreignField: 'author',
 });
 
-accountSchema.virtual("likedRecipes", {
-  ref: "Recipe",
-  localField: "_id",
-  foreignField: "likedBy",
+accountSchema.virtual('likedRecipes', {
+  ref: 'Recipe',
+  localField: '_id',
+  foreignField: 'likedBy',
 });
 
-accountSchema.virtual("snapshots", {
-  ref: "Snapshot",
-  localField: "_id",
-  foreignField: "author",
+accountSchema.virtual('snapshots', {
+  ref: 'Snapshot',
+  localField: '_id',
+  foreignField: 'author',
 });
 
 //---------------------
 //   MODEL
 //---------------------
-export const Account = model<AccountInstanceInterface, AccountModelInterface>(
-  "Account",
-  accountSchema
-);
+export const Account = model<AccountInstanceInterface, AccountModelInterface>('Account', accountSchema);

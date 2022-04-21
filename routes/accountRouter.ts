@@ -1,14 +1,14 @@
-import express from "express";
+import express from 'express';
 
-import { getMe, getAllAccounts, seedAccount } from "@controllers/accountController";
-import { auth, adminAuth } from "@middleware/auth";
+import { getMe, getAllAccounts, seedAccount } from '@controllers/accountController';
+import { auth, adminAuth } from '@middleware/auth';
 
 const accountRouter = express.Router();
 
-accountRouter.get("/", adminAuth, getAllAccounts);
+accountRouter.get('/', adminAuth, getAllAccounts);
 
-accountRouter.get("/me", auth, getMe);
+accountRouter.get('/me', auth, getMe);
 
-accountRouter.get("/seed", seedAccount);
+accountRouter.get('/seed', seedAccount);
 
 export default accountRouter;

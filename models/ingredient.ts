@@ -1,11 +1,4 @@
-import {
-  model,
-  Schema,
-  Document,
-  Types,
-  PaginateModel,
-  PaginateResult,
-} from "mongoose";
+import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
 //---------------------
 //   INTERFACE
@@ -25,12 +18,9 @@ export interface IngredientInstanceMethods {
   // declare any instance methods here
 }
 
-export interface IngredientInstanceInterface
-  extends IngredientInterface,
-    IngredientInstanceMethods {}
+export interface IngredientInstanceInterface extends IngredientInterface, IngredientInstanceMethods {}
 
-export interface IngredientModelInterface
-  extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
+export interface IngredientModelInterface extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
   // declare any static methods here
   listAll(
     page: number,
@@ -55,10 +45,10 @@ export const ingredientSchema = new Schema<
 >({
   name: { type: String, required: true, unique: true },
   queryKey: { type: String, required: true, unique: true },
-  unit: { type: "ObjectId", ref: "Unit", required: true, autopopulate: true },
+  unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
   type: {
-    type: "ObjectId",
-    ref: "IngredientType",
+    type: 'ObjectId',
+    ref: 'IngredientType',
     required: true,
     autopopulate: true,
   },
@@ -69,7 +59,4 @@ export const ingredientSchema = new Schema<
 //---------------------
 //   MODEL
 //---------------------
-export const Ingredient = model<
-  IngredientInstanceInterface,
-  IngredientModelInterface
->("Ingredient", ingredientSchema);
+export const Ingredient = model<IngredientInstanceInterface, IngredientModelInterface>('Ingredient', ingredientSchema);

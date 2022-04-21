@@ -6,10 +6,10 @@ import {
   QueryWithHelpers,
   AggregatePaginateModel,
   AggregatePaginateResult,
-} from "mongoose";
+} from 'mongoose';
 
-import { CommentInstanceInterface } from "@models/comment";
-import { RatingInstanceInterface } from "@models/rating";
+import { CommentInstanceInterface } from '@models/comment';
+import { RatingInstanceInterface } from '@models/rating';
 
 //---------------------
 //   INTERFACE
@@ -49,12 +49,9 @@ export interface RecipeInstanceMethods {
   // declare any instance methods here
 }
 
-export interface RecipeInstanceInterface
-  extends RecipeInterface,
-    RecipeInstanceMethods {}
+export interface RecipeInstanceInterface extends RecipeInterface, RecipeInstanceMethods {}
 
-export interface RecipeModelInterface
-  extends AggregatePaginateModel<RecipeInstanceInterface> {
+export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInstanceInterface> {
   // declare any static methods here
   listRecipe(
     page: number,
@@ -71,22 +68,16 @@ interface RecipeQueryHelpers {
   byName(
     this: QueryWithHelpers<any, RecipeInstanceInterface, RecipeQueryHelpers>,
     name: string
-  ): QueryWithHelpers<
-    RecipeInstanceInterface,
-    RecipeInstanceInterface,
-    RecipeQueryHelpers
-  >;
+  ): QueryWithHelpers<RecipeInstanceInterface, RecipeInstanceInterface, RecipeQueryHelpers>;
 }
 
 //---------------------
 //   SCHEMA
 //---------------------
-export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
-  {
-    ingredient: { type: "ObjectId", ref: "Ingredient", required: true },
-    quantity: { type: Number, required: true, min: 0 },
-  }
-);
+export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
+  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true },
+  quantity: { type: Number, required: true, min: 0 },
+});
 
 export const recipeSchema = new Schema<
   RecipeInstanceInterface,
@@ -100,28 +91,28 @@ export const recipeSchema = new Schema<
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
     methods: [
       {
-        type: "ObjectId",
-        ref: "CookingMethod",
+        type: 'ObjectId',
+        ref: 'CookingMethod',
         required: true,
         autopopulate: true,
       },
     ],
     types: [
       {
-        type: "ObjectId",
-        ref: "RecipeType",
+        type: 'ObjectId',
+        ref: 'RecipeType',
         required: true,
         autopopulate: true,
       },
     ],
     image: String,
     author: {
-      type: "ObjectId",
-      ref: "Account",
+      type: 'ObjectId',
+      ref: 'Account',
       required: true,
-      autopopulate: { select: "username" },
+      autopopulate: { select: 'username' },
     },
-    likedBy: [{ type: "ObjectId", ref: "Account" }],
+    likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
     toJSON: { virtuals: true },
@@ -135,52 +126,42 @@ export const recipeSchema = new Schema<
 //---------------------
 recipeSchema.query.byName = function (
   name: string
-): QueryWithHelpers<
-  RecipeInstanceInterface,
-  RecipeInstanceInterface,
-  RecipeQueryHelpers
-> {
+): QueryWithHelpers<RecipeInstanceInterface, RecipeInstanceInterface, RecipeQueryHelpers> {
   return this.where({ name });
 };
 
 //---------------------
 //   VIRTUAL
 //---------------------
-recipeSchema.virtual("ratings", {
-  ref: "Rating",
-  localField: "_id",
-  foreignField: "post",
+recipeSchema.virtual('ratings', {
+  ref: 'Rating',
+  localField: '_id',
+  foreignField: 'post',
 });
 
-recipeSchema.virtual("comments", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "post",
+recipeSchema.virtual('comments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'post',
 });
 
-recipeSchema.virtual("countRating", {
-  ref: "Rating",
-  localField: "_id",
-  foreignField: "post",
+recipeSchema.virtual('countRating', {
+  ref: 'Rating',
+  localField: '_id',
+  foreignField: 'post',
   count: true,
 });
 
-recipeSchema.virtual("countComment", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "post",
+recipeSchema.virtual('countComment', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'post',
   count: true,
 });
 
 //---------------------
 //   MODEL
 //---------------------
-export const Recipe = model<RecipeInstanceInterface, RecipeModelInterface>(
-  "Recipe",
-  recipeSchema
-);
+export const Recipe = model<RecipeInstanceInterface, RecipeModelInterface>('Recipe', recipeSchema);
 
-export const IngredientQuantity = model<IngredientQuantityInterface>(
-  "IngredientQuantity",
-  ingredientQuantitySchema
-);
+export const IngredientQuantity = model<IngredientQuantityInterface>('IngredientQuantity', ingredientQuantitySchema);

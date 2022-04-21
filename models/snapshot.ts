@@ -1,12 +1,5 @@
-import { RecipeInstanceInterface } from "./recipe";
-import {
-  model,
-  Schema,
-  Model,
-  Document,
-  Types,
-  QueryWithHelpers,
-} from "mongoose";
+import { RecipeInstanceInterface } from './recipe';
+import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 //---------------------
 //   INTERFACE
@@ -25,34 +18,19 @@ export interface SnapshotInstanceMethods {
   // declare any instance methods here
 }
 
-export interface SnapshotInstanceInterface
-  extends SnapshotInterface,
-    SnapshotInstanceMethods {}
+export interface SnapshotInstanceInterface extends SnapshotInterface, SnapshotInstanceMethods {}
 
-export interface SnapshotModelInterface
-  extends Model<SnapshotInstanceInterface, SnapshotQueryHelpers> {
+export interface SnapshotModelInterface extends Model<SnapshotInstanceInterface, SnapshotQueryHelpers> {
   // declare any static methods here
 }
 
 interface SnapshotQueryHelpers {
   byRecipe(
-    this: QueryWithHelpers<
-      any,
-      SnapshotInstanceInterface,
-      SnapshotQueryHelpers
-    >,
+    this: QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers>,
     recipeId: string | Types.ObjectId
-  ): QueryWithHelpers<
-    SnapshotInstanceInterface,
-    SnapshotInstanceInterface,
-    SnapshotQueryHelpers
-  >;
+  ): QueryWithHelpers<SnapshotInstanceInterface, SnapshotInstanceInterface, SnapshotQueryHelpers>;
   byRecipeName(
-    this: QueryWithHelpers<
-      any,
-      SnapshotInstanceInterface,
-      SnapshotQueryHelpers
-    >,
+    this: QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers>,
     name: string
   ): QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers>;
 }
@@ -70,18 +48,18 @@ export const snapshotSchema = new Schema<
     caption: { type: String, required: true },
     image: { type: String, required: true },
     author: {
-      type: "ObjectId",
-      ref: "Account",
+      type: 'ObjectId',
+      ref: 'Account',
       required: true,
-      autopopulate: { select: "username image" },
+      autopopulate: { select: 'username image' },
     },
     recipe: {
-      type: "ObjectId",
-      ref: "Recipe",
+      type: 'ObjectId',
+      ref: 'Recipe',
       required: true,
-      autopopulate: { select: "name" },
+      autopopulate: { select: 'name' },
     },
-    likedBy: [{ type: "ObjectId", ref: "Account" }],
+    likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
     toJSON: { virtuals: true },
@@ -95,11 +73,7 @@ export const snapshotSchema = new Schema<
 //---------------------
 snapshotSchema.query.byRecipe = function (
   recipeId: string | Types.ObjectId
-): QueryWithHelpers<
-  SnapshotInstanceInterface,
-  SnapshotInstanceInterface,
-  SnapshotQueryHelpers
-> {
+): QueryWithHelpers<SnapshotInstanceInterface, SnapshotInstanceInterface, SnapshotQueryHelpers> {
   return this.where({ recipe: recipeId });
 };
 
@@ -107,25 +81,22 @@ snapshotSchema.query.byRecipeName = function (
   name: string
 ): QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers> {
   return this.populate<{ recipe: RecipeInstanceInterface }>({
-    path: "recipe",
+    path: 'recipe',
     match: { name },
-    select: "name -_id",
+    select: 'name -_id',
   });
 };
 
 //---------------------
 //   VIRTUAL
 //---------------------
-snapshotSchema.virtual("comments", {
-  ref: "Comment",
-  localField: "_id",
-  foreignField: "post",
+snapshotSchema.virtual('comments', {
+  ref: 'Comment',
+  localField: '_id',
+  foreignField: 'post',
 });
 
 //---------------------
 //   MODEL
 //---------------------
-export const Snapshot = model<
-  SnapshotInstanceInterface,
-  SnapshotModelInterface
->("Snapshot", snapshotSchema);
+export const Snapshot = model<SnapshotInstanceInterface, SnapshotModelInterface>('Snapshot', snapshotSchema);

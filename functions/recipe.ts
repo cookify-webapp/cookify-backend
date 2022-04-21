@@ -1,7 +1,7 @@
-import _ from "lodash";
-import { Types, AggregatePaginateResult } from "mongoose";
+import _ from 'lodash';
+import { Types, AggregatePaginateResult } from 'mongoose';
 
-import { Recipe, RecipeInstanceInterface, recipeSchema } from "@models/recipe";
+import { Recipe, RecipeInstanceInterface, recipeSchema } from '@models/recipe';
 
 //---------------------
 //   STATICS
@@ -15,64 +15,64 @@ recipeSchema.statics.listRecipe = async function (
 ): Promise<AggregatePaginateResult<RecipeInstanceInterface>> {
   const aggregate = this.aggregate<RecipeInstanceInterface>()
     .lookup({
-      from: "cookingMethods",
-      localField: "methods",
-      foreignField: "_id",
-      as: "methods",
+      from: 'cookingMethods',
+      localField: 'methods',
+      foreignField: '_id',
+      as: 'methods',
     })
     .lookup({
-      from: "recipeTypes",
-      localField: "types",
-      foreignField: "_id",
-      as: "types",
+      from: 'recipeTypes',
+      localField: 'types',
+      foreignField: '_id',
+      as: 'types',
     })
     .lookup({
-      from: "accounts",
-      localField: "author",
-      foreignField: "_id",
-      as: "author",
+      from: 'accounts',
+      localField: 'author',
+      foreignField: '_id',
+      as: 'author',
       pipeline: [{ $project: { username: 1 } }],
     })
     .match({
       $and: [
-        { name: { $regex: name, $options: "i" } },
+        { name: { $regex: name, $options: 'i' } },
         {
-          "methods._id": {
+          'methods._id': {
             $all: _.map(methods, (item) => new Types.ObjectId(item)),
           },
         },
         {
-          "ingredients.ingredient": {
+          'ingredients.ingredient': {
             $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
           },
         },
       ],
     })
     .lookup({
-      from: "ratings",
-      localField: "_id",
-      foreignField: "post",
-      as: "ratings",
+      from: 'ratings',
+      localField: '_id',
+      foreignField: 'post',
+      as: 'ratings',
     })
-    .unwind("ratings")
+    .unwind('ratings')
     .group({
-      _id: "$_id",
-      root: { $first: "$$ROOT" },
-      ratings: { $push: "$ratings" },
-      averageRating: { $avg: "$ratings.rating" },
+      _id: '$_id',
+      root: { $first: '$$ROOT' },
+      ratings: { $push: '$ratings' },
+      averageRating: { $avg: '$ratings.rating' },
       countRating: { $count: 1 },
     })
     .replaceRoot({
       $mergeObjects: [
-        "$root",
+        '$root',
         {
-          averageRating: { $round: ["$averageRating", 1] },
-          countRating: "$countRating",
-          ratings: "$ratings",
+          averageRating: { $round: ['$averageRating', 1] },
+          countRating: '$countRating',
+          ratings: '$ratings',
         },
       ],
     })
-    .sort("updatedAt");
+    .sort('updatedAt');
 
   return Recipe.aggregatePaginate(aggregate, {
     page: page,
@@ -80,14 +80,12 @@ recipeSchema.statics.listRecipe = async function (
   });
 };
 
-recipeSchema.statics.getRecipeDetail = async function (
-  id: string
-): Promise<RecipeInstanceInterface | null> {
+recipeSchema.statics.getRecipeDetail = async function (id: string): Promise<RecipeInstanceInterface | null> {
   return this.findById(id)
-    .populate("ratings")
-    .populate("comments")
-    .populate("countRating")
-    .populate("countComment")
-    .sort("updatedAt")
+    .populate('ratings')
+    .populate('comments')
+    .populate('countRating')
+    .populate('countComment')
+    .sort('updatedAt')
     .exec();
 };
