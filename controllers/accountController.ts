@@ -1,4 +1,3 @@
-import seedAccounts from '@mock/seedAccounts';
 import { Types } from 'mongoose';
 import createError from 'http-errors';
 import bcrypt from 'bcrypt';
@@ -7,6 +6,7 @@ import _ from 'lodash';
 
 import { Account } from '@models/account';
 import { errorText } from '@coreTypes/core';
+import seedAccounts from '@mock/seedAccounts';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -85,12 +85,12 @@ export const seedAccount = async (_req: Request, res: Response, next: NextFuncti
     session.startTransaction();
     await Account.deleteMany().session(session).exec();
     await Account.insertMany(seedAccounts, { session });
-    session.commitTransaction();
+    await session.commitTransaction();
     res.status(200).send({ message: 'success' });
   } catch (err) {
-    session.abortTransaction();
+    await session.abortTransaction();
     return next(err);
   } finally {
-    session.endSession();
+    await session.endSession();
   }
 };

@@ -86,13 +86,23 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 //---------------------
 //   ERROR HANDLER
 //---------------------
-app.use(function (err: Error, _req: Request, res: Response, _next: NextFunction) {
+app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) {
   if (err instanceof HttpError) {
-    res.status(err.status || 500).send({ name: err.name, message: err.message });
+    res
+      .status(err.status || 500)
+      .send({ status: err.status || 500, name: err.name, message: err.message, method: req.method, path: req.path });
   } else if (err instanceof Error) {
-    res.status(500).send({ name: err.name, message: err.message });
+    res.status(500).send({ status: 500, name: err.name, message: err.message, method: req.method, path: req.path });
   } else {
-    res.status(500).send({ name: 'Internal server error', message: 'Something went wrong' });
+    res
+      .status(500)
+      .send({
+        status: 500,
+        name: 'Internal server error',
+        message: 'Something went wrong',
+        method: req.method,
+        path: req.path,
+      });
   }
 });
 
