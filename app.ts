@@ -88,21 +88,18 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 //---------------------
 app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) {
   if (err instanceof HttpError) {
-    res
-      .status(err.status || 500)
-      .send({ status: err.status || 500, name: err.name, message: err.message, method: req.method, path: req.path });
+    const status = err.status || 500;
+    res.status(status).send({ status, name: err.name, message: err.message, method: req.method, path: req.path });
   } else if (err instanceof Error) {
     res.status(500).send({ status: 500, name: err.name, message: err.message, method: req.method, path: req.path });
   } else {
-    res
-      .status(500)
-      .send({
-        status: 500,
-        name: 'Internal server error',
-        message: 'Something went wrong',
-        method: req.method,
-        path: req.path,
-      });
+    res.status(500).send({
+      status: 500,
+      name: 'Internal server error',
+      message: 'Something went wrong',
+      method: req.method,
+      path: req.path,
+    });
   }
 });
 
