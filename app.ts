@@ -39,8 +39,7 @@ app.use(cookieParser());
 //---------------------
 //   LOGGER
 //---------------------
-const format =
-  ':date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :req[username] == :res[content-length]';
+const format = ':date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :res[content-length]';
 
 morgan.token('date', (_req, _res, tz) => {
   return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
