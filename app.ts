@@ -74,7 +74,7 @@ app.use(
 //   ROUTES
 //---------------------
 app.use('/', indexRouter);
-app.use('/account', accountRouter);
+app.use('/accounts', accountRouter);
 app.use('/seed', seedRouter);
 
 app.get('/health', (_req, res) => {

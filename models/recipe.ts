@@ -30,7 +30,7 @@ export interface RecipeInterface extends Document {
   ingredients: Types.DocumentArray<IngredientQuantityInterface>;
   methods: Types.Array<Types.ObjectId>;
   types: Types.Array<Types.ObjectId>;
-  image?: string;
+  image: string;
   author: Types.ObjectId;
   likedBy: Types.Array<Types.ObjectId>;
   ratings?: Types.DocumentArray<RatingInstanceInterface>;
@@ -89,8 +89,8 @@ export const recipeSchema = new Schema<
   RecipeQueryHelpers
 >(
   {
-    name: { type: String, required: true, unique: true },
-    desc: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    desc: { type: String, required: true },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
     methods: [
       {
@@ -108,7 +108,7 @@ export const recipeSchema = new Schema<
         autopopulate: true,
       },
     ],
-    image: String,
+    image: { type: String, required: true },
     author: {
       type: 'ObjectId',
       ref: 'Account',

@@ -5,7 +5,7 @@ import { auth, adminAuth } from '@middleware/auth';
 
 const accountRouter = express.Router();
 
-accountRouter.get('/', adminAuth, getAllAccounts);
+accountRouter.get('/list', adminAuth, getAllAccounts);
 
 accountRouter.get('/me', auth, getMe);
 

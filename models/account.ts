@@ -61,7 +61,7 @@ export const accountSchema = new Schema<
       enum: ['user', 'admin'],
       default: 'user',
     },
-    image: String,
+    image: { type: String, default: null },
     following: [{ type: 'ObjectId', ref: 'Account' }],
     allergy: [{ type: 'ObjectId', ref: 'Ingredient' }],
     bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],

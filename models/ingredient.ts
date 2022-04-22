@@ -56,7 +56,7 @@ export const ingredientSchema = new Schema<
     required: true,
     autopopulate: true,
   },
-  image: String,
+  image: { type: String, required: true },
   shopUrl: String,
 });
 
