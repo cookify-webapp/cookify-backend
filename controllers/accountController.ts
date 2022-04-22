@@ -99,17 +99,11 @@ export const editProfile = async (req: Request, res: Response, next: NextFunctio
 };
 
 export const seedAccount = async (_req: Request, res: Response, next: NextFunction) => {
-  const session = await Account.startSession();
   try {
-    session.startTransaction();
-    await Account.deleteMany().session(session).exec();
-    await Account.insertMany(seedAccounts, { session });
-    await session.commitTransaction();
+    await Account.deleteMany().exec();
+    await Account.insertMany(seedAccounts);
     res.status(200).send({ message: 'success' });
   } catch (err) {
-    await session.abortTransaction();
     return next(err);
-  } finally {
-    await session.endSession();
   }
 };
