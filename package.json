@@ -14,7 +14,8 @@
     "@routes": "./routes",
     "@services": "./services",
     "@coreTypes": "./types",
-    "@mock": "./mock"
+    "@mock": "./mock",
+    "@utils": "./utils"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

@@ -9,17 +9,12 @@ import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 import morgan from 'morgan';
 import fs from 'fs';
 import path from 'path';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import 'module-alias/register';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import seedRouter from '@routes/seedRouter';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { dateTimeNowTz } from '@utils/dateTime';
 
 const app = express();
 
@@ -48,9 +43,7 @@ const format =
   ':date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :req[username] == :res[content-length]';
 
 morgan.token('date', (_req, _res, tz) => {
-  return dayjs()
-    .tz(tz as string)
-    .format('ddd, DD MMM YYYY HH:mm:ss');
+  return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
 });
 
 app.use(

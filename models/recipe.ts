@@ -1,5 +1,3 @@
-/// <reference path="../functions/recipe.ts" />
-
 import {
   model,
   Schema,
@@ -13,6 +11,7 @@ import {
 import { CommentInstanceInterface } from '@models/comment';
 import { RatingInstanceInterface } from '@models/rating';
 import { getRecipeDetail, listRecipe } from '@functions/recipe';
+import { dateTimeNowTz } from '@utils/dateTime';
 
 //---------------------
 //   INTERFACE
@@ -116,11 +115,11 @@ export const recipeSchema = new Schema<
       autopopulate: { select: 'username' },
     },
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
+    updatedAt: { type: Date, required: true, default: dateTimeNowTz },
   },
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
-    timestamps: { updatedAt: true, createdAt: false },
   }
 );
 
