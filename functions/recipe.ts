@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { Types, AggregatePaginateResult } from 'mongoose';
 
-import { Recipe, RecipeInstanceInterface, RecipeModelInterface, recipeSchema } from '@models/recipe';
+import { Recipe, RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
 
 export const listRecipe: (
   this: RecipeModelInterface,
@@ -76,7 +76,7 @@ export const listRecipe: (
         },
       ],
     })
-    .sort('updatedAt');
+    .sort('-updatedAt');
 
   return Recipe.aggregatePaginate(aggregate, {
     page: page,
@@ -91,6 +91,6 @@ export const getRecipeDetail: (this: RecipeModelInterface, id: string) => Promis
       .populate('comments')
       .populate('countRating')
       .populate('countComment')
-      .sort('updatedAt')
+      .sort('-updatedAt')
       .exec();
   };
