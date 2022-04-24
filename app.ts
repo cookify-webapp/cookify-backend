@@ -10,13 +10,31 @@ import morgan from 'morgan';
 import fs from 'fs';
 import path from 'path';
 import 'module-alias/register';
+import cors from 'cors';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import seedRouter from '@routes/seedRouter';
 import { dateTimeNowTz } from '@utils/dateTime';
+import { errorText } from '@coreTypes/core';
 
 const app = express();
+
+//---------------------
+//   CORS
+//---------------------
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin || process.env.ORIGIN?.split(' ').includes(origin)) {
+        cb(null, true);
+      } else {
+        cb(createError(403, errorText.CORS));
+      }
+    },
+    methods: ['GET', 'PUT', 'POST', 'DELETE'],
+  })
+);
 
 //---------------------
 //   DATABASE
