@@ -3,14 +3,12 @@ services:
   expressjs-prd:
     image: ghcr.io/cookify-webapp/cookify-backend:prd
     restart: unless-stopped
-    container_name: "expressjs"
+    container_name: "expressjs-prd"
     env_file:
-      - ./cookify-backend/.env
+      - ./.env
     ports:
       - "5000:5000"
-    depends_on:
-      - mongodb-prd
 networks:
   default:
     external:
-      name: cookify-devops_cookify-webapp-prd
+      name: cookify-devops_cookify-webapp

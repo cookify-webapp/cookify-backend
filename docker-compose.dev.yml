@@ -3,14 +3,12 @@ services:
   expressjs-dev:
     image: ghcr.io/cookify-webapp/cookify-backend:dev
     restart: unless-stopped
-    container_name: "expressjs"
+    container_name: "expressjs-dev"
     env_file:
-      - ./cookify-backend/.env.development
+      - ./.env.development
     ports:
       - "5001:5001"
-    depends_on:
-      - mongodb-dev
 networks:
   default:
     external:
-      name: cookify-devops_cookify-webapp-dev
+      name: cookify-devops_cookify-webapp
