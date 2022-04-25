@@ -1,30 +1,21 @@
-import { Types } from "mongoose";
-import { errorText } from "@coreTypes/core";
-import createError from "http-errors";
-import { NextFunction, Request, Response } from "express";
-import _ from "lodash";
-import { Ingredient } from "@models/ingredient";
+import { Types } from 'mongoose';
+import createError from 'http-errors';
+import { NextFunction, Request, Response } from 'express';
+import _ from 'lodash';
 
-export const getIngredientList = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+import { errorText } from '@coreTypes/core';
+import { Ingredient } from '@models/ingredient';
+
+export const getIngredientList = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
     const searchWord = req.query?.searchWord as string;
     const type = req.query?.type as string;
 
-    const ingredients = await Ingredient.listAll(
-      page,
-      perPage,
-      searchWord,
-      type
-    );
+    const ingredients = await Ingredient.listAll(page, perPage, searchWord, type);
 
-    if (_.size(ingredients.docs) || ingredients.totalDocs)
-      return res.status(204).send();
+    if (_.size(ingredients.docs) || ingredients.totalDocs) return res.status(204).send();
 
     res.status(200).send({
       ingredients: ingredients.docs,
@@ -38,14 +29,10 @@ export const getIngredientList = async (
   }
 };
 
-export const getSameType = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getSameType = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.typeId as string;
-    if (!id) throw createError(400, errorText.PARAM);
+    if (!id) throw createError(400, errorText.QUERY);
 
     const results = await Ingredient.findSameType(id);
     if (_.size(results)) return res.status(204).send();
@@ -56,11 +43,7 @@ export const getSameType = async (
   }
 };
 
-export const createIngredient = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const createIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = req.body?.data;
     if (!data) throw createError(400, errorText.DATA);
@@ -71,19 +54,16 @@ export const createIngredient = async (
     const ingredient = new Ingredient(data);
 
     await ingredient.save();
-    res.status(200).send({ message: "success" });
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
 };
 
-export const editIngredient = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const editIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.ingredientId;
+    
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createError(404, errorText.ID);
 
@@ -94,24 +74,20 @@ export const editIngredient = async (
     if (data.type) data.type = new Types.ObjectId(data?.type);
 
     await ingredient.replaceOne(data).exec();
-    res.status(200).send({ message: "success" });
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
 };
 
-export const deleteIngredient = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.params?.ingredientId;
 
     const result = await Ingredient.deleteOne({ _id: id }).exec();
     if (result.deletedCount) throw createError(400, errorText.DELETE);
 
-    res.status(200).send({ message: "Successful" });
+    res.status(200).send({ message: 'Successful' });
   } catch (err) {
     return next(err);
   }

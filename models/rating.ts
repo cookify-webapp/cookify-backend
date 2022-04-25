@@ -1,11 +1,4 @@
-import {
-  model,
-  Schema,
-  Model,
-  Document,
-  Types,
-  QueryWithHelpers,
-} from "mongoose";
+import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 //---------------------
 //   INTERFACE
@@ -21,12 +14,9 @@ export interface RatingInstanceMethods {
   // declare any instance methods here
 }
 
-export interface RatingInstanceInterface
-  extends RatingInterface,
-    RatingInstanceMethods {}
+export interface RatingInstanceInterface extends RatingInterface, RatingInstanceMethods {}
 
-export interface RatingModelInterface
-  extends Model<RatingInstanceInterface, RatingQueryHelpers> {
+export interface RatingModelInterface extends Model<RatingInstanceInterface, RatingQueryHelpers> {
   // declare any static methods here
 }
 
@@ -34,11 +24,7 @@ interface RatingQueryHelpers {
   byPost(
     this: QueryWithHelpers<any, RatingInstanceInterface, RatingQueryHelpers>,
     postId: string | Types.ObjectId
-  ): QueryWithHelpers<
-    RatingInstanceInterface,
-    RatingInstanceInterface,
-    RatingQueryHelpers
-  >;
+  ): QueryWithHelpers<RatingInstanceInterface, RatingInstanceInterface, RatingQueryHelpers>;
 }
 
 //---------------------
@@ -50,8 +36,8 @@ const ratingSchema = new Schema<
   RatingInstanceMethods,
   RatingQueryHelpers
 >({
-  post: { type: "ObjectId", ref: "Recipe", required: true },
-  author: { type: "ObjectId", ref: "Account", required: true },
+  post: { type: 'ObjectId', ref: 'Recipe', required: true },
+  author: { type: 'ObjectId', ref: 'Account', required: true },
   rating: { type: Number, required: true, min: 1, max: 5 },
 });
 
@@ -60,18 +46,11 @@ const ratingSchema = new Schema<
 //---------------------
 ratingSchema.query.byPost = function (
   postId: string | Types.ObjectId
-): QueryWithHelpers<
-  RatingInstanceInterface,
-  RatingInstanceInterface,
-  RatingQueryHelpers
-> {
+): QueryWithHelpers<RatingInstanceInterface, RatingInstanceInterface, RatingQueryHelpers> {
   return this.where({ post: postId });
 };
 
 //---------------------
 //   MODEL
 //---------------------
-export const Rating = model<RatingInstanceInterface, RatingModelInterface>(
-  "Rating",
-  ratingSchema
-);
+export const Rating = model<RatingInstanceInterface, RatingModelInterface>('Rating', ratingSchema);

@@ -1,18 +1,11 @@
-import {
-  model,
-  Schema,
-  Model,
-  Document,
-  Types,
-  QueryWithHelpers,
-} from "mongoose";
+import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 //---------------------
 //   INTERFACE
 //---------------------
 export interface CommentInterface extends Document {
   _id: Types.ObjectId;
-  type: "Recipe" | "Snapshot";
+  type: 'Recipe' | 'Snapshot';
   post: Types.ObjectId;
   author: Types.ObjectId;
   comment: string;
@@ -23,12 +16,9 @@ export interface CommentInstanceMethods {
   // declare any instance methods here
 }
 
-export interface CommentInstanceInterface
-  extends CommentInterface,
-    CommentInstanceMethods {}
+export interface CommentInstanceInterface extends CommentInterface, CommentInstanceMethods {}
 
-export interface CommentModelInterface
-  extends Model<CommentInstanceInterface, CommentQueryHelpers> {
+export interface CommentModelInterface extends Model<CommentInstanceInterface, CommentQueryHelpers> {
   // declare any static methods here
 }
 
@@ -36,11 +26,7 @@ interface CommentQueryHelpers {
   byPost(
     this: QueryWithHelpers<any, CommentInstanceInterface, CommentQueryHelpers>,
     postId: string | Types.ObjectId
-  ): QueryWithHelpers<
-    CommentInstanceInterface,
-    CommentInstanceInterface,
-    CommentQueryHelpers
-  >;
+  ): QueryWithHelpers<CommentInstanceInterface, CommentInstanceInterface, CommentQueryHelpers>;
 }
 
 //---------------------
@@ -53,19 +39,17 @@ const commentSchema = new Schema<
   CommentQueryHelpers
 >(
   {
-    type: { type: String, enum: ["Recipe", "Snapshot"], required: true },
-    post: { type: "ObjectId", refPath: "type", required: true },
+    type: { type: String, enum: ['Recipe', 'Snapshot'], required: true },
+    post: { type: 'ObjectId', refPath: 'type', required: true },
     author: {
-      type: "ObjectId",
-      ref: "Account",
+      type: 'ObjectId',
+      ref: 'Account',
       required: true,
-      autopopulate: { select: "username image" },
+      autopopulate: { select: 'username image' },
     },
     comment: { type: String, required: true },
   },
-  {
-    timestamps: { updatedAt: true, createdAt: false },
-  }
+  { timestamps: { createdAt: false, updatedAt: true } }
 );
 
 //---------------------
@@ -73,18 +57,11 @@ const commentSchema = new Schema<
 //---------------------
 commentSchema.query.byPost = function (
   postId: string | Types.ObjectId
-): QueryWithHelpers<
-  CommentInstanceInterface,
-  CommentInstanceInterface,
-  CommentQueryHelpers
-> {
+): QueryWithHelpers<CommentInstanceInterface, CommentInstanceInterface, CommentQueryHelpers> {
   return this.where({ post: postId });
 };
 
 //---------------------
 //   MODEL
 //---------------------
-export const Comment = model<CommentInstanceInterface, CommentModelInterface>(
-  "Comment",
-  commentSchema
-);
+export const Comment = model<CommentInstanceInterface, CommentModelInterface>('Comment', commentSchema);

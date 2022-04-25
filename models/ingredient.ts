@@ -1,11 +1,8 @@
-import {
-  model,
-  Schema,
-  Document,
-  Types,
-  PaginateModel,
-  PaginateResult,
-} from "mongoose";
+/// <reference path="../functions/ingredient.ts" />
+
+import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
+
+import { findSameType, listAll } from '@functions/ingredient';
 
 //---------------------
 //   INTERFACE
@@ -25,21 +22,18 @@ export interface IngredientInstanceMethods {
   // declare any instance methods here
 }
 
-export interface IngredientInstanceInterface
-  extends IngredientInterface,
-    IngredientInstanceMethods {}
+export interface IngredientInstanceInterface extends IngredientInterface, IngredientInstanceMethods {}
 
-export interface IngredientModelInterface
-  extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
+export interface IngredientModelInterface extends PaginateModel<IngredientInstanceInterface, IngredientQueryHelpers> {
   // declare any static methods here
-  listAll(
+  listAll: (
     page: number,
     perPage: number,
     searchWord: string,
     type: string
-  ): Promise<PaginateResult<IngredientInstanceInterface>>;
+  ) => Promise<PaginateResult<IngredientInstanceInterface>>;
 
-  findSameType(type: string): Promise<IngredientInstanceInterface[]>;
+  findSameType: (type: string) => Promise<IngredientInstanceInterface[]>;
 }
 
 interface IngredientQueryHelpers {}
@@ -55,21 +49,24 @@ export const ingredientSchema = new Schema<
 >({
   name: { type: String, required: true, unique: true },
   queryKey: { type: String, required: true, unique: true },
-  unit: { type: "ObjectId", ref: "Unit", required: true, autopopulate: true },
+  unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
   type: {
-    type: "ObjectId",
-    ref: "IngredientType",
+    type: 'ObjectId',
+    ref: 'IngredientType',
     required: true,
     autopopulate: true,
   },
-  image: String,
+  image: { type: String, required: true },
   shopUrl: String,
 });
 
 //---------------------
+//   STATICS
+//---------------------
+ingredientSchema.statics.listAll = listAll;
+ingredientSchema.statics.findSameType = findSameType;
+
+//---------------------
 //   MODEL
 //---------------------
-export const Ingredient = model<
-  IngredientInstanceInterface,
-  IngredientModelInterface
->("Ingredient", ingredientSchema);
+export const Ingredient = model<IngredientInstanceInterface, IngredientModelInterface>('Ingredient', ingredientSchema);

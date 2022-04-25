@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document, Types } from "mongoose";
+import { model, Schema, Model, Document, Types } from 'mongoose';
 
 //---------------------
 //   INTERFACE
@@ -13,12 +13,9 @@ export interface UnitInstanceMethods {
   // declare any instance methods here
 }
 
-export interface UnitInstanceInterface
-  extends UnitInterface,
-    UnitInstanceMethods {}
+export interface UnitInstanceInterface extends UnitInterface, UnitInstanceMethods {}
 
-export interface UnitModelInterface
-  extends Model<UnitInstanceInterface, UnitQueryHelpers> {
+export interface UnitModelInterface extends Model<UnitInstanceInterface, UnitQueryHelpers> {
   // declare any static methods here
 }
 
@@ -27,12 +24,7 @@ interface UnitQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-const unitSchema = new Schema<
-  UnitInstanceInterface,
-  UnitModelInterface,
-  UnitInstanceMethods,
-  UnitQueryHelpers
->({
+const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>({
   name: { type: String, required: true, unique: true },
   query: { type: String, required: true },
 });
@@ -40,7 +32,4 @@ const unitSchema = new Schema<
 //---------------------
 //   MODEL
 //---------------------
-export const Unit = model<UnitInstanceInterface, UnitModelInterface>(
-  "Unit",
-  unitSchema
-);
+export const Unit = model<UnitInstanceInterface, UnitModelInterface>('Unit', unitSchema);
