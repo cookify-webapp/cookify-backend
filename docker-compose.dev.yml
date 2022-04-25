@@ -9,7 +9,7 @@ services:
     ports:
       - "5001:5001"
     depends_on:
-      - mongodb-dev
+      - mongodb
 networks:
   default:
     external:
