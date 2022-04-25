@@ -1,9 +1,8 @@
-import { comparePassword, signToken } from '@functions/account';
-
 import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
+import { comparePassword, signToken } from '@functions/account';
 
 //---------------------
 //   INTERFACE
@@ -26,6 +25,7 @@ export interface AccountInterface extends Document {
 export interface AccountInstanceMethods {
   // declare any instance methods here
   comparePassword: (this: AccountInstanceInterface, password: string) => Promise<boolean>;
+
   signToken: (this: AccountInstanceInterface, secret: string) => string;
 }
 
@@ -52,9 +52,9 @@ export const accountSchema = new Schema<
   AccountQueryHelpers
 >(
   {
-    username: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true, minlength: 6, maxlength: 30 },
     email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true, select: false, minlength: 8, maxlength: 32 },
     accountType: {
       type: String,
       required: true,

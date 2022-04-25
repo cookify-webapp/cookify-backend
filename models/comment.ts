@@ -47,7 +47,7 @@ const commentSchema = new Schema<
       required: true,
       autopopulate: { select: 'username image' },
     },
-    comment: { type: String, required: true },
+    comment: { type: String, required: true, maxlength: 500 },
   },
   { timestamps: { createdAt: false, updatedAt: true } }
 );

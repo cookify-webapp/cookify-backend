@@ -1,5 +1,3 @@
-/// <reference path="../functions/ingredient.ts" />
-
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
 import { findSameType, listAll } from '@functions/ingredient';

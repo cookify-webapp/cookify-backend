@@ -88,7 +88,7 @@ export const recipeSchema = new Schema<
 >(
   {
     name: { type: String, required: true },
-    desc: { type: String, required: true },
+    desc: { type: String, required: true, maxlength: 500 },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
     methods: [
       {

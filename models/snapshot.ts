@@ -46,7 +46,7 @@ export const snapshotSchema = new Schema<
   SnapshotQueryHelpers
 >(
   {
-    caption: { type: String, required: true },
+    caption: { type: String, required: true, maxlength: 500 },
     image: { type: String, required: true },
     author: {
       type: 'ObjectId',
