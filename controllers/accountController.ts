@@ -18,7 +18,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     const secret = process.env.JWT_SECRET;
     if (!secret) throw createError(500, errorText.SECRET);
 
-    const account = await Account.findOne().byName(username).exec();
+    const account = await Account.findOne().select('password').byName(username).exec();
     if (!account) throw createError(403, errorText.USERNAME);
 
     const result = await account.comparePassword(password);
