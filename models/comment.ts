@@ -1,7 +1,5 @@
 import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
-import { dateTimeNowTz } from '@utils/dateTime';
-
 //---------------------
 //   INTERFACE
 //---------------------
@@ -50,8 +48,8 @@ const commentSchema = new Schema<
       autopopulate: { select: 'username image' },
     },
     comment: { type: String, required: true },
-    updatedAt: { type: Date, required: true, default: dateTimeNowTz },
   },
+  { timestamps: { createdAt: false, updatedAt: true } }
 );
 
 //---------------------

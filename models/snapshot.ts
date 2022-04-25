@@ -1,7 +1,6 @@
 import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 import { RecipeInstanceInterface } from '@models/recipe';
-import { dateTimeNowTz } from '@utils/dateTime';
 
 //---------------------
 //   INTERFACE
@@ -62,9 +61,9 @@ export const snapshotSchema = new Schema<
       autopopulate: { select: 'name' },
     },
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
-    updatedAt: { type: Date, required: true, default: dateTimeNowTz },
   },
   {
+    timestamps: { createdAt: false, updatedAt: true },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
   }
