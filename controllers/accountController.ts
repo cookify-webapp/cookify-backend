@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { Account } from '@models/account';
 import { errorText } from '@coreTypes/core';
 import seedAccounts from '@mock/seedAccounts';
+import { Recipe } from '@models/recipe';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -32,7 +33,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
 
 export const getAllAccounts = async (_req: Request, res: Response, next: NextFunction) => {
   try {
-    const accounts = await Account.find().select('-password').lean().exec();
+    const accounts = await Account.find().lean().exec();
     res.status(200).send({ accounts });
   } catch (err) {
     return next(err);
@@ -68,11 +69,36 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       username: data?.username,
       password: encodeURIComponent(hash),
       email: data?.email,
-      accountType: 'user',
       allergy: allergyIds,
     });
 
     await account.save();
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const setBookmark = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.username) throw createError(401, errorText.AUTH);
+
+    const account = await Account.findOne().byName(req.username).exec();
+    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
+
+    const id = req.params?.recipeId;
+
+    const recipe = await Recipe.findById(id).exec();
+    if (!recipe) throw createError(404, errorText.ID);
+
+    await account
+      .updateOne({
+        [_.includes(account.bookmark, recipe._id) ? '$pull' : '$addToSet']: {
+          bookmark: recipe._id,
+        },
+      })
+      .exec();
+
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

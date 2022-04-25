@@ -33,7 +33,7 @@ export const getRecipeList = async (req: Request, res: Response, next: NextFunct
 
 export const getRecipeDetail = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = req.query?.recipeId as string;
+    const id = req.params?.recipeId;
 
     const recipe = await Recipe.getRecipeDetail(id);
     if (!recipe) throw createError(404, errorText.ID);

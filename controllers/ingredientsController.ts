@@ -32,7 +32,7 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
 export const getSameType = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.typeId as string;
-    if (!id) throw createError(400, errorText.PARAM);
+    if (!id) throw createError(400, errorText.QUERY);
 
     const results = await Ingredient.findSameType(id);
     if (_.size(results)) return res.status(204).send();
@@ -63,6 +63,7 @@ export const createIngredient = async (req: Request, res: Response, next: NextFu
 export const editIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.ingredientId;
+    
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createError(404, errorText.ID);
 
