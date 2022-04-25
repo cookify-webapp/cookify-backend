@@ -54,7 +54,7 @@ export const accountSchema = new Schema<
   {
     username: { type: String, required: true, unique: true, minlength: 6, maxlength: 30 },
     email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
-    password: { type: String, required: true, select: false, minlength: 8, maxlength: 32 },
+    password: { type: String, required: true, select: false },
     accountType: {
       type: String,
       required: true,

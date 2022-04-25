@@ -15,7 +15,7 @@ const seedIngredientTypes = [
   },
   {
     _id: new Types.ObjectId('6264264220403a1e86e3ab48'),
-    name: 'สมุนไพรและเครื่องเทศ',
+    name: 'อาหารแปรรูป',
   },
   {
     _id: new Types.ObjectId('62642648a293bd52a72832e0'),

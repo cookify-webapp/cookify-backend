@@ -63,6 +63,8 @@ morgan.token('date', (_req, _res, tz) => {
   return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
 });
 
+if (!fs.existsSync('./log')) fs.mkdirSync('./log', { recursive: true });
+
 app.use(
   morgan(format, {
     skip: (_req, res) => res.statusCode < 400,
