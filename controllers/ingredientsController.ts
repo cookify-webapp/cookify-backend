@@ -34,10 +34,10 @@ export const getSameType = async (req: Request, res: Response, next: NextFunctio
     const id = req.query?.typeId as string;
     if (!id) throw createError(400, errorText.QUERY);
 
-    const results = await Ingredient.findSameType(id);
-    if (_.size(results)) return res.status(204).send();
+    const ingredients = await Ingredient.findSameType(id);
+    if (_.size(ingredients)) return res.status(204).send();
 
-    res.status(200).send({ ingredients: results });
+    res.status(200).send({ ingredients });
   } catch (err) {
     return next(err);
   }
@@ -63,7 +63,7 @@ export const createIngredient = async (req: Request, res: Response, next: NextFu
 export const editIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.ingredientId;
-    
+
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createError(404, errorText.ID);
 
@@ -87,7 +87,7 @@ export const deleteIngredient = async (req: Request, res: Response, next: NextFu
     const result = await Ingredient.deleteOne({ _id: id }).exec();
     if (result.deletedCount) throw createError(400, errorText.DELETE);
 
-    res.status(200).send({ message: 'Successful' });
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }

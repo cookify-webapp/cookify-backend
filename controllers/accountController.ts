@@ -6,7 +6,6 @@ import _ from 'lodash';
 
 import { Account } from '@models/account';
 import { errorText } from '@coreTypes/core';
-import seedAccounts from '@mock/seedAccounts';
 import { Recipe } from '@models/recipe';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
@@ -118,16 +117,6 @@ export const editProfile = async (req: Request, res: Response, next: NextFunctio
     account.email = data?.email;
 
     await account.save();
-    res.status(200).send({ message: 'success' });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const seedAccount = async (_req: Request, res: Response, next: NextFunction) => {
-  try {
-    await Account.deleteMany().exec();
-    await Account.insertMany(seedAccounts);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

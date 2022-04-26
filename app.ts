@@ -15,7 +15,7 @@ import cors from 'cors';
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import seedRouter from '@routes/seedRouter';
-import { dateTimeNowTz } from '@utils/dateTime';
+import { dateTimeNowTz } from '@utils/dateTimeUtil';
 import { errorText } from '@coreTypes/core';
 
 const app = express();
