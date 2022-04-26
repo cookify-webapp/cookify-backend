@@ -24,10 +24,15 @@ interface UnitQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>({
-  name: { type: String, required: true, unique: true },
-  query: { type: String, required: true },
-});
+const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>(
+  {
+    name: { type: String, required: true, unique: true },
+    query: { type: String, required: true },
+  },
+  {
+    collation: { locale: 'th' },
+  }
+);
 
 //---------------------
 //   MODEL

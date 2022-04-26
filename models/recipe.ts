@@ -116,6 +116,7 @@ export const recipeSchema = new Schema<
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
+    collation: { locale: 'th' },
     timestamps: { createdAt: false, updatedAt: true },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
@@ -170,5 +171,3 @@ recipeSchema.virtual('countComment', {
 //   MODEL
 //---------------------
 export const Recipe = model<RecipeInstanceInterface, RecipeModelInterface>('Recipe', recipeSchema);
-
-export const IngredientQuantity = model<IngredientQuantityInterface>('IngredientQuantity', ingredientQuantitySchema);

@@ -44,19 +44,22 @@ export const ingredientSchema = new Schema<
   IngredientModelInterface,
   IngredientInstanceMethods,
   IngredientQueryHelpers
->({
-  name: { type: String, required: true, unique: true },
-  queryKey: { type: String, required: true, unique: true },
-  unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
-  type: {
-    type: 'ObjectId',
-    ref: 'IngredientType',
-    required: true,
-    autopopulate: true,
+>(
+  {
+    name: { type: String, required: true, unique: true },
+    queryKey: { type: String, required: true, unique: true },
+    unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
+    type: {
+      type: 'ObjectId',
+      ref: 'IngredientType',
+      required: true,
+      autopopulate: true,
+    },
+    image: { type: String, required: true },
+    shopUrl: String,
   },
-  image: { type: String, required: true },
-  shopUrl: String,
-});
+  { collation: { locale: 'th' } }
+);
 
 //---------------------
 //   STATICS

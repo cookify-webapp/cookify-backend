@@ -35,11 +35,14 @@ const ratingSchema = new Schema<
   RatingModelInterface,
   RatingInstanceMethods,
   RatingQueryHelpers
->({
-  post: { type: 'ObjectId', ref: 'Recipe', required: true },
-  author: { type: 'ObjectId', ref: 'Account', required: true },
-  rating: { type: Number, required: true, min: 1, max: 5 },
-});
+>(
+  {
+    post: { type: 'ObjectId', ref: 'Recipe', required: true },
+    author: { type: 'ObjectId', ref: 'Account', required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+  },
+  { collation: { locale: 'th' } }
+);
 
 //---------------------
 //   QUERY HELPERS

@@ -12,11 +12,7 @@ export const seedData =
     try {
       await model.deleteMany().exec();
       await model.insertMany(data);
-      if (isNext) {
-        return next();
-      } else {
-        return res.status(200).send({ message: 'success' });
-      }
+      return isNext ? next() : res.status(200).send({ message: 'success' });
     } catch (err) {
       return next(err);
     }

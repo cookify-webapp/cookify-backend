@@ -38,14 +38,9 @@ export const getRecipeDetail = async (req: Request, res: Response, next: NextFun
     const recipe = await Recipe.getRecipeDetail(id);
     if (!recipe) throw createError(404, errorText.ID);
 
-    const avg = _.meanBy(recipe.ratings, 'rating');
+    recipe.averageRating = parseFloat(_.meanBy(recipe.ratings, 'rating').toFixed(1));
 
-    res.status(200).send({
-      recipe: {
-        ...recipe,
-        averageRating: avg.toFixed(1),
-      },
-    });
+    res.status(200).send({ recipe });
   } catch (err) {
     return next(err);
   }

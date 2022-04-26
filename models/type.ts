@@ -23,9 +23,12 @@ interface TypeQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeInstanceMethods, TypeQueryHelpers>({
-  name: { type: String, required: true, unique: true },
-});
+const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeInstanceMethods, TypeQueryHelpers>(
+  {
+    name: { type: String, required: true, unique: true },
+  },
+  { collation: { locale: 'th' } }
+);
 
 //---------------------
 //   MODEL

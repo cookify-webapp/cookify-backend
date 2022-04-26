@@ -63,6 +63,7 @@ export const snapshotSchema = new Schema<
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
+    collation: { locale: 'th' },
     timestamps: { createdAt: false, updatedAt: true },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
