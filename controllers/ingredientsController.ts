@@ -3,8 +3,9 @@ import createError from 'http-errors';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
-import createRestAPIError from '@error/createRestAPIError';
 import { Ingredient } from '@models/ingredient';
+
+import createRestAPIError from '@error/createRestAPIError';
 
 export const getIngredientList = async (req: Request, res: Response, next: NextFunction) => {
   try {

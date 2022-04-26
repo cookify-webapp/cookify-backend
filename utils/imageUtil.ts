@@ -1,4 +1,3 @@
-import createError from 'http-errors';
 import _ from 'lodash';
 import multer from 'multer';
 import path from 'path';

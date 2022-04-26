@@ -1,12 +1,12 @@
 import { Types } from 'mongoose';
-import createError from 'http-errors';
 import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
 import { Account } from '@models/account';
-import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
+
+import createRestAPIError from '@error/createRestAPIError';
 
 export const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
