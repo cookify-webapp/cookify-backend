@@ -16,7 +16,7 @@ import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import seedRouter from '@routes/seedRouter';
 import { dateTimeNowTz } from '@utils/dateTimeUtil';
-import { errorText } from '@coreTypes/core';
+import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
 
 const app = express();
 
@@ -29,7 +29,7 @@ app.use(
       if (!origin || process.env.ORIGIN?.split(' ').includes(origin)) {
         cb(null, true);
       } else {
-        cb(createError(403, errorText.CORS));
+        cb(createRestAPIError('CORS'));
       }
     },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
@@ -101,7 +101,7 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 //   ERROR HANDLER
 //---------------------
 app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) {
-  if (err instanceof HttpError) {
+  if (err instanceof HttpError || err instanceof RestAPIError) {
     const status = err.status || 500;
     res.status(status).send({ status, name: err.name, message: err.message, method: req.method, path: req.path });
   } else if (err instanceof Error) {

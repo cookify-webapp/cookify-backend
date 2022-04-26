@@ -1,18 +1,17 @@
-import createError from 'http-errors';
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import _ from 'lodash';
 
-import { errorText } from '@coreTypes/core';
+import createRestAPIError from '@error/createRestAPIError';
 
 const getPayload = (req: Request): JwtPayload => {
   let authHeader = req.headers['authorization'];
-  if (!authHeader) throw createError(401, errorText.AUTH);
-  if (_.isArray(authHeader)) throw createError(400, errorText.AUTH_HEADER);
+  if (!authHeader) throw createRestAPIError('AUTH');
+  if (_.isArray(authHeader)) throw createRestAPIError('AUTH_HEADER');
 
   const token = authHeader.split(' ')[1];
   const secret = process.env.JWT_SECRET;
-  if (!secret) throw createError(500, errorText.SECRET);
+  if (!secret) throw createRestAPIError('MISSING_SECRET');
 
   return jwt.verify(token, secret) as JwtPayload;
 };
@@ -32,7 +31,7 @@ export const adminAuth = async (req: Request, _res: Response, next: NextFunction
   try {
     const decoded = getPayload(req);
 
-    if (!decoded.isAdmin) throw createError(401, errorText.ADMIN);
+    if (!decoded.isAdmin) throw createRestAPIError('AUTH_ADMIN');
 
     req.username = decoded.username;
     return next();

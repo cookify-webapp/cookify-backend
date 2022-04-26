@@ -1,9 +1,8 @@
-import createError from 'http-errors';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
-import { errorText } from '@coreTypes/core';
+import createRestAPIError from '@error/createRestAPIError';
 
 export const getRecipeList = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -36,7 +35,7 @@ export const getRecipeDetail = async (req: Request, res: Response, next: NextFun
     const id = req.params?.recipeId;
 
     const recipe = await Recipe.getRecipeDetail(id);
-    if (!recipe) throw createError(404, errorText.ID);
+    if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
     recipe.averageRating = parseFloat(_.meanBy(recipe.ratings, 'rating').toFixed(1));
 

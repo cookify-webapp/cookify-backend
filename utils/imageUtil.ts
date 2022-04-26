@@ -4,7 +4,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-import { errorText } from '@coreTypes/core';
+import createRestAPIError from '@error/createRestAPIError';
 
 const maxSize = 5 * 1024 * 1024;
 
@@ -24,7 +24,7 @@ export const upload = multer({
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
     if (!_.includes(['.png', '.jpg', '.gif', '.jpeg'], ext)) {
-      return cb(createError(400, errorText.IMG_EXT));
+      return cb(createRestAPIError('IMG_EXT'));
     }
     cb(null, true);
   },

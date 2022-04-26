@@ -3,7 +3,7 @@ import createError from 'http-errors';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
-import { errorText } from '@coreTypes/core';
+import createRestAPIError from '@error/createRestAPIError';
 import { Ingredient } from '@models/ingredient';
 
 export const getIngredientList = async (req: Request, res: Response, next: NextFunction) => {
@@ -31,8 +31,8 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
 
 export const getSameType = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const id = req.query?.typeId as string;
-    if (!id) throw createError(400, errorText.QUERY);
+    const id = req.query?.typeId;
+    if (typeof id !== 'string') throw createRestAPIError('INV_QUERY');
 
     const ingredients = await Ingredient.findSameType(id);
     if (_.size(ingredients)) return res.status(204).send();
@@ -46,7 +46,7 @@ export const getSameType = async (req: Request, res: Response, next: NextFunctio
 export const createIngredient = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = req.body?.data;
-    if (!data) throw createError(400, errorText.DATA);
+    if (!data) throw createRestAPIError('INV_REQ_BODY');
 
     if (data.unit) data.unit = new Types.ObjectId(data?.unit);
     if (data.type) data.type = new Types.ObjectId(data?.type);
@@ -65,10 +65,10 @@ export const editIngredient = async (req: Request, res: Response, next: NextFunc
     const id = req.query?.ingredientId;
 
     const ingredient = await Ingredient.findById(id).exec();
-    if (!ingredient) throw createError(404, errorText.ID);
+    if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
     const data = req.body?.data;
-    if (!data) throw createError(400, errorText.DATA);
+    if (!data) throw createRestAPIError('INV_REQ_BODY');
 
     if (data.unit) data.unit = new Types.ObjectId(data?.unit);
     if (data.type) data.type = new Types.ObjectId(data?.type);
@@ -84,8 +84,8 @@ export const deleteIngredient = async (req: Request, res: Response, next: NextFu
   try {
     const id = req.params?.ingredientId;
 
-    const result = await Ingredient.deleteOne({ _id: id }).exec();
-    if (result.deletedCount) throw createError(400, errorText.DELETE);
+    const result = await Ingredient.findByIdAndDelete(id).exec();
+    if (result) throw createError(404, 'No documents were deleted');
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

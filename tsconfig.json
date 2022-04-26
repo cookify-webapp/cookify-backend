@@ -22,7 +22,8 @@
       "@services/*": ["services/*"],
       "@coreTypes/*": ["types/*"],
       "@mock/*": ["mock/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@error/*": ["error/*"]
     }
   },
   "include": ["**/*.ts", "**/*.d.ts"],
