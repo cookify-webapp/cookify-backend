@@ -7,6 +7,8 @@ import createRestAPIError from '@error/createRestAPIError';
 
 const maxSize = 5 * 1024 * 1024;
 
+export const allowedExt = ['.png', '.jpg', '.gif', '.jpeg'];
+
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
     const dir = `public/images/${req.baseUrl.substring(1)}`;
@@ -22,7 +24,7 @@ export const upload = multer({
   storage,
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
-    if (!_.includes(['.png', '.jpg', '.gif', '.jpeg'], ext)) {
+    if (!_.includes(allowedExt, ext)) {
       return cb(createRestAPIError('IMG_EXT'));
     }
     cb(null, true);

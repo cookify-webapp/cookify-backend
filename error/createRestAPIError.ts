@@ -1,5 +1,7 @@
 import createError from 'http-errors';
 
+import { allowedExt } from '@utils/imageUtil';
+
 const ErrorDetail = Object.freeze({
   BAD_REQUEST: { name: createError(400).name, status: 400 },
   UNAUTHORIZED: { name: createError(401).name, status: 401 },
@@ -13,7 +15,7 @@ const ErrorResponse = Object.freeze({
   //   400
   //---------------------
   AUTH_HEADER: { ...ErrorDetail.BAD_REQUEST, msg: 'Multiple authentication headers detected' },
-  IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid image extension, only images are allowed' },
+  IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: `Invalid image extension, only ${allowedExt.join(' ')} are allowed` },
   INV_QUERY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request query(s)' },
   INV_REQ_BODY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request body' },
 
@@ -29,6 +31,7 @@ const ErrorResponse = Object.freeze({
   CORS: { ...ErrorDetail.FORBIDDEN, msg: 'Not allowed by CORS' },
   WRONG_USERNAME: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect username' },
   WRONG_PASSWORD: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect password' },
+  DEL_REFERENCE: { ...ErrorDetail.FORBIDDEN, msg: 'Cannot delete referenced document' },
 
   //---------------------
   //   404
