@@ -113,8 +113,8 @@ export const editProfile = async (req: Request, res: Response, next: NextFunctio
     const account = await Account.findOne().byName(req.username).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    account.username = data?.username;
-    account.email = data?.email;
+    account.username = data?.username || account.username;
+    account.email = data?.email || account.email;
 
     await account.save();
     res.status(200).send({ message: 'success' });
