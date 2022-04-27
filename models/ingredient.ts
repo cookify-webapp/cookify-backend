@@ -1,6 +1,6 @@
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
-import { findSameType, listAll } from '@functions/ingredient';
+import { sampleByType, listAll } from '@functions/ingredient';
 
 //---------------------
 //   INTERFACE
@@ -31,7 +31,7 @@ export interface IngredientModelInterface extends PaginateModel<IngredientInstan
     type: string
   ) => Promise<PaginateResult<IngredientInstanceInterface>>;
 
-  findSameType: (type: string) => Promise<IngredientInstanceInterface[]>;
+  sampleByType: (type: string) => Promise<IngredientInstanceInterface[]>;
 }
 
 interface IngredientQueryHelpers {}
@@ -65,7 +65,7 @@ export const ingredientSchema = new Schema<
 //   STATICS
 //---------------------
 ingredientSchema.statics.listAll = listAll;
-ingredientSchema.statics.findSameType = findSameType;
+ingredientSchema.statics.sampleByType = sampleByType;
 
 //---------------------
 //   MODEL

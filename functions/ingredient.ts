@@ -21,7 +21,7 @@ export const listAll: (
   });
 };
 
-export const findSameType: (this: IngredientModelInterface, type: string) => Promise<IngredientInstanceInterface[]> =
+export const sampleByType: (this: IngredientModelInterface, type: string) => Promise<IngredientInstanceInterface[]> =
   async function (type) {
     return this.aggregate<IngredientInstanceInterface>()
       .lookup({

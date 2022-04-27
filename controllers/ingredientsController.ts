@@ -1,9 +1,10 @@
 import { Types } from 'mongoose';
-import createError from 'http-errors';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
 import { Ingredient } from '@models/ingredient';
+import { IngredientType } from '@models/type';
+import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
 
@@ -30,15 +31,40 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
   }
 };
 
-export const getSameType = async (req: Request, res: Response, next: NextFunction) => {
+export const getIngredientTypes = async (_req: Request, res: Response, next: NextFunction) => {
+  try {
+    const ingredientTypes = await IngredientType.find().exec();
+
+    if (!ingredientTypes) return res.status(204).send();
+
+    res.status(200).send({ ingredientTypes });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const sampleByType = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const id = req.query?.typeId;
     if (typeof id !== 'string') throw createRestAPIError('INV_QUERY');
 
-    const ingredients = await Ingredient.findSameType(id);
+    const ingredients = await Ingredient.sampleByType(id);
     if (_.size(ingredients)) return res.status(204).send();
 
     res.status(200).send({ ingredients });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getIngredientDetail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const id = req.params?.id;
+
+    const ingredient = await Ingredient.findById(id).exec();
+    if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
+
+    res.status(200).send({ ingredient });
   } catch (err) {
     return next(err);
   }
@@ -85,8 +111,11 @@ export const deleteIngredient = async (req: Request, res: Response, next: NextFu
   try {
     const id = req.params?.ingredientId;
 
+    const ref = await Recipe.exists({ ingredients: id }).exec();
+    if (ref) throw createRestAPIError('DEL_REFERENCE');
+
     const result = await Ingredient.findByIdAndDelete(id).exec();
-    if (result) throw createError(404, 'No documents were deleted');
+    if (!result) throw createRestAPIError('DOC_NOT_FOUND');
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
