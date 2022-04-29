@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
 
@@ -16,7 +15,6 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
     const type = req.query?.type as string;
 
     const ingredients = await Ingredient.listAll(page, perPage, searchWord, type);
-
     if (_.size(ingredients.docs) || ingredients.totalDocs) return res.status(204).send();
 
     res.status(200).send({
@@ -34,7 +32,6 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
 export const getIngredientTypes = async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const ingredientTypes = await IngredientType.find().exec();
-
     if (!ingredientTypes) return res.status(204).send();
 
     res.status(200).send({ ingredientTypes });
@@ -75,8 +72,7 @@ export const createIngredient = async (req: Request, res: Response, next: NextFu
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    if (data.unit) data.unit = new Types.ObjectId(data?.unit);
-    if (data.type) data.type = new Types.ObjectId(data?.type);
+    data.image = req.file?.path;
 
     const ingredient = new Ingredient(data);
 
@@ -97,8 +93,7 @@ export const editIngredient = async (req: Request, res: Response, next: NextFunc
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    if (data.unit) data.unit = new Types.ObjectId(data?.unit);
-    if (data.type) data.type = new Types.ObjectId(data?.type);
+    data.image = req.file?.path || data.image;
 
     await ingredient.replaceOne(data).exec();
     res.status(200).send({ message: 'success' });

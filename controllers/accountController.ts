@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { NextFunction, Request, Response } from 'express';
 import _ from 'lodash';
@@ -60,15 +59,16 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const data = req.body?.data;
+    if (!data) throw createRestAPIError('INV_REQ_BODY');
+
     const saltRounds = 10;
     const hash = await bcrypt.hash(data?.password, saltRounds);
-    const allergyIds = _.map(data?.allergy, (item: string) => new Types.ObjectId(item));
 
     const account = new Account({
       username: data?.username,
       password: encodeURIComponent(hash),
       email: data?.email,
-      allergy: allergyIds,
+      allergy: data?.allergy,
     });
 
     await account.save();
