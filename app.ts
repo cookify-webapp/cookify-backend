@@ -1,14 +1,10 @@
 import createError, { HttpError } from 'http-errors';
 import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import 'module-alias/register';
 
-import uniqueValidator from 'mongoose-unique-validator';
-import mongooseAutoPopulate from 'mongoose-autopopulate';
-import mongoosePaginate from 'mongoose-paginate-v2';
-import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
+import '@db/connection'
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
@@ -30,22 +26,11 @@ app.use(
         cb(null, true);
       } else {
         cb(createRestAPIError('CORS'));
-      }
+      }                                     
     },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
   })
 );
-
-//---------------------
-//   DATABASE
-//---------------------
-mongoose.connect(process.env.MONGODB_URL as string);
-mongoose.plugin(uniqueValidator);
-mongoose.plugin(mongooseAutoPopulate, {
-  functions: ['find', 'findOne', 'findOneAndUpdate', 'aggregate'],
-});
-mongoose.plugin(mongoosePaginate);
-mongoose.plugin(aggregatePaginate);
 
 //---------------------
 //   MODULES

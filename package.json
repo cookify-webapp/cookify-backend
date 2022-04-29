@@ -16,7 +16,8 @@
     "@coreTypes": "./types",
     "@mock": "./mock",
     "@utils": "./utils",
-    "@error": "./error"
+    "@error": "./error",
+    "@db": "./db"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
