@@ -11,8 +11,9 @@ import accountRouter from '@routes/accountRouter';
 import ingredientRouter from '@routes/ingredientRouter';
 import seedRouter from '@routes/seedRouter';
 
-import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
 import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
+
+import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
 
 const app = express();
 

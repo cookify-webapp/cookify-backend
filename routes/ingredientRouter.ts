@@ -20,12 +20,12 @@ ingredientRouter.get('/types', getIngredientTypes);
 
 ingredientRouter.get('/sample', sampleByType);
 
-ingredientRouter.get('/:recipeId', getIngredientDetail);
+ingredientRouter.get('/:ingredientId', getIngredientDetail);
 
 ingredientRouter.post('/create', adminAuth, imageUtil.single('ingredientImage'), createIngredient);
 
-ingredientRouter.put('/:recipeId/edit', adminAuth, imageUtil.single('ingredientImage'), editIngredient);
+ingredientRouter.put('/:ingredientId/edit', adminAuth, imageUtil.single('ingredientImage'), editIngredient);
 
-ingredientRouter.delete('/:recipeId/delete', adminAuth, deleteIngredient);
+ingredientRouter.delete('/:ingredientId/delete', adminAuth, deleteIngredient);
 
 export default ingredientRouter;

@@ -43,7 +43,7 @@ export const getIngredientTypes: RequestHandler = async (_req, res, next) => {
 export const sampleByType: RequestHandler = async (req, res, next) => {
   try {
     const id = req.query?.typeId;
-    if (typeof id !== 'string') throw createRestAPIError('INV_QUERY');
+    if (typeof id !== 'string' || !id) throw createRestAPIError('INV_QUERY');
 
     const ingredients = await Ingredient.sampleByType(id);
     if (_.size(ingredients)) return res.status(204).send();
@@ -56,7 +56,7 @@ export const sampleByType: RequestHandler = async (req, res, next) => {
 
 export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   try {
-    const id = req.params?.id;
+    const id = req.params?.ingredientId;
 
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
@@ -85,7 +85,7 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
 
 export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
-    const id = req.query?.ingredientId;
+    const id = req.params?.ingredientId;
 
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
