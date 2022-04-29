@@ -8,9 +8,11 @@ import mongoosePaginate from 'mongoose-paginate-v2';
 import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 import morgan from 'morgan';
 import fs from 'fs';
+import { createStream, Generator, Options } from 'rotating-file-stream';
 import path from 'path';
 import 'module-alias/register';
 import cors from 'cors';
+import dayjs from 'dayjs';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
@@ -63,22 +65,32 @@ morgan.token('date', (_req, _res, tz) => {
   return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
 });
 
-if (!fs.existsSync('./log')) fs.mkdirSync('./log', { recursive: true });
+const logName: (name: string) => Generator = (name) => (time: number | Date, index: number | undefined) => {
+  if (!time) return path.resolve(__dirname, 'log', name, `${name}.log`);
+  return path.resolve(__dirname, 'log', name, `${dayjs().format('YYYY-MMDD-HHmm')}-${index}-${name}.log`);
+};
+
+const logOpt: Options = { omitExtension: true, interval: '7d', maxFiles: 4, history: 'log-history.txt' };
+
+if (!fs.existsSync('log')) fs.mkdirSync('log', { recursive: true });
 
 app.use(
   morgan(format, {
     skip: (_req, res) => res.statusCode < 400,
-    stream: fs.createWriteStream(path.resolve(__dirname, 'log', 'error.log'), {
-      flags: 'a',
-    }),
+    stream: createStream(logName('error'), logOpt),
   })
 );
 
 app.use(
   morgan(format, {
-    stream: fs.createWriteStream(path.resolve(__dirname, 'log', 'access.log'), {
-      flags: 'a',
-    }),
+    skip: (req, _res) => req.baseUrl !== '/seed',
+    stream: createStream(logName('seed'), logOpt),
+  })
+);
+
+app.use(
+  morgan(format, {
+    stream: createStream(logName('access'), logOpt),
   })
 );
 
@@ -109,7 +121,7 @@ app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) 
   } else {
     res.status(500).send({
       status: 500,
-      name: 'Internal server error',
+      name: createError(500).name,
       message: 'Something went wrong',
       method: req.method,
       path: req.path,
