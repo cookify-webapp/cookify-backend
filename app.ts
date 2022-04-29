@@ -12,6 +12,7 @@ import aggregatePaginate from 'mongoose-aggregate-paginate-v2';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
+import ingredientRouter from '@routes/ingredientRouter';
 import seedRouter from '@routes/seedRouter';
 
 import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
@@ -65,6 +66,7 @@ app.use(accessLogger);
 //---------------------
 app.use('/', indexRouter);
 app.use('/accounts', accountRouter);
+app.use('/ingredients', ingredientRouter);
 app.use('/seed', seedRouter);
 
 app.get('/health', (_req, res) => {
