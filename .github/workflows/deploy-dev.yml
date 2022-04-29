@@ -33,12 +33,8 @@ jobs:
             git checkout develop
             git pull origin develop
             docker rm -f expressjs-dev
-            docker rm -f nginx
             docker rmi ghcr.io/cookify-webapp/cookify-backend:dev
-            docker rmi cookify-devops_nginx
             docker-compose -f docker-compose.dev.yml up -d
-            cd ..
-            docker-compose up -d
   test:
     needs: deploy
     runs-on: ubuntu-20.04
