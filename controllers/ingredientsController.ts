@@ -87,15 +87,17 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const ingredient = await Ingredient.findById(id).exec();
-    if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
-
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
     data.image = req.file?.path || data.image;
 
-    await ingredient.replaceOne(data).exec();
+    const ingredient = await Ingredient.findOneAndReplace({ _id: id }, data, {
+      runValidators: true,
+      context: 'query',
+    }).exec();
+    if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
+
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

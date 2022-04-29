@@ -24,14 +24,10 @@ const imageUtil = multer({
   storage,
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
-    if (!_.includes(allowedExt, ext)) {
-      return cb(createRestAPIError('IMG_EXT'));
-    }
+    if (!_.includes(allowedExt, ext)) return cb(createRestAPIError('IMG_EXT'));
     cb(null, true);
   },
-  limits: {
-    fileSize: maxSize,
-  },
+  limits: { fileSize: maxSize },
 });
 
 export default imageUtil;

@@ -30,7 +30,6 @@ export const auth: RequestHandler = async (req, _res, next) => {
 export const adminAuth: RequestHandler = async (req, _res, next) => {
   try {
     const decoded = getPayload(req);
-
     if (!decoded.isAdmin) throw createRestAPIError('AUTH_ADMIN');
 
     req.username = decoded.username;

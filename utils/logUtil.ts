@@ -9,6 +9,8 @@ import { dateTimeNowTz } from '@utils/dateTimeUtil';
 
 const format = ':date[Asia/Bangkok] == :remote-user :method :url :status :response-time ms == :res[content-length]';
 
+const logOpt: Options = { omitExtension: true, interval: '7d', maxFiles: 4, history: 'log-history.txt' };
+
 morgan.token('date', (_req, _res, tz) => {
   return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
 });
@@ -17,8 +19,6 @@ const logName: (name: string) => Generator = (name) => (time: number | Date, ind
   if (!time) return path.resolve(process.cwd(), 'log', name, `${name}.log`);
   return path.resolve(process.cwd(), 'log', name, `${dayjs().format('YYYY-MMDD-HHmm')}-${index}-${name}.log`);
 };
-
-const logOpt: Options = { omitExtension: true, interval: '7d', maxFiles: 4, history: 'log-history.txt' };
 
 if (!fs.existsSync(path.resolve(process.cwd(), 'log')))
   fs.mkdirSync(path.resolve(process.cwd(), 'log'), { recursive: true });
