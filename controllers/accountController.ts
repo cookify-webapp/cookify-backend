@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { NextFunction, Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Account } from '@models/account';
@@ -7,7 +7,7 @@ import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+export const login: RequestHandler = async (req, res, next) => {
   try {
     const username = req.body?.data?.username;
     const password = req.body?.data?.password;
@@ -29,7 +29,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const getAllAccounts = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllAccounts: RequestHandler = async (_req, res, next) => {
   try {
     const accounts = await Account.find().lean().exec();
     res.status(200).send({ accounts });
@@ -38,7 +38,7 @@ export const getAllAccounts = async (_req: Request, res: Response, next: NextFun
   }
 };
 
-export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+export const getMe: RequestHandler = async (req, res, next) => {
   try {
     if (!req.username) throw createRestAPIError('AUTH');
 
@@ -56,7 +56,7 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
@@ -78,7 +78,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const setBookmark = async (req: Request, res: Response, next: NextFunction) => {
+export const setBookmark: RequestHandler = async (req, res, next) => {
   try {
     if (!req.username) throw createRestAPIError('AUTH');
 
@@ -104,7 +104,7 @@ export const setBookmark = async (req: Request, res: Response, next: NextFunctio
   }
 };
 
-export const editProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const editProfile: RequestHandler = async (req, res, next) => {
   try {
     if (!req.username) throw createRestAPIError('AUTH');
 

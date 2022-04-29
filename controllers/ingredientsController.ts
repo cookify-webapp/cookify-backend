@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Ingredient } from '@models/ingredient';
@@ -7,7 +7,7 @@ import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
 
-export const getIngredientList = async (req: Request, res: Response, next: NextFunction) => {
+export const getIngredientList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
@@ -29,7 +29,7 @@ export const getIngredientList = async (req: Request, res: Response, next: NextF
   }
 };
 
-export const getIngredientTypes = async (_req: Request, res: Response, next: NextFunction) => {
+export const getIngredientTypes: RequestHandler = async (_req, res, next) => {
   try {
     const ingredientTypes = await IngredientType.find().exec();
     if (!ingredientTypes) return res.status(204).send();
@@ -40,7 +40,7 @@ export const getIngredientTypes = async (_req: Request, res: Response, next: Nex
   }
 };
 
-export const sampleByType = async (req: Request, res: Response, next: NextFunction) => {
+export const sampleByType: RequestHandler = async (req, res, next) => {
   try {
     const id = req.query?.typeId;
     if (typeof id !== 'string') throw createRestAPIError('INV_QUERY');
@@ -54,7 +54,7 @@ export const sampleByType = async (req: Request, res: Response, next: NextFuncti
   }
 };
 
-export const getIngredientDetail = async (req: Request, res: Response, next: NextFunction) => {
+export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.id;
 
@@ -67,7 +67,7 @@ export const getIngredientDetail = async (req: Request, res: Response, next: Nex
   }
 };
 
-export const createIngredient = async (req: Request, res: Response, next: NextFunction) => {
+export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
@@ -83,7 +83,7 @@ export const createIngredient = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const editIngredient = async (req: Request, res: Response, next: NextFunction) => {
+export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.query?.ingredientId;
 
@@ -102,7 +102,7 @@ export const editIngredient = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export const deleteIngredient = async (req: Request, res: Response, next: NextFunction) => {
+export const deleteIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 

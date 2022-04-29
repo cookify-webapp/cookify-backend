@@ -1,11 +1,11 @@
-import { NextFunction, Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
 
-export const getRecipeList = async (req: Request, res: Response, next: NextFunction) => {
+export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
@@ -31,7 +31,7 @@ export const getRecipeList = async (req: Request, res: Response, next: NextFunct
   }
 };
 
-export const getRecipeDetail = async (req: Request, res: Response, next: NextFunction) => {
+export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, RequestHandler } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import _ from 'lodash';
 
@@ -16,7 +16,7 @@ const getPayload = (req: Request): JwtPayload => {
   return jwt.verify(token, secret) as JwtPayload;
 };
 
-export const auth = async (req: Request, _res: Response, next: NextFunction) => {
+export const auth: RequestHandler = async (req, _res, next) => {
   try {
     const decoded = getPayload(req);
 
@@ -27,7 +27,7 @@ export const auth = async (req: Request, _res: Response, next: NextFunction) => 
   }
 };
 
-export const adminAuth = async (req: Request, _res: Response, next: NextFunction) => {
+export const adminAuth: RequestHandler = async (req, _res, next) => {
   try {
     const decoded = getPayload(req);
 

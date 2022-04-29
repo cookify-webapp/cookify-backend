@@ -1,5 +1,5 @@
 import { Model } from 'mongoose';
-import { NextFunction, Request, Response } from 'express';
+import { RequestHandler } from 'express';
 
 import { Account } from '@models/account';
 import seedAccounts from '@mock/seedAccounts';
@@ -7,8 +7,8 @@ import seedAccounts from '@mock/seedAccounts';
 import { IngredientType } from '@models/type';
 import seedIngredientTypes from '@mock/seedIngredientTypes';
 
-export const seedData =
-  (model: Model<any>, data: any[], isNext: boolean) => async (_req: Request, res: Response, next: NextFunction) => {
+export const seedData: (model: Model<any>, data: any[], isNext: boolean) => RequestHandler =
+  (model, data, isNext) => async (_req, res, next) => {
     try {
       await model.deleteMany().exec();
       await model.insertMany(data);
