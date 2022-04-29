@@ -7,8 +7,8 @@ const indexRouter = express.Router();
 
 indexRouter.get('/login', login);
 
-indexRouter.post('/register', register);
-
 indexRouter.get('/me', auth, getMe);
+
+indexRouter.post('/register', register);
 
 export default indexRouter;

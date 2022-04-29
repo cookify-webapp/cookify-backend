@@ -11,7 +11,7 @@ export const allowedExt = ['.png', '.jpg', '.gif', '.jpeg'];
 
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
-    const dir = `public/images${req.baseUrl}`;
+    const dir = path.resolve(process.cwd(), 'public', 'images', req.baseUrl);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
     cb(null, dir);
   },
@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
   },
 });
 
-export const upload = multer({
+const imageUtil = multer({
   storage,
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -33,3 +33,5 @@ export const upload = multer({
     fileSize: maxSize,
   },
 });
+
+export default imageUtil;
