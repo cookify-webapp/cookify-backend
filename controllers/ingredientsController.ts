@@ -18,7 +18,7 @@ export const getIngredientList: RequestHandler = async (req, res, next) => {
     const type = req.query?.type as string;
 
     const ingredients = await Ingredient.listAll(page, perPage, searchWord, type);
-    if (_.size(ingredients.docs) || ingredients.totalDocs) return res.status(204).send();
+    if (!_.size(ingredients.docs) || !ingredients.totalDocs) return res.status(204).send();
 
     res.status(200).send({
       ingredients: ingredients.docs,
@@ -60,7 +60,7 @@ export const sampleByType: RequestHandler = async (req, res, next) => {
     if (typeof id !== 'string' || !id) throw createRestAPIError('INV_QUERY');
 
     const ingredients = await Ingredient.sampleByType(id);
-    if (_.size(ingredients)) return res.status(204).send();
+    if (!_.size(ingredients)) return res.status(204).send();
 
     res.status(200).send({ ingredients });
   } catch (err) {

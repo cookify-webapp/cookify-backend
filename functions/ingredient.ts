@@ -1,4 +1,4 @@
-import { PaginateResult, FilterQuery } from 'mongoose';
+import { PaginateResult, FilterQuery, Types } from 'mongoose';
 
 import { IngredientInstanceInterface, IngredientModelInterface } from '@models/ingredient';
 
@@ -25,12 +25,13 @@ export const sampleByType: (this: IngredientModelInterface, type: string) => Pro
   async function (type) {
     return this.aggregate<IngredientInstanceInterface>()
       .lookup({
-        from: 'ingredientTypes',
+        from: 'ingredienttypes',
         localField: 'type',
         foreignField: '_id',
         as: 'type',
       })
-      .match({ 'type._id': type })
+      .unwind('type')
+      .match({ 'type._id': new Types.ObjectId(type) })
       .project({ name: 1, type: 1, image: 1 })
       .sample(4)
       .exec();
