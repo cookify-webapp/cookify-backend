@@ -120,6 +120,7 @@ export const recipeSchema = new Schema<
     timestamps: { createdAt: false, updatedAt: true },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    versionKey: false,
   }
 );
 

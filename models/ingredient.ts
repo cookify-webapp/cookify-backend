@@ -58,7 +58,7 @@ export const ingredientSchema = new Schema<
     image: { type: String, required: true },
     shopUrl: String,
   },
-  { collation: { locale: 'th' } }
+  { collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------

@@ -49,7 +49,7 @@ const commentSchema = new Schema<
     },
     comment: { type: String, required: true, maxlength: 500 },
   },
-  { collation: { locale: 'th' }, timestamps: { createdAt: false, updatedAt: true } }
+  { collation: { locale: 'th' }, timestamps: { createdAt: false, updatedAt: true }, versionKey: false }
 );
 
 //---------------------
