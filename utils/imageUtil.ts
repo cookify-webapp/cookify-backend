@@ -2,12 +2,15 @@ import _ from 'lodash';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto'
 
 import createRestAPIError from '@error/createRestAPIError';
 
 const maxSize = 5 * 1024 * 1024;
 
 export const allowedExt = ['.png', '.jpg', '.gif', '.jpeg'];
+
+const genName = crypto.randomBytes(8).toString('hex')
 
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
@@ -16,7 +19,7 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (_req, file, cb) => {
-    cb(null, file.originalname);
+    cb(null, `${genName}${path.extname(file.originalname)}`);
   },
 });
 
