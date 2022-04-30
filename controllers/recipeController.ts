@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
+import { CookingMethod } from '@models/type';
 
 import createRestAPIError from '@error/createRestAPIError';
 
@@ -26,6 +27,17 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     } else {
       res.status(204).send();
     }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getCookingMethods: RequestHandler = async (_req, res, next) => {
+  try {
+    const cookingMethods = await CookingMethod.find().exec();
+    if (!cookingMethods) return res.status(204).send();
+
+    res.status(200).send({ cookingMethods });
   } catch (err) {
     return next(err);
   }

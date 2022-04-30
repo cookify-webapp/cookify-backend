@@ -9,6 +9,7 @@ import '@db/connection'
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import ingredientRouter from '@routes/ingredientRouter';
+import recipeRouter from '@routes/recipeRouter';
 import seedRouter from '@routes/seedRouter';
 
 import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
@@ -53,6 +54,7 @@ app.use(accessLogger);
 app.use('/', indexRouter);
 app.use('/accounts', accountRouter);
 app.use('/ingredients', ingredientRouter);
+app.use('/recipes', recipeRouter);
 app.use('/seed', seedRouter);
 
 app.get('/health', (_req, res) => {
