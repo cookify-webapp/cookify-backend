@@ -7,6 +7,7 @@ import {
   getIngredientDetail,
   getIngredientList,
   getIngredientTypes,
+  getUnits,
   sampleByType,
 } from '@controllers/ingredientsController';
 import { adminAuth } from '@middleware/auth';
@@ -17,6 +18,8 @@ const ingredientRouter = express.Router();
 ingredientRouter.get('/list', getIngredientList);
 
 ingredientRouter.get('/types', getIngredientTypes);
+
+ingredientRouter.get('/units', getUnits);
 
 ingredientRouter.get('/sample', sampleByType);
 

@@ -56,7 +56,7 @@ export const ingredientSchema = new Schema<
       autopopulate: true,
     },
     image: { type: String, required: true },
-    shopUrl: String,
+    shopUrl: { type: String, default: '' },
   },
   { collation: { locale: 'th' }, versionKey: false }
 );

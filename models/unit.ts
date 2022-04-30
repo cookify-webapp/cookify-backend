@@ -6,7 +6,7 @@ import { model, Schema, Model, Document, Types } from 'mongoose';
 export interface UnitInterface extends Document {
   _id: Types.ObjectId;
   name: string;
-  query: string;
+  queryKey: string;
 }
 
 export interface UnitInstanceMethods {
@@ -27,7 +27,7 @@ interface UnitQueryHelpers {}
 const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>(
   {
     name: { type: String, required: true, unique: true },
-    query: { type: String, required: true },
+    queryKey: { type: String, required: true },
   },
   { collation: { locale: 'th' }, versionKey: false }
 );

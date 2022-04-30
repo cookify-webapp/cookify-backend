@@ -4,6 +4,7 @@ import _ from 'lodash';
 import { Ingredient } from '@models/ingredient';
 import { IngredientType } from '@models/type';
 import { Recipe } from '@models/recipe';
+import { Unit } from '@models/unit';
 
 import createRestAPIError from '@error/createRestAPIError';
 
@@ -35,6 +36,17 @@ export const getIngredientTypes: RequestHandler = async (_req, res, next) => {
     if (!ingredientTypes) return res.status(204).send();
 
     res.status(200).send({ ingredientTypes });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getUnits: RequestHandler = async (_req, res, next) => {
+  try {
+    const units = await Unit.find().exec();
+    if (!units) return res.status(204).send();
+
+    res.status(200).send({ units });
   } catch (err) {
     return next(err);
   }
