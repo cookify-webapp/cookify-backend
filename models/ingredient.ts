@@ -11,7 +11,7 @@ export interface IngredientInterface extends Document {
   queryKey: string;
   unit: Types.ObjectId;
   type: Types.ObjectId;
-  image?: string;
+  image: string;
   shopUrl?: string;
   // nutritionalDetail: Object;
 }

@@ -4,7 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import 'module-alias/register';
 
-import '@db/connection'
+import '@db/connection';
 
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
@@ -28,7 +28,7 @@ app.use(
         cb(null, true);
       } else {
         cb(createRestAPIError('CORS'));
-      }                                     
+      }
     },
     methods: ['GET', 'PUT', 'POST', 'DELETE'],
   })
@@ -56,6 +56,8 @@ app.use('/accounts', accountRouter);
 app.use('/ingredients', ingredientRouter);
 app.use('/recipes', recipeRouter);
 app.use('/seed', seedRouter);
+
+app.use('/images', express.static('public/images'));
 
 app.get('/health', (_req, res) => {
   res.send({ status: 'This service is healthy.' });

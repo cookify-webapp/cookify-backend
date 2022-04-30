@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
@@ -7,6 +8,7 @@ import { Recipe } from '@models/recipe';
 import { Unit } from '@models/unit';
 
 import createRestAPIError from '@error/createRestAPIError';
+import { deleteImage } from '@utils/imageUtil';
 
 export const getIngredientList: RequestHandler = async (req, res, next) => {
   try {
@@ -81,10 +83,10 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
 
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
-    const data = req.body?.data;
+    const data = JSON.parse(req.body?.data);
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    data.image = req.file?.path;
+    data.image = req.file?.filename;
 
     const ingredient = new Ingredient(data);
 
@@ -120,11 +122,13 @@ export const deleteIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const ref = await Recipe.exists({ ingredients: id }).exec();
+    const ref = await Recipe.exists({ ingredients: new Types.ObjectId(id) }).exec();
     if (ref) throw createRestAPIError('DEL_REFERENCE');
 
     const result = await Ingredient.findByIdAndDelete(id).exec();
     if (!result) throw createRestAPIError('DOC_NOT_FOUND');
+
+    deleteImage('ingredients', result.image);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

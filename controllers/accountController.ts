@@ -16,7 +16,7 @@ export const login: RequestHandler = async (req, res, next) => {
     const secret = process.env.JWT_SECRET;
     if (!secret) throw createRestAPIError('MISSING_SECRET');
 
-    const account = await Account.findOne().byName(username).select('password').exec();
+    const account = await Account.findOne().byName(username).select('username password accountType').exec();
     if (!account) throw createRestAPIError('WRONG_USERNAME');
 
     const result = await account.comparePassword(password);
