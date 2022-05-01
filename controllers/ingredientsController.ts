@@ -116,7 +116,7 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     const ingredient = await Ingredient.findById(id).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const oldImage = data?.image;
+    const oldImage = ingredient.image;
 
     ingredient.name = data?.name || ingredient.name;
     ingredient.queryKey = data?.queryKey || ingredient.queryKey;
