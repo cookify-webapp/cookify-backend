@@ -5,9 +5,9 @@ import { auth } from '@middleware/auth';
 
 const indexRouter = express.Router();
 
-indexRouter.get('/login', login);
-
 indexRouter.get('/me', auth, getMe);
+
+indexRouter.post('/login', login);
 
 indexRouter.post('/register', register);
 

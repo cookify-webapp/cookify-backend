@@ -1,12 +1,11 @@
-import { UnitInstanceInterface } from './../models/unit';
 import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
-import _, { isNull } from 'lodash';
+import _ from 'lodash';
 
 import { Ingredient } from '@models/ingredient';
 import { IngredientType } from '@models/type';
 import { Recipe } from '@models/recipe';
-import { Unit } from '@models/unit';
+import { Unit, UnitInstanceInterface } from '@models/unit';
 import { deleteImage } from '@utils/imageUtil';
 
 import createRestAPIError from '@error/createRestAPIError';
