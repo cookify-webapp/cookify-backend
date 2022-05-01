@@ -114,20 +114,15 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
     const ingredient = await Ingredient.findById(id).exec();
-    console.log(ingredient);
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
     const oldImage = data?.image;
 
     ingredient.name = data?.name || ingredient.name;
     ingredient.queryKey = data?.queryKey || ingredient.queryKey;
-    if (ingredient.unit.id === data?.unit) {
-      ingredient.depopulate('unit');
-    } else {
-      ingredient.unit = data?.unit;
-    }
+    if (ingredient.unit.id !== data?.unit) ingredient.unit = data?.unit;
     ingredient.type = data?.type || ingredient.type;
-    ingredient.image = req.file?.filename || data?.image || ingredient.image;
+    ingredient.image = req.file?.filename || ingredient.image;
     ingredient.shopUrl = data?.shopUrl || ingredient.shopUrl;
 
     if (ingredient.isModified('queryKey') || ingredient.isModified('unit')) {
