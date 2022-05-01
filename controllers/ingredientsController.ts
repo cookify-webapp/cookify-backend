@@ -1,14 +1,16 @@
+import { UnitInstanceInterface } from './../models/unit';
 import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
-import _ from 'lodash';
+import _, { isNull } from 'lodash';
 
 import { Ingredient } from '@models/ingredient';
 import { IngredientType } from '@models/type';
 import { Recipe } from '@models/recipe';
 import { Unit } from '@models/unit';
+import { deleteImage } from '@utils/imageUtil';
 
 import createRestAPIError from '@error/createRestAPIError';
-import { deleteImage } from '@utils/imageUtil';
+import NutritionDetailService from '@services/nutritionDetailService';
 
 export const getIngredientList: RequestHandler = async (req, res, next) => {
   try {
@@ -90,9 +92,16 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
 
     const ingredient = new Ingredient(data);
 
+    const popIngredient = await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
+    ingredient.nutritionalDetail = await NutritionDetailService.getByIngredient(
+      popIngredient.unit.queryKey,
+      ingredient.queryKey
+    );
+
     await ingredient.save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
+    req.file && deleteImage('ingredients', req.file?.filename);
     return next(err);
   }
 };
@@ -101,19 +110,40 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const data = req.body?.data;
+    const data = JSON.parse(req.body?.data);
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    data.image = req.file?.path || data.image;
-
-    const ingredient = await Ingredient.findOneAndReplace({ _id: id }, data, {
-      runValidators: true,
-      context: 'query',
-    }).exec();
+    const ingredient = await Ingredient.findById(id).exec();
+    console.log(ingredient);
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
+
+    const oldImage = data?.image;
+
+    ingredient.name = data?.name || ingredient.name;
+    ingredient.queryKey = data?.queryKey || ingredient.queryKey;
+    if (ingredient.unit.id === data?.unit) {
+      ingredient.depopulate('unit');
+    } else {
+      ingredient.unit = data?.unit;
+    }
+    ingredient.type = data?.type || ingredient.type;
+    ingredient.image = req.file?.filename || data?.image || ingredient.image;
+    ingredient.shopUrl = data?.shopUrl || ingredient.shopUrl;
+
+    if (ingredient.isModified('queryKey') || ingredient.isModified('unit')) {
+      ingredient.nutritionalDetail = await NutritionDetailService.getByIngredient(
+        ingredient.unit.queryKey,
+        ingredient.queryKey
+      );
+    }
+
+    await ingredient.save({ validateModifiedOnly: true });
+
+    req.file && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
+    req.file && deleteImage('ingredients', req.file?.filename);
     return next(err);
   }
 };

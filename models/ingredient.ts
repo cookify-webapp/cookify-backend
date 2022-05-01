@@ -1,6 +1,8 @@
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
 import { sampleByType, listAll } from '@functions/ingredient';
+import { TypeInstanceInterface } from '@models/type';
+import { UnitInstanceInterface } from '@models/unit';
 
 //---------------------
 //   INTERFACE
@@ -9,11 +11,11 @@ export interface IngredientInterface extends Document {
   _id: Types.ObjectId;
   name: string;
   queryKey: string;
-  unit: Types.ObjectId;
-  type: Types.ObjectId;
+  unit: Types.ObjectId & UnitInstanceInterface;
+  type: Types.ObjectId & TypeInstanceInterface;
   image: string;
   shopUrl?: string;
-  // nutritionalDetail: Object;
+  nutritionalDetail: any;
 }
 
 export interface IngredientInstanceMethods {
@@ -57,6 +59,7 @@ export const ingredientSchema = new Schema<
     },
     image: { type: String, required: true },
     shopUrl: { type: String, default: '' },
+    nutritionalDetail: {},
   },
   { collation: { locale: 'th' }, versionKey: false, selectPopulatedPaths: false }
 );
