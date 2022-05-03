@@ -16,9 +16,9 @@ export const getIngredientList: RequestHandler = async (req, res, next) => {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
     const searchWord = req.query?.searchWord as string;
-    const type = req.query?.type as string;
+    const typeId = req.query?.typeId as string;
 
-    const ingredients = await Ingredient.listAll(page, perPage, searchWord, type);
+    const ingredients = await Ingredient.listAll(page, perPage, searchWord, typeId);
     if (!_.size(ingredients.docs) || !ingredients.totalDocs) return res.status(204).send();
 
     res.status(200).send({
@@ -112,21 +112,22 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     const data = JSON.parse(req.body?.data);
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    const ingredient = await Ingredient.findById(id).exec();
+    const ingredient = await Ingredient.findById(id, {}, { autopopulate: false }).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
     const oldImage = ingredient.image;
 
     ingredient.name = data?.name || ingredient.name;
     ingredient.queryKey = data?.queryKey || ingredient.queryKey;
-    if (ingredient.unit.id !== data?.unit) ingredient.unit = data?.unit;
+    if (ingredient.unit.toString() !== data?.unit) ingredient.unit = data?.unit;
     ingredient.type = data?.type || ingredient.type;
     ingredient.image = req.file?.filename || ingredient.image;
     ingredient.shopUrl = data?.shopUrl || ingredient.shopUrl;
 
     if (ingredient.isModified('queryKey') || ingredient.isModified('unit')) {
+      const popIngredient = await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
       ingredient.nutritionalDetail = await NutritionDetailService.getByIngredient(
-        ingredient.unit.queryKey,
+        popIngredient.unit.queryKey,
         ingredient.queryKey
       );
     }

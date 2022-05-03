@@ -13,8 +13,6 @@ mongoose.connect(process.env.MONGODB_URL || '');
 //   PLUGINS
 //---------------------
 mongoose.plugin(uniqueValidator, { message: 'Expected {PATH} to be unique' });
-mongoose.plugin(mongooseAutoPopulate, {
-  functions: ['find', 'findOne', 'findOneAndUpdate', 'aggregate'],
-});
+mongoose.plugin(mongooseAutoPopulate, { functions: ['find', 'findOne', 'findOneAndUpdate'] });
 mongoose.plugin(mongoosePaginate);
 mongoose.plugin(aggregatePaginate);

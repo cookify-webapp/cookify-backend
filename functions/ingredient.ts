@@ -7,12 +7,12 @@ export const listAll: (
   page: number,
   perPage: number,
   searchWord: string,
-  type: string
-) => Promise<PaginateResult<IngredientInstanceInterface>> = async function (page, perPage, searchWord, type) {
+  typeId: string
+) => Promise<PaginateResult<IngredientInstanceInterface>> = async function (page, perPage, searchWord, typeId) {
   const filter: FilterQuery<IngredientInstanceInterface> = {
     name: { $regex: searchWord, $options: 'i' },
   };
-  if (type) filter['type._id'] = type;
+  if (typeId) filter.type = typeId;
 
   return this.paginate(filter, {
     page: page,
