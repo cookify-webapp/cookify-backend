@@ -1,6 +1,6 @@
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
-import { sampleByType, listAll } from '@functions/ingredient';
+import { sampleByType, listAll } from '@functions/ingredientFunction';
 import { TypeInstanceInterface } from '@models/type';
 import { UnitInstanceInterface } from '@models/unit';
 

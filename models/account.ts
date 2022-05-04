@@ -2,7 +2,7 @@ import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoos
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
-import { comparePassword, signToken } from '@functions/account';
+import { comparePassword, signToken } from '@functions/accountFunction';
 
 //---------------------
 //   INTERFACE

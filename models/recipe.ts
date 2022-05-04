@@ -10,7 +10,7 @@ import {
 
 import { CommentInstanceInterface } from '@models/comment';
 import { RatingInstanceInterface } from '@models/rating';
-import { getRecipeDetail, listRecipe } from '@functions/recipe';
+import { getRecipeDetail, listRecipe } from '@functions/recipeFunction';
 
 //---------------------
 //   INTERFACE
