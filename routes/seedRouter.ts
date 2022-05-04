@@ -11,7 +11,15 @@ import {
 
 const seedRouter = express.Router();
 
-seedRouter.get('/', seedAccount(true), seedCookingMethod(true), seedUnit(true), seedIngredientType());
+seedRouter.get(
+  '/',
+  seedAccount(true),
+  seedCookingMethod(true),
+  seedUnit(true),
+  seedIngredientType(true),
+  seedImage('ingredients'),
+  seedIngredient()
+);
 
 seedRouter.get('/accounts', seedAccount());
 
