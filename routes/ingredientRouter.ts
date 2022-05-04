@@ -21,9 +21,9 @@ ingredientRouter.get('/types', getIngredientTypes);
 
 ingredientRouter.get('/units', getUnits);
 
-ingredientRouter.get('/sample', sampleByType);
-
 ingredientRouter.get('/:ingredientId', getIngredientDetail);
+
+ingredientRouter.get('/:ingredientId/sample', sampleByType);
 
 ingredientRouter.post('/create', adminAuth, imageUtil.single('ingredientImage'), createIngredient);
 
