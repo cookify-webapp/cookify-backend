@@ -43,6 +43,7 @@ const ErrorResponse = Object.freeze({
   //   500
   //---------------------
   MISSING_SECRET: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing token secret in environment' },
+  MISSING_IMAGE_DIR: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing seed image directory in environment' },
 });
 
 export class RestAPIError extends Error {
