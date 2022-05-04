@@ -66,7 +66,13 @@ export const accountSchema = new Schema<
     allergy: [{ type: 'ObjectId', ref: 'Ingredient' }],
     bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],
   },
-  { collation: { locale: 'th' }, toJSON: { virtuals: true }, toObject: { virtuals: true }, versionKey: false }
+  {
+    autoCreate: false,
+    collation: { locale: 'th' },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    versionKey: false,
+  }
 );
 
 //---------------------

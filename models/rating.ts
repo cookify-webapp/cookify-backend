@@ -41,7 +41,7 @@ const ratingSchema = new Schema<
     author: { type: 'ObjectId', ref: 'Account', required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
   },
-  { collation: { locale: 'th' }, versionKey: false }
+  { autoCreate: false, collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------

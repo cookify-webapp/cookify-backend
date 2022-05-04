@@ -62,6 +62,7 @@ export const ingredientSchema = new Schema<
     nutritionalDetail: {},
   },
   {
+    autoCreate: false,
     collation: { locale: 'th' },
     timestamps: { createdAt: true, updatedAt: false },
     versionKey: false,

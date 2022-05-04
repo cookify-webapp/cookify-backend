@@ -27,7 +27,7 @@ const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeIns
   {
     name: { type: String, required: true, unique: true },
   },
-  { collation: { locale: 'th' }, versionKey: false }
+  { autoCreate: false, collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------

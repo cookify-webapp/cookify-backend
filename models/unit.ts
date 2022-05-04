@@ -29,7 +29,7 @@ const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitIns
     name: { type: String, required: true, unique: true },
     queryKey: { type: String, required: true },
   },
-  { collation: { locale: 'th' }, versionKey: false }
+  { autoCreate: false, collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------
