@@ -117,7 +117,7 @@ export const recipeSchema = new Schema<
   },
   {
     collation: { locale: 'th' },
-    timestamps: { createdAt: false, updatedAt: true },
+    timestamps: { createdAt: true, updatedAt: false },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
     versionKey: false,
