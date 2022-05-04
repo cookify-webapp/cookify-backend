@@ -9,21 +9,18 @@ export const listAll: (
   searchWord: string,
   typeId: string
 ) => Promise<PaginateResult<IngredientInstanceInterface>> = async function (page, perPage, searchWord, typeId) {
-  const filter: FilterQuery<IngredientInstanceInterface> = {
-    name: { $regex: searchWord, $options: 'i' },
-  };
+  const filter: FilterQuery<IngredientInstanceInterface> = { name: { $regex: searchWord, $options: 'i' } };
   if (typeId) filter.type = typeId;
 
-  return this.paginate(filter, {
-    page: page,
-    limit: perPage,
-    select: 'name type image',
-  });
+  return this.paginate(filter, { page: page, limit: perPage, select: 'name type image' });
 };
 
-export const sampleByType: (this: IngredientModelInterface, type: string) => Promise<IngredientInstanceInterface[]> =
-  async function (type) {
+export const sampleByType: (this: IngredientModelInterface, typeId: string) => Promise<IngredientInstanceInterface[]> =
+  async function (typeId) {
     return this.aggregate<IngredientInstanceInterface>()
+      .match({ type: new Types.ObjectId(typeId) })
+      .project({ name: 1, type: 1, image: 1 })
+      .sample(4)
       .lookup({
         from: 'ingredienttypes',
         localField: 'type',
@@ -31,8 +28,5 @@ export const sampleByType: (this: IngredientModelInterface, type: string) => Pro
         as: 'type',
       })
       .unwind('type')
-      .match({ 'type._id': new Types.ObjectId(type) })
-      .project({ name: 1, type: 1, image: 1 })
-      .sample(4)
       .exec();
   };

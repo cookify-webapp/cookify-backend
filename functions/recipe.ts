@@ -18,14 +18,29 @@ export const listRecipe: (
   methods
 ) {
   const aggregate = this.aggregate<RecipeInstanceInterface>()
+    .match({
+      $and: [
+        { name: { $regex: name, $options: 'i' } },
+        {
+          methods: {
+            $all: _.map(methods, (item) => new Types.ObjectId(item)),
+          },
+        },
+        {
+          'ingredients.ingredient': {
+            $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
+          },
+        },
+      ],
+    })
     .lookup({
-      from: 'cookingMethods',
+      from: 'cookingmethods',
       localField: 'methods',
       foreignField: '_id',
       as: 'methods',
     })
     .lookup({
-      from: 'recipeTypes',
+      from: 'recipetypes',
       localField: 'types',
       foreignField: '_id',
       as: 'types',
@@ -36,21 +51,6 @@ export const listRecipe: (
       foreignField: '_id',
       as: 'author',
       pipeline: [{ $project: { username: 1 } }],
-    })
-    .match({
-      $and: [
-        { name: { $regex: name, $options: 'i' } },
-        {
-          'methods._id': {
-            $all: _.map(methods, (item) => new Types.ObjectId(item)),
-          },
-        },
-        {
-          'ingredients.ingredient': {
-            $all: _.map(ingredients, (item) => new Types.ObjectId(item)),
-          },
-        },
-      ],
     })
     .lookup({
       from: 'ratings',
@@ -76,7 +76,7 @@ export const listRecipe: (
         },
       ],
     })
-    .sort('-updatedAt');
+    .sort('-createdAt');
 
   return Recipe.aggregatePaginate(aggregate, {
     page: page,
@@ -91,6 +91,6 @@ export const getRecipeDetail: (this: RecipeModelInterface, id: string) => Promis
       .populate('comments')
       .populate('countRating')
       .populate('countComment')
-      .sort('-updatedAt')
+      .sort('-createdAt')
       .exec();
   };

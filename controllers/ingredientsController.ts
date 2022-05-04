@@ -73,7 +73,7 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const ingredient = await Ingredient.findById(id).exec();
+    const ingredient = await Ingredient.findById(id).projection('-createdAt').exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
     res.status(200).send({ ingredient });
