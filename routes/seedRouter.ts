@@ -1,12 +1,21 @@
 import express from 'express';
 
-import { seedAccount, seedCookingMethod, seedIngredientType, seedUnit } from '@utils/seedUtil';
+import {
+  seedAccount,
+  seedCookingMethod,
+  seedIngredient,
+  seedIngredientType,
+  seedUnit,
+  seedImage,
+} from '@utils/seedUtil';
 
 const seedRouter = express.Router();
 
 seedRouter.get('/', seedAccount(true), seedCookingMethod(true), seedUnit(true), seedIngredientType());
 
 seedRouter.get('/accounts', seedAccount());
+
+seedRouter.get('/ingredients', seedImage('ingredients'), seedIngredient());
 
 seedRouter.get('/ingredients/types', seedIngredientType());
 

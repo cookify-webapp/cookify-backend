@@ -1,8 +1,21 @@
 import axios from 'axios';
 import process from 'process';
 
+type ingredientNutritionList = {
+  FAT: any;
+  FASAT: any;
+  FAMS: any;
+  FAPU: any;
+  CHOCDF: any;
+  FIBTG: any;
+  SUGAR: any;
+  PROCNT: any;
+  CHOLE: any;
+  NA: any;
+};
+
 class NutritionDetailService {
-  static url = 'https://api.edamam.com/api/nutrition-details'
+  static url = 'https://api.edamam.com/api/nutrition-details';
 
   static getByIngredient = async (unit: string, ingredient: string) => {
     const res = await axios.post(
@@ -12,7 +25,17 @@ class NutritionDetailService {
       }
     );
     if (res.status === 200) {
-      return res.data;
+      const data = res.data;
+
+      data.totalNutrients = ((props: ingredientNutritionList) => ({ ...props }))(data.totalNutrients);
+
+      delete data.uri;
+      delete data.yield;
+      delete data.dietLabels;
+      delete data.healthLabels;
+      delete data.cautions;
+
+      return data;
     }
   };
 }
