@@ -8,6 +8,8 @@ services:
       - ./.env.development
     ports:
       - "5001:5001"
+    volumes:
+      - "/home/cookifywebapp/cookify-devops/seed-image:/app-dist/seed-image"
 networks:
   default:
     external:
