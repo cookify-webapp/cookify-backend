@@ -14,7 +14,7 @@ export const listAll: (
   const filter: FilterQuery<IngredientInstanceInterface> = { name: { $regex: searchWord, $options: 'i' } };
   if (typeId) filter.type = typeId;
 
-  return this.paginate(filter, { page: page, limit: perPage, select: 'name type image' });
+  return this.paginate(filter, { page: page, limit: perPage, select: 'name type image', sort: '-createdAt' });
 };
 
 export const sampleByType: (

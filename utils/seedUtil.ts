@@ -18,12 +18,12 @@ import seedUnits from '@mock/seedUnits';
 
 import createRestAPIError from '@error/createRestAPIError';
 
-const seedData: (model: Model<any>, data: any[], isNext: boolean) => RequestHandler =
-  (model, data, isNext) => async (_req, res, next) => {
+const seedData: (model: Model<any>, data: any[], hasNext: boolean) => RequestHandler =
+  (model, data, hasNext) => async (_req, res, next) => {
     try {
       await model.deleteMany().exec();
       await model.insertMany(data);
-      return isNext ? next() : res.status(200).send({ message: 'success' });
+      return hasNext ? next() : res.status(200).send({ message: 'success' });
     } catch (err) {
       return next(err);
     }
@@ -50,12 +50,12 @@ export const seedImage: (imageType: string) => RequestHandler = (imageType) => a
   }
 };
 
-export const seedAccount = (isNext: boolean = false) => seedData(Account, seedAccounts, isNext);
+export const seedAccount = (hasNext: boolean = false) => seedData(Account, seedAccounts, hasNext);
 
-export const seedCookingMethod = (isNext: boolean = false) => seedData(CookingMethod, seedCookingMethods, isNext);
+export const seedCookingMethod = (hasNext: boolean = false) => seedData(CookingMethod, seedCookingMethods, hasNext);
 
-export const seedIngredient = (isNext: boolean = false) => seedData(Ingredient, seedIngredients, isNext);
+export const seedIngredient = (hasNext: boolean = false) => seedData(Ingredient, seedIngredients, hasNext);
 
-export const seedIngredientType = (isNext: boolean = false) => seedData(IngredientType, seedIngredientTypes, isNext);
+export const seedIngredientType = (hasNext: boolean = false) => seedData(IngredientType, seedIngredientTypes, hasNext);
 
-export const seedUnit = (isNext: boolean = false) => seedData(Unit, seedUnits, isNext);
+export const seedUnit = (hasNext: boolean = false) => seedData(Unit, seedUnits, hasNext);

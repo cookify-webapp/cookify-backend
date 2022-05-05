@@ -76,8 +76,6 @@ export const ingredientSchema = new Schema<
 ingredientSchema.statics.listAll = listAll;
 ingredientSchema.statics.sampleByType = sampleByType;
 
-// ingredientSchema.plugin(mongoosePaginate)
-
 //---------------------
 //   MODEL
 //---------------------
