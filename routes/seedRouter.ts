@@ -21,7 +21,7 @@ seedRouter.get(
   seedIngredient()
 );
 
-seedRouter.get('/accounts', seedAccount());
+seedRouter.get('/accounts', seedImage('accounts'), seedAccount());
 
 seedRouter.get('/ingredients', seedImage('ingredients'), seedIngredient());
 

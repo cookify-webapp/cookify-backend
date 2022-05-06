@@ -29,7 +29,7 @@ const seedAccounts = [
     email: 'napat.wtn@gmail.com',
     password: '%242a%2410%24FYdrNx.p6wT6l57Npc6KVei4vX7yUbQzhKrT5gqyBidAvtHl6hjl6',
     accountType: 'admin',
-    image: '',
+    image: '7bfc638de22b9c1f.jpg',
     following: [],
     allergy: [],
     bookmark: [],
