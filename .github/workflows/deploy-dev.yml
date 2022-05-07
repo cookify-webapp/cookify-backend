@@ -36,8 +36,8 @@ jobs:
     needs: deploy
     runs-on: ubuntu-20.04
     steps:
-      - name: Check health check page
-        run: curl http://cookifywebapp-dev.ddns.net/api/health | grep "This service is healthy."
+      - name: Run Test
+        run: npm run test:all
   notify:
     name: Discord Notification
     runs-on: ubuntu-20.04
