@@ -1,22 +1,16 @@
 import type { Config } from '@jest/types';
+import { pathsToModuleNameMapper } from 'ts-jest';
+import { compilerOptions } from './tsconfig.json';
 
 const jestConfig: Config.InitialOptions = {
   verbose: true,
+  roots: ['<rootDir>', '<rootDir>/tests'],
+  modulePaths: ['<rootDir>'],
+  moduleDirectories: ['node_modules'],
+  setupFiles: ['<rootDir>/tests/setup/plugin.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/setup/global.ts'],
   testPathIgnorePatterns: ['<rootDir>/.github/', '<rootDir>/node_modules/'],
-  moduleNameMapper: {
-    '@models/(.*)': '<rootDir>/models/$1',
-    '@controllers/(.*)': '<rootDir>/controllers/$1',
-    '@functions/(.*)': '<rootDir>/functions/$1',
-    '@middleware/(.*)': '<rootDir>/middleware/$1',
-    '@routes/(.*)': '<rootDir>/routes/$1',
-    '@services/(.*)': '<rootDir>/services/$1',
-    '@coreTypes/(.*)': '<rootDir>/types/$1',
-    '@mock/(.*)': '<rootDir>/mock/$1',
-    '@utils/(.*)': '<rootDir>/utils/$1',
-    '@error/(.*)': '<rootDir>/error/$1',
-    '@db/(.*)': '<rootDir>/db/$1',
-    '@setup/(.*)': '<rootDir>/tests/setup/$1',
-  },
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   transform: {
     '\\.ts$': 'ts-jest',
   },

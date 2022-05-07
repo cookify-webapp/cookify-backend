@@ -5,7 +5,6 @@ import cors from 'cors';
 import 'module-alias/register';
 
 import '@db/connection';
-
 import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import ingredientRouter from '@routes/ingredientRouter';
