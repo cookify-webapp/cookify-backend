@@ -2,7 +2,7 @@ import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoos
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
-import { comparePassword, signToken } from '@functions/accountFunction';
+import { comparePassword, hashPassword, signToken } from '@functions/accountFunction';
 
 //---------------------
 //   INTERFACE
@@ -25,6 +25,8 @@ export interface AccountInterface extends Document {
 export interface AccountInstanceMethods {
   // declare any instance methods here
   comparePassword: (this: AccountInstanceInterface, password: string) => Promise<boolean>;
+
+  hashPassword: (this: AccountInstanceInterface) => Promise<void>;
 
   signToken: (this: AccountInstanceInterface, secret: string) => string;
 }
@@ -89,6 +91,7 @@ accountSchema.query.byName = function (
 //---------------------
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.signToken = signToken;
+accountSchema.methods.hashPassword = hashPassword;
 
 //---------------------
 //   VIRTUAL

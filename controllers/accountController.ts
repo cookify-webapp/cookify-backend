@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
@@ -61,15 +60,8 @@ export const register: RequestHandler = async (req, res, next) => {
     const data = req.body?.data;
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    const saltRounds = 10;
-    const hash = await bcrypt.hash(data?.password, saltRounds);
-
-    const account = new Account({
-      username: data?.username,
-      password: encodeURIComponent(hash),
-      email: data?.email,
-      allergy: data?.allergy,
-    });
+    const account = new Account(data);
+    await account.hashPassword();
 
     await account.save();
     res.status(200).send({ message: 'success' });
