@@ -10,11 +10,6 @@ import mongoose from 'mongoose';
 mongoose.connect(process.env.MONGODB_URL || '');
 
 //---------------------
-//   VALIDATOR
-//---------------------
-mongoose.Schema.Types.String.checkRequired(v => typeof v === 'string');
-
-//---------------------
 //   PLUGINS
 //---------------------
 mongoose.plugin(uniqueValidator, { message: 'Expected {PATH} to be unique' });

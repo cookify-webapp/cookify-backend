@@ -15,11 +15,13 @@ const jestConfig: Config.InitialOptions = {
     '@utils/(.*)': '<rootDir>/utils/$1',
     '@error/(.*)': '<rootDir>/error/$1',
     '@db/(.*)': '<rootDir>/db/$1',
+    '@setup/(.*)': '<rootDir>/tests/setup/$1',
   },
   transform: {
-    '^.+\\.ts$': '<rootDir>/node_modules/babel-jest',
+    '\\.ts$': 'ts-jest',
   },
   coveragePathIgnorePatterns: ['<rootDir>/.github/', '<rootDir>/node_modules/', '<rootDir>/log/', '<rootDir>/mock/'],
+  moduleFileExtensions: ['js', 'ts'],
 };
 
 export default jestConfig;

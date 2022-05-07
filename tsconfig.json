@@ -24,9 +24,10 @@
       "@mock/*": ["mock/*"],
       "@utils/*": ["utils/*"],
       "@error/*": ["error/*"],
-      "@db/*": ["db/*"]
+      "@db/*": ["db/*"],
+      "@setup/*": ["tests/setup/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.d.ts"],
+  "include": ["**/*.ts", "**/*.d.ts", "**/*.test.ts"],
   "exclude": ["node_modules"]
 }
