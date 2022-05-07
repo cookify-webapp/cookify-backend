@@ -63,7 +63,7 @@ export const snapshotSchema = new Schema<
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
-    autoCreate: false,
+    autoCreate: process.env.NODE_ENV !== 'production',
     collation: { locale: 'th' },
     timestamps: { createdAt: true, updatedAt: false },
     toJSON: { virtuals: true },

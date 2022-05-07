@@ -41,7 +41,7 @@ const ratingSchema = new Schema<
     author: { type: 'ObjectId', ref: 'Account', required: true },
     rating: { type: Number, required: true, min: 1, max: 5 },
   },
-  { autoCreate: false, collation: { locale: 'th' }, versionKey: false }
+  { autoCreate: process.env.NODE_ENV !== 'production', collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------

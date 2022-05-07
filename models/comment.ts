@@ -50,7 +50,7 @@ const commentSchema = new Schema<
     comment: { type: String, required: true, maxlength: 500 },
   },
   {
-    autoCreate: false,
+    autoCreate: process.env.NODE_ENV !== 'production',
     collation: { locale: 'th' },
     timestamps: { createdAt: true, updatedAt: false },
     versionKey: false,

@@ -67,7 +67,7 @@ export const accountSchema = new Schema<
     bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],
   },
   {
-    autoCreate: false,
+    autoCreate: process.env.NODE_ENV !== 'production',
     collation: { locale: 'th' },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

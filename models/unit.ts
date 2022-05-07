@@ -29,7 +29,7 @@ const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitIns
     name: { type: String, required: true, unique: true },
     queryKey: { type: String, required: true },
   },
-  { autoCreate: false, collation: { locale: 'th' }, versionKey: false }
+  { autoCreate: process.env.NODE_ENV !== 'production', collation: { locale: 'th' }, versionKey: false }
 );
 
 //---------------------
