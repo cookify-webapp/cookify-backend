@@ -9,7 +9,7 @@ RUN touch error.log
 RUN cd ..
 
 COPY package*.json ./
-COPY ./seed-image /usr/src/app/public/images/
+COPY ./seed-image/ /usr/src/app/public/images/
 
 RUN npm install --silent
 RUN npm install -g ts-node
