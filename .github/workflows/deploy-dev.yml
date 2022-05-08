@@ -36,9 +36,8 @@ jobs:
     needs: deploy
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
-      - name: Install modules
-        run: npm install
+      - name: Checkout code
+        uses: actions/checkout@v2
       - name: Run Test
         run: npm run test:all
   notify:
