@@ -29,3 +29,5 @@ yarn-error.log*
 /public/images
 /coverage
 /log
+
+seed-image

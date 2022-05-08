@@ -8,7 +8,7 @@ RUN touch access.log
 RUN touch error.log
 RUN cd ..
 
-ADD /home/cookifywebapp/cookify-devops/seed-image /usr/src/app/public/images/
+ADD seed-image /usr/src/app/public/images/
 
 COPY package*.json ./
 
