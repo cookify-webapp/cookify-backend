@@ -10,7 +10,7 @@ RUN cd ..
 
 COPY package*.json ./
 
-ADD ../seed-image /usr/src/app/public/images/
+ADD /home/cookifywebapp/cookify-devops/seed-image /usr/src/app/public/images/
 
 RUN npm install --silent
 RUN npm install -g ts-node
