@@ -7,6 +7,10 @@ RUN cd log
 RUN touch access.log
 RUN touch error.log
 RUN cd ..
+RUN mkdir public
+RUN cd public
+RUN mkdir images
+RUN cd ../../
 
 COPY package*.json ./
 
