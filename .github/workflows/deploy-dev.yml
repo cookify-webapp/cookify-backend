@@ -7,6 +7,16 @@ jobs:
   build:
     runs-on: ubuntu-20.04
     steps:
+      - name: pull seed-image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd cookify-devops/seed-image
+            git pull origin master
       - name: Checkout code
         uses: actions/checkout@v2
       - run: docker build -f Dockerfile-dev . --tag ghcr.io/cookify-webapp/cookify-backend:dev
@@ -16,8 +26,6 @@ jobs:
     needs: build
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
       - name: pull images and deploy
         uses: appleboy/ssh-action@master
         with:
