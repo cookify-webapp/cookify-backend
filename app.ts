@@ -54,7 +54,10 @@ app.use('/', indexRouter);
 app.use('/accounts', accountRouter);
 app.use('/ingredients', ingredientRouter);
 app.use('/recipes', recipeRouter);
-app.get('env') === 'development' && app.use('/seed', seedRouter);
+if (app.get('env') === 'development') {
+  app.use('/seed', seedRouter);
+  app.use('/coverage', express.static('coverage'));
+}
 
 app.use('/images', express.static('public/images'));
 

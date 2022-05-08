@@ -12,6 +12,7 @@ const jestConfig: Config.InitialOptions = {
   testPathIgnorePatterns: ['<rootDir>/.github/', '<rootDir>/node_modules/'],
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, { prefix: '<rootDir>/' }),
   transform: { '\\.ts$': 'ts-jest' },
+  coverageReporters: ['text', 'text-summary', 'html'],
   coveragePathIgnorePatterns: ['<rootDir>/.github/', '<rootDir>/node_modules/', '<rootDir>/log/', '<rootDir>/mock/'],
   moduleFileExtensions: ['js', 'ts'],
 };

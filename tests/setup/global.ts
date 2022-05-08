@@ -7,7 +7,7 @@ beforeAll(async () => {
 });
 
 afterEach(async () => {
-  await db.dropCollections();
+  await db.clearCollections();
 });
 
 afterAll(async () => {

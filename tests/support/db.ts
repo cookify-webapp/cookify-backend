@@ -18,7 +18,7 @@ export const dropDatabase = async () => {
   }
 };
 
-export const dropCollections = async () => {
+export const clearCollections = async () => {
   if (mongo) {
     const collections = mongoose.connection.collections;
     _.forEach(collections, async (collection) => {
