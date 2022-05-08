@@ -8,8 +8,6 @@ RUN touch access.log
 RUN touch error.log
 RUN cd ..
 
-COPY seed-image ./public/images
-
 COPY package*.json ./
 
 RUN npm install --silent
