@@ -15,7 +15,7 @@ jobs:
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            cd cookify-devops/cookify-backend/seed-image
+            cd cookify-devops/seed-image
             git pull origin master
       - name: Checkout code
         uses: actions/checkout@v2
@@ -40,6 +40,7 @@ jobs:
             docker rm -f expressjs-dev
             docker rmi ghcr.io/cookify-webapp/cookify-backend:dev
             docker-compose -f docker-compose.dev.yml up -d
+            docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
   test:
     needs: deploy
     runs-on: ubuntu-20.04

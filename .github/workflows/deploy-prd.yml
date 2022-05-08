@@ -27,6 +27,7 @@ jobs:
             docker rm -f expressjs-prd
             docker rmi ghcr.io/cookify-webapp/cookify-backend:prd
             docker-compose -f docker-compose.prd.yml up -d
+            docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
   test:
     needs: deploy
     runs-on: ubuntu-20.04
