@@ -7,7 +7,7 @@ const fs = jest.createMockFromModule('fs') as any;
 let mockFiles = Object.create(null);
 
 const traverse = (dir: string) => {
-  const dirArr = dir.split('\\');
+  const dirArr = dir.split(/[\\\/]/);
   let tmp = mockFiles;
   _.forEach(dirArr, (item) => {
     tmp = tmp[item];
@@ -19,7 +19,7 @@ fs.__setMockFiles = (newMockFiles: { [key: string]: string }) => {
   mockFiles = Object.create(null);
   _.forIn(newMockFiles, (_data, file) => {
     const dir = path.dirname(file);
-    const dirArr = dir.split('\\');
+    const dirArr = dir.split(/[\\\/]/);
     _.reduce(
       dirArr,
       (prev, curr, index) => {
@@ -42,7 +42,7 @@ fs.mkdirSync = (dir: string) => (mockFiles[dir] = []);
 
 fs.unlinkSync = (file: string) => {
   const dir = path.dirname(file);
-  const dirArr = dir.split('\\');
+  const dirArr = dir.split(/[\\\/]/);
   const lastDir = dirArr[_.size(dirArr) - 1];
   dirArr.pop();
   const newDir = dirArr.join('\\');
