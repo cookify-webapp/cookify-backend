@@ -40,7 +40,7 @@ const seedAccounts = [
     email: 'zenos.ayumu@gmail.com',
     password: '%242a%2410%24VmXUPVfrjXzN.alFwp4QAeBVgzVXW87Cg9A4d8O8ETYyhl4vmSesi',
     accountType: 'admin',
-    image: '',
+    image: '2a67a23889f1eb20.jpeg',
     following: [new Types.ObjectId('625ec5d04605c1d046c0c2ae')],
     allergy: [],
     bookmark: [],
