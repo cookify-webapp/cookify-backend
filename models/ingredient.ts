@@ -33,7 +33,7 @@ export interface IngredientModelInterface extends PaginateModel<IngredientInstan
     type: string
   ) => Promise<PaginateResult<IngredientInstanceInterface>>;
 
-  sampleByType: (type: string) => Promise<IngredientInstanceInterface[]>;
+  sampleByType: (ingredientId: string) => Promise<IngredientInstanceInterface[]>;
 }
 
 interface IngredientQueryHelpers {}

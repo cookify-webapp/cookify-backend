@@ -15,7 +15,7 @@ const ErrorResponse = Object.freeze({
   //   400
   //---------------------
   AUTH_HEADER: { ...ErrorDetail.BAD_REQUEST, msg: 'Multiple authentication headers detected' },
-  IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: `Invalid image extension, only ${allowedExt.join(' ')} are allowed` },
+  IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: `Invalid image extension, only ${allowedExt?.join(' ')} are allowed` },
   INV_QUERY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request query(s)' },
   INV_REQ_BODY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request body' },
 
