@@ -14,7 +14,11 @@ describe('Image Utility', () => {
     });
   });
 
-  it('should be a middleware function', () => {
+  it('should be a multer object', () => {
+    expect(typeof imageUtil).toEqual('object');
+  });
+
+  it('should return a middleware function', () => {
     expect(typeof imageUtil.single('')).toEqual('function');
   });
 

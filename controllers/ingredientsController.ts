@@ -19,7 +19,7 @@ export const getIngredientList: RequestHandler = async (req, res, next) => {
     const typeId = req.query?.typeId as string;
 
     const ingredients = await Ingredient.listAll(page, perPage, searchWord, typeId);
-    if (!_.size(ingredients.docs) || !ingredients.totalDocs) return res.status(204).send();
+    if (!ingredients.totalDocs) return res.status(204).send();
 
     res.status(200).send({
       ingredients: ingredients.docs,
@@ -90,13 +90,13 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
 
     const ingredient = new Ingredient(data);
 
-    const popIngredient = await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
+    await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
     ingredient.nutritionalDetail = await NutritionDetailService.getByIngredient(
-      popIngredient.unit.queryKey,
+      ingredient.unit.queryKey,
       ingredient.queryKey
     );
+    await ingredient.depopulate().save();
 
-    await ingredient.save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
     req.file && deleteImage('ingredients', req.file?.filename);
@@ -123,15 +123,14 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     ingredient.image = req.file?.filename || ingredient.image;
     ingredient.shopUrl = data?.shopUrl || ingredient.shopUrl;
 
-    if (ingredient.isModified('queryKey') || ingredient.isModified('unit')) {
-      const popIngredient = await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
+    if (ingredient.isModified(['queryKey', 'unit'])) {
+      await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
       ingredient.nutritionalDetail = await NutritionDetailService.getByIngredient(
-        popIngredient.unit.queryKey,
+        ingredient.unit.queryKey,
         ingredient.queryKey
       );
     }
-
-    await ingredient.save({ validateModifiedOnly: true });
+    await ingredient.depopulate().save({ validateModifiedOnly: true });
 
     req.file && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
 

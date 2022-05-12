@@ -38,7 +38,17 @@ fs.__setMockFiles = (newMockFiles: { [key: string]: string }) => {
 
 fs.existsSync = (dir: string) => _.has(mockFiles, dir);
 
-fs.mkdirSync = (dir: string) => (mockFiles[dir] = []);
+fs.mkdirSync = (dir: string) => {
+  const dirArr = dir.split(/[\\\/]/);
+  _.reduce(
+    dirArr,
+    (prev, curr, index) => {
+      prev[curr] = prev[curr] || index === _.size(dirArr) - 1 ? [] : {};
+      return prev[curr];
+    },
+    mockFiles
+  );
+};
 
 fs.unlinkSync = (file: string) => {
   const dir = path.dirname(file);

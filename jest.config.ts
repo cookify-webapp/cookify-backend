@@ -6,7 +6,7 @@ const jestConfig: Config.InitialOptions = {
   verbose: true,
   roots: ['<rootDir>', '<rootDir>/tests'],
   modulePaths: ['<rootDir>'],
-  moduleDirectories: ['node_modules', '<rootDir>/__mocks__'],
+  moduleDirectories: ['node_modules', '<rootDir>/**/__mocks__'],
   setupFiles: ['<rootDir>/tests/setup/plugin.ts'],
   setupFilesAfterEnv: ['<rootDir>/tests/setup/global.ts'],
   testMatch: ['<rootDir>/tests/**/*.ts'],

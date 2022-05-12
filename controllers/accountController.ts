@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import _ from 'lodash';
+import _, { pull } from 'lodash';
 
 import { Account } from '@models/account';
 import { Recipe } from '@models/recipe';
@@ -82,14 +82,9 @@ export const setBookmark: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(id).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    await account
-      .updateOne({
-        [_.includes(account.bookmark, recipe._id) ? '$pull' : '$addToSet']: {
-          bookmark: recipe._id,
-        },
-      })
-      .exec();
+    account.bookmark[_.includes(account.bookmark, recipe._id) ? 'pull' : 'push'](recipe._id);
 
+    await account.save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
