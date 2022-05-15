@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-const seedCookingMethods = [
+export default [
   { _id: new Types.ObjectId('626c3a0320e1318208666f7f'), name: 'ย่าง' },
   { _id: new Types.ObjectId('626c3a060254ba5cd96b50c2'), name: 'อบ' },
   { _id: new Types.ObjectId('626c3a0a6b6fe9a8ca46dda8'), name: 'ต้ม' },
@@ -15,5 +15,3 @@ const seedCookingMethods = [
   { _id: new Types.ObjectId('626c3a2e0ecae1a40bef72f6'), name: 'ดอง' },
   { _id: new Types.ObjectId('626c3a31d1e8e4d36604d408'), name: 'แช่เย็น' },
 ];
-
-export default seedCookingMethods;

@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedLegumes = [
+export default [
   {
     _id: new Types.ObjectId('62740c111904d21ae9bd58fe'),
     name: 'ข้าว',
     queryKey: 'rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'c4c3509f5b3cc378.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 360,
@@ -60,7 +60,7 @@ const seedLegumes = [
     queryKey: 'sticky rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'b3f85a395c017d91.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 360,
@@ -113,7 +113,7 @@ const seedLegumes = [
     queryKey: 'cashew nut',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'd010f085240875e8.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 553,
@@ -172,7 +172,7 @@ const seedLegumes = [
     queryKey: 'sesame',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '8ea17117ac0b8aee.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 573,
@@ -231,7 +231,7 @@ const seedLegumes = [
     queryKey: 'almond',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'ad16220b761f8fbd.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 579,
@@ -286,5 +286,3 @@ const seedLegumes = [
     },
   },
 ];
-
-export default seedLegumes;

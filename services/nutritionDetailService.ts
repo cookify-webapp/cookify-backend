@@ -38,6 +38,4 @@ const getByIngredient = async (unit: string, ingredient: string) => {
   }
 };
 
-const NutritionDetailService = Object.freeze({ getByIngredient });
-
-export default NutritionDetailService;
+export default Object.freeze({ getByIngredient });

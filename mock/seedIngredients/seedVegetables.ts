@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedVegetables = [
+export default [
   {
     _id: new Types.ObjectId('6274dadf0664ddcf2a97ee0b'),
     name: 'ลูกท้อ',
     queryKey: 'peach',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '435601f1b8c13caf.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 59,
@@ -66,7 +66,7 @@ const seedVegetables = [
     queryKey: 'cabbage',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '7d60454ca11a0b56.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 25,
@@ -125,7 +125,7 @@ const seedVegetables = [
     queryKey: 'garlic',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '6c421c03e87bfe12.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 149,
@@ -184,7 +184,7 @@ const seedVegetables = [
     queryKey: 'lime',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '1b88946e46e65f21.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 20,
@@ -243,7 +243,7 @@ const seedVegetables = [
     queryKey: 'chinese broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '69eb0f5609e1bb92.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -302,7 +302,7 @@ const seedVegetables = [
     queryKey: 'carrot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '3e509832173a8057.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 41,
@@ -362,7 +362,7 @@ const seedVegetables = [
     queryKey: 'apple',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: 'f7faaaa2bc6e0b06.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 94,
@@ -421,7 +421,7 @@ const seedVegetables = [
     queryKey: 'orange',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '2d96cc7368c0a7d0.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 61,
@@ -480,7 +480,7 @@ const seedVegetables = [
     queryKey: 'banana',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '28e88523de0507cc.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 102,
@@ -539,7 +539,7 @@ const seedVegetables = [
     queryKey: 'shiitake mushroom',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '3c279d55bd789c50.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -587,7 +587,7 @@ const seedVegetables = [
     queryKey: 'spring onion',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'd5e370ff8776613b.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 32,
@@ -646,7 +646,7 @@ const seedVegetables = [
     queryKey: 'broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '7a3dc2818605ee89.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -705,7 +705,7 @@ const seedVegetables = [
     queryKey: 'baby corn',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '9ae9bd6712c5458e.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 86,
@@ -765,7 +765,7 @@ const seedVegetables = [
     queryKey: 'lettuce',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '6b297f9bf0dfa925.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 13,
@@ -824,7 +824,7 @@ const seedVegetables = [
     queryKey: 'lemon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: 'cdb17b3a6bafea04.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 16,
@@ -883,7 +883,7 @@ const seedVegetables = [
     queryKey: 'shallot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '3a3a07b6d4192ec9.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 72,
@@ -942,7 +942,7 @@ const seedVegetables = [
     queryKey: 'potato',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '0a068b82023eaf97.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 77,
@@ -1001,7 +1001,7 @@ const seedVegetables = [
     queryKey: 'melon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '9580c19923cef684.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 187,
@@ -1060,7 +1060,7 @@ const seedVegetables = [
     queryKey: 'pomegranate',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '81422358621d0086.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 234,
@@ -1119,7 +1119,7 @@ const seedVegetables = [
     queryKey: 'strawberry',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '',
+    image: '7133f3bdf1bfbed9.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 4,
@@ -1173,5 +1173,3 @@ const seedVegetables = [
     },
   },
 ];
-
-export default seedVegetables;

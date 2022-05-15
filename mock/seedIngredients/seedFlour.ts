@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedFlour = [
+export default [
   {
     _id: new Types.ObjectId('627417dc4d5f6010d05a7262'),
     name: 'ขนมปังขาว',
     queryKey: 'white bread',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d47bb14dd0301cbd72d94'),
-    image: '',
+    image: '6beb9ad8cb444b11.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 77,
@@ -67,7 +67,7 @@ const seedFlour = [
     queryKey: 'instant noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '47c72ba81e4dd565.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 384,
@@ -127,7 +127,7 @@ const seedFlour = [
     queryKey: 'egg noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'f3f71ff8e6a12e6a.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 384,
@@ -187,7 +187,7 @@ const seedFlour = [
     queryKey: 'all purpose flour',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'e9735d7bc10b142d.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 364,
@@ -246,7 +246,7 @@ const seedFlour = [
     queryKey: 'udon',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '3a964617e13af686.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 371,
@@ -300,5 +300,3 @@ const seedFlour = [
     },
   },
 ];
-
-export default seedFlour;

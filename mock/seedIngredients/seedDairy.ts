@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedDairy = [
+export default [
   {
     _id: new Types.ObjectId('6274025c19cfa624be5dfb36'),
     name: 'ไข่ไก่',
     queryKey: 'egg',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47bf130242373ba8d680'),
-    image: '',
+    image: 'e7a477885742d8ff.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 61,
@@ -67,7 +67,7 @@ const seedDairy = [
     queryKey: 'whole milk',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: '',
+    image: '66878f069c6d21e4.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 6,
@@ -126,7 +126,7 @@ const seedDairy = [
     queryKey: 'sweetened condensed milk',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: '',
+    image: '65be11a1e59f7f90.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 41,
@@ -185,7 +185,7 @@ const seedDairy = [
     queryKey: 'salted butter',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '3db1eb4d2426196d.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 101,
@@ -245,7 +245,7 @@ const seedDairy = [
     queryKey: 'cheese',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: 'c40bbc652436e8d4.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 62,
@@ -300,5 +300,3 @@ const seedDairy = [
     },
   },
 ];
-
-export default seedDairy;

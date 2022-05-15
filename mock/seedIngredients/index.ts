@@ -7,7 +7,7 @@ import seedFlour from '@mock/seedIngredients/seedFlour';
 import seedManufactured from '@mock/seedIngredients/seedManufactured';
 import seedVegetables from '@mock/seedIngredients/seedVegetables';
 
-const seedIngredients = [
+export default [
   ...seedSeasonings,
   ...seedDairy,
   ...seedSeafood,
@@ -17,5 +17,3 @@ const seedIngredients = [
   ...seedManufactured,
   ...seedVegetables,
 ];
-
-export default seedIngredients;

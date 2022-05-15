@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedSeafood = [
+export default [
   {
     _id: new Types.ObjectId('627407dc9012761e5e61c0d2'),
     name: 'กุ้ง',
     queryKey: 'shrimp',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'c90be4c9600d1601.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 71,
@@ -67,7 +67,7 @@ const seedSeafood = [
     queryKey: 'salmon',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '3632dc3a3ba70305.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 208,
@@ -123,7 +123,7 @@ const seedSeafood = [
     queryKey: 'squid',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'f38c65cc031f2c86.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 92,
@@ -182,7 +182,7 @@ const seedSeafood = [
     queryKey: 'oyster',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '1f2c68ff25f2f8a5.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 81,
@@ -237,7 +237,7 @@ const seedSeafood = [
     queryKey: 'snapper fish',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'eda8def3238f1756.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 96,
@@ -291,5 +291,3 @@ const seedSeafood = [
     },
   },
 ];
-
-export default seedSeafood;

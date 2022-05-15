@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-const seedAccounts = [
+export default [
   {
     _id: new Types.ObjectId('625ec5c4443a3c4c0548045b'),
     username: 'AdminAcc',
@@ -105,5 +105,3 @@ const seedAccounts = [
     bookmark: [],
   },
 ];
-
-export default seedAccounts;

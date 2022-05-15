@@ -1,13 +1,13 @@
 import { Types } from 'mongoose';
 
-const seedMeat = [
+export default [
   {
     _id: new Types.ObjectId('62740f93154458bb976009b8'),
     name: 'เนื้อสันคอ',
     queryKey: 'beef collar',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '57f53ad892a1d150.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 130,
@@ -67,7 +67,7 @@ const seedMeat = [
     queryKey: 'beef sirloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'fac181c848928fda.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 214,
@@ -125,7 +125,7 @@ const seedMeat = [
     queryKey: 'beef tenderloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'dd57c61f2fd45d4a.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 246,
@@ -183,7 +183,7 @@ const seedMeat = [
     queryKey: 'chicken breast',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: 'febca8d4d96fe483.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 172,
@@ -243,7 +243,7 @@ const seedMeat = [
     queryKey: 'pork tenderloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '',
+    image: '975bdaecb8a9dcf1.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 120,
@@ -298,5 +298,3 @@ const seedMeat = [
     },
   },
 ];
-
-export default seedMeat;

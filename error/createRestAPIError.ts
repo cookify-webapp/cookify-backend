@@ -56,6 +56,4 @@ export class RestAPIError extends Error {
   }
 }
 
-const createRestAPIError = (error: keyof typeof ErrorResponse) => new RestAPIError(error);
-
-export default createRestAPIError;
+export default (error: keyof typeof ErrorResponse) => new RestAPIError(error);

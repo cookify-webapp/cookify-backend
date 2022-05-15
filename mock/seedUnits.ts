@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-const seedUnits = [
+export default [
   { _id: new Types.ObjectId('626d479e5b4bfde4d83361b9'), name: 'กรัม', queryKey: 'gram' },
   { _id: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'), name: 'มิลลิลิตร', queryKey: 'milliliter' },
   { _id: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'), name: 'ช้อนโต๊ะ', queryKey: 'tablespoon' },
@@ -12,5 +12,3 @@ const seedUnits = [
   { _id: new Types.ObjectId('626d47bf130242373ba8d680'), name: 'ฟอง', queryKey: 'whole' },
   { _id: new Types.ObjectId('626d47c28f38cc8d65496d68'), name: 'ตัว', queryKey: 'whole' },
 ];
-
-export default seedUnits;

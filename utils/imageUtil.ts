@@ -23,7 +23,10 @@ const storage = multer.diskStorage({
   },
 });
 
-const imageUtil = multer({
+export const deleteImage = (imageType: string, fileName: string) =>
+  fs.unlinkSync(path.resolve(process.cwd(), 'public', 'images', imageType, fileName));
+
+export default multer({
   storage,
   fileFilter: (_req, file, cb) => {
     const ext = path.extname(file.originalname);
@@ -32,8 +35,3 @@ const imageUtil = multer({
   },
   limits: { fileSize: maxSize },
 });
-
-export const deleteImage = (imageType: string, fileName: string) =>
-  fs.unlinkSync(path.resolve(process.cwd(), 'public', 'images', imageType, fileName));
-
-export default imageUtil;

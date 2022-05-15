@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-const seedSeasonings = [
+export default [
   {
     _id: new Types.ObjectId('62722629c9572fcb1439166a'),
     name: 'น้ำปลา',
@@ -66,7 +66,7 @@ const seedSeasonings = [
     queryKey: 'sugar',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '12aa1e6bd305a1b6.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 48,
@@ -125,7 +125,7 @@ const seedSeasonings = [
     queryKey: 'oil',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: '',
+    image: 'c3c5578b26b8bc87.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 81,
@@ -185,7 +185,7 @@ const seedSeasonings = [
     queryKey: 'salt',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '23b8313f6920498a.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 0,
@@ -244,7 +244,7 @@ const seedSeasonings = [
     queryKey: 'chili powder',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: 'ed1f9310c2929666.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 22,
@@ -304,7 +304,7 @@ const seedSeasonings = [
     queryKey: 'vinegar',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '743bdc4a57e1c6aa.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 2,
@@ -364,7 +364,7 @@ const seedSeasonings = [
     queryKey: 'pepper',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47aabd8906bf6a69eaf9'),
-    image: '',
+    image: 'cd7d077e16757469.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 7,
@@ -424,7 +424,7 @@ const seedSeasonings = [
     queryKey: 'honey',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: '',
+    image: 'f41815ff0911af60.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 4,
@@ -483,7 +483,7 @@ const seedSeasonings = [
     queryKey: 'chili sauce',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '01beff0a44f3706c.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 17,
@@ -542,7 +542,7 @@ const seedSeasonings = [
     queryKey: 'ketchup',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '',
+    image: '54e6f581ed0c2456.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 17,
@@ -595,6 +595,63 @@ const seedSeasonings = [
       },
     },
   },
+  {
+    _id: new Types.ObjectId('628144b69cdfc0a5d5629319'),
+    name: 'น้ำเปล่า',
+    queryKey: 'water',
+    type: new Types.ObjectId('62642656b7f4830a426bf24f'),
+    unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
+    image: 'b785c940de195593.jpg',
+    shopUrl: '',
+    nutritionalDetail: {
+      calories: 0,
+      totalWeight: 10,
+      totalNutrients: {
+        ENERC_KCAL: { label: 'Energy', quantity: 0, unit: 'kcal' },
+        FAT: { label: 'Total lipid (fat)', quantity: 0, unit: 'g' },
+        FASAT: { label: 'Fatty acids, total saturated', quantity: 0, unit: 'g' },
+        FAMS: { label: 'Fatty acids, total monounsaturated', quantity: 0, unit: 'g' },
+        FAPU: { label: 'Fatty acids, total polyunsaturated', quantity: 0, unit: 'g' },
+        CHOCDF: { label: 'Carbohydrate, by difference', quantity: 0, unit: 'g' },
+        FIBTG: { label: 'Fiber, total dietary', quantity: 0, unit: 'g' },
+        SUGAR: { label: 'Sugars, total', quantity: 0, unit: 'g' },
+        PROCNT: { label: 'Protein', quantity: 0, unit: 'g' },
+        CHOLE: { label: 'Cholesterol', quantity: 0, unit: 'mg' },
+        NA: { label: 'Sodium, Na', quantity: 0.4, unit: 'mg' },
+      },
+      totalDaily: {
+        ENERC_KCAL: { label: 'Energy', quantity: 0, unit: '%' },
+        FAT: { label: 'Fat', quantity: 0, unit: '%' },
+        FASAT: { label: 'Saturated', quantity: 0, unit: '%' },
+        CHOCDF: { label: 'Carbs', quantity: 0, unit: '%' },
+        FIBTG: { label: 'Fiber', quantity: 0, unit: '%' },
+        PROCNT: { label: 'Protein', quantity: 0, unit: '%' },
+        CHOLE: { label: 'Cholesterol', quantity: 0, unit: '%' },
+        NA: { label: 'Sodium', quantity: 0.016666666666666666, unit: '%' },
+        CA: { label: 'Calcium', quantity: 0.030000000000000002, unit: '%' },
+        MG: { label: 'Magnesium', quantity: 0.023809523809523808, unit: '%' },
+        K: { label: 'Potassium', quantity: 0, unit: '%' },
+        FE: { label: 'Iron', quantity: 0, unit: '%' },
+        ZN: { label: 'Zinc', quantity: 0.009090909090909092, unit: '%' },
+        P: { label: 'Phosphorus', quantity: 0, unit: '%' },
+        VITA_RAE: { label: 'Vitamin A', quantity: 0, unit: '%' },
+        VITC: { label: 'Vitamin C', quantity: 0, unit: '%' },
+        THIA: { label: 'Thiamin (B1)', quantity: 0, unit: '%' },
+        RIBF: { label: 'Riboflavin (B2)', quantity: 0, unit: '%' },
+        NIA: { label: 'Niacin (B3)', quantity: 0, unit: '%' },
+        VITB6A: { label: 'Vitamin B6', quantity: 0, unit: '%' },
+        FOLDFE: { label: 'Folate equivalent (total)', quantity: 0, unit: '%' },
+        VITB12: { label: 'Vitamin B12', quantity: 0, unit: '%' },
+        VITD: { label: 'Vitamin D', quantity: 0, unit: '%' },
+        TOCPHA: { label: 'Vitamin E', quantity: 0, unit: '%' },
+        VITK1: { label: 'Vitamin K', quantity: 0, unit: '%' },
+      },
+      totalNutrientsKCal: {
+        ENERC_KCAL: { label: 'Energy', quantity: 0, unit: 'kcal' },
+        PROCNT_KCAL: { label: 'Calories from protein', quantity: 0, unit: 'kcal' },
+        FAT_KCAL: { label: 'Calories from fat', quantity: 0, unit: 'kcal' },
+        CHOCDF_KCAL: { label: 'Calories from carbohydrates', quantity: 0, unit: 'kcal' },
+      },
+    },
+  },
 ];
-
-export default seedSeasonings;
