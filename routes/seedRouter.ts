@@ -13,6 +13,7 @@ const seedRouter = express.Router();
 
 seedRouter.get(
   '/',
+  seedImage('accounts'),
   seedAccount(true),
   seedCookingMethod(true),
   seedUnit(true),
