@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import _, { pull } from 'lodash';
+import _ from 'lodash';
 
 import { Account } from '@models/account';
 import { Recipe } from '@models/recipe';
@@ -100,8 +100,10 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(req.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    account.username = data?.username || account.username;
-    account.email = data?.email || account.email;
+    account.set({
+      username: data?.username || account.username,
+      email: data?.email || account.email,
+    });
 
     await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });

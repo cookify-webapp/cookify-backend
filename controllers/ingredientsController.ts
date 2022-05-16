@@ -116,12 +116,14 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
 
     const oldImage = ingredient.image;
 
-    ingredient.name = data?.name || ingredient.name;
-    ingredient.queryKey = data?.queryKey || ingredient.queryKey;
-    if (ingredient.unit.toString() !== data?.unit) ingredient.unit = data?.unit;
-    ingredient.type = data?.type || ingredient.type;
-    ingredient.image = req.file?.filename || ingredient.image;
-    ingredient.shopUrl = data?.shopUrl || ingredient.shopUrl;
+    ingredient.set({
+      name: data?.name || ingredient.name,
+      queryKey: data?.queryKey || ingredient.queryKey,
+      type: data?.type || ingredient.type,
+      image: req.file?.filename || ingredient.image,
+      shopUrl: data?.shopUrl || ingredient.shopUrl,
+    });
+    if (data?.unit && ingredient.unit.toString() !== data?.unit) ingredient.set('unit', data?.unit);
 
     if (ingredient.isModified(['queryKey', 'unit'])) {
       await ingredient.populate<{ unit: UnitInstanceInterface }>('unit');
@@ -130,9 +132,9 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
         ingredient.queryKey
       );
     }
-    
+
     await ingredient.depopulate().save({ validateModifiedOnly: true });
-    req.file && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
+    ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     req.file && deleteImage('ingredients', req.file?.filename);
