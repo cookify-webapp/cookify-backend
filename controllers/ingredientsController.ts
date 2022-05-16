@@ -95,8 +95,8 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
       ingredient.unit.queryKey,
       ingredient.queryKey
     );
-    await ingredient.depopulate().save();
 
+    await ingredient.depopulate().save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
     req.file && deleteImage('ingredients', req.file?.filename);
@@ -111,7 +111,7 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     const data = JSON.parse(req.body?.data);
     if (!data) throw createRestAPIError('INV_REQ_BODY');
 
-    const ingredient = await Ingredient.findById(id, {}, { autopopulate: false }).exec();
+    const ingredient = await Ingredient.findById(id).setOptions({ autopopulate: false }).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
     const oldImage = ingredient.image;
@@ -130,10 +130,9 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
         ingredient.queryKey
       );
     }
+    
     await ingredient.depopulate().save({ validateModifiedOnly: true });
-
     req.file && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
-
     res.status(200).send({ message: 'success' });
   } catch (err) {
     req.file && deleteImage('ingredients', req.file?.filename);

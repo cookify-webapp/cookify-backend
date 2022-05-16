@@ -84,7 +84,7 @@ export const setBookmark: RequestHandler = async (req, res, next) => {
 
     account.bookmark[_.includes(account.bookmark, recipe._id) ? 'pull' : 'push'](recipe._id);
 
-    await account.save();
+    await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -97,13 +97,13 @@ export const editProfile: RequestHandler = async (req, res, next) => {
 
     const data = req.body?.data;
 
-    const account = await Account.findOne().byName(req.username).exec();
+    const account = await Account.findOne().byName(req.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     account.username = data?.username || account.username;
     account.email = data?.email || account.email;
 
-    await account.save();
+    await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

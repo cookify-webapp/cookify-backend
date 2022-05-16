@@ -15,7 +15,7 @@ morgan.token('date', (_req, _res, tz) => {
   return dateTimeNowTz(tz as string).format('ddd, DD MMM YYYY HH:mm:ss');
 });
 
-const logName: (name: string) => Generator = (name) => (time: number | Date, index: number | undefined) => {
+const logName: (name: string) => Generator = (name) => (time, index) => {
   if (!time) return path.resolve(process.cwd(), 'log', name, `${name}.log`);
   return path.resolve(process.cwd(), 'log', name, `${dayjs().format('YYYY-MMDD-HHmm')}-${index}-${name}.log`);
 };
