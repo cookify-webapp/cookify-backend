@@ -60,7 +60,10 @@ export const accountSchema = new Schema<
     accountType: {
       type: String,
       required: true,
-      enum: ['user', 'admin'],
+      enum: {
+        values: ['user', 'admin'],
+        message: 'accountType must be either `user` or `admin`'
+      },
       default: 'user',
     },
     image: { type: String, default: '' },

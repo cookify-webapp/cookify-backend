@@ -44,7 +44,7 @@ describe('Account model', () => {
     await expect(invalidUsername.save()).rejects.toThrow(
       /Path `username` \(`this is something really really long`\) is longer/
     );
-    await expect(invalidAccountType.save()).rejects.toThrow(/(?=.*accountType)(?=.*not a valid enum value)/);
+    await expect(invalidAccountType.save()).rejects.toThrow('accountType must be either `user` or `admin`');
     await expect(invalidEmail.save()).rejects.toThrow('Path `email` is invalid');
   });
 

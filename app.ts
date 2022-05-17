@@ -1,4 +1,5 @@
 import createError, { HttpError } from 'http-errors';
+import mongoose from 'mongoose';
 import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -14,6 +15,7 @@ import seedRouter from '@routes/seedRouter';
 import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
 
 import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
+import validationErrorHandler from '@error/validationErrorHandler';
 
 const app = express();
 
@@ -75,18 +77,25 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) {
   if (err instanceof HttpError || err instanceof RestAPIError) {
     const status = err.status || 500;
-    res.status(status).send({ status, name: err.name, message: err.message, method: req.method, path: req.path });
-  } else if (err instanceof Error) {
-    res.status(500).send({ status: 500, name: err.name, message: err.message, method: req.method, path: req.path });
-  } else {
-    res.status(500).send({
-      status: 500,
-      name: createError(500).name,
-      message: 'Something went wrong',
-      method: req.method,
-      path: req.path,
-    });
+    return res
+      .status(status)
+      .send({ status, name: err.name, message: err.message, method: req.method, path: req.path });
   }
+  if (err instanceof mongoose.Error.ValidationError) {
+    return validationErrorHandler(err, req, res);
+  }
+  if (err instanceof Error) {
+    return res
+      .status(500)
+      .send({ status: 500, name: err.name, message: err.message, method: req.method, path: req.path });
+  }
+  return res.status(500).send({
+    status: 500,
+    name: createError(500).name,
+    message: 'Something went wrong',
+    method: req.method,
+    path: req.path,
+  });
 });
 
 //---------------------
