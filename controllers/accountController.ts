@@ -57,8 +57,7 @@ export const getMe: RequestHandler = async (req, res, next) => {
 
 export const register: RequestHandler = async (req, res, next) => {
   try {
-    const data = req.body?.data;
-    if (!data) throw createRestAPIError('INV_REQ_BODY');
+    const data = req.body.data;
 
     const account = new Account(data);
     await account.hashPassword();

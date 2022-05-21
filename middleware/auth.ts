@@ -7,7 +7,6 @@ import createRestAPIError from '@error/createRestAPIError';
 const getPayload = (req: Request): JwtPayload => {
   let authHeader = req.headers['authorization'];
   if (!authHeader) throw createRestAPIError('AUTH');
-  if (_.isArray(authHeader)) throw createRestAPIError('AUTH_HEADER');
 
   const token = authHeader.split(' ')[1];
   const secret = process.env.JWT_SECRET;

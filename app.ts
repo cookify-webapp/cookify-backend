@@ -2,6 +2,7 @@ import createError, { HttpError } from 'http-errors';
 import mongoose from 'mongoose';
 import express, { json, NextFunction, Request, Response, urlencoded } from 'express';
 import cookieParser from 'cookie-parser';
+import { isCelebrateError } from 'celebrate';
 import cors from 'cors';
 import 'module-alias/register';
 
@@ -16,6 +17,8 @@ import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
 
 import createRestAPIError, { RestAPIError } from '@error/createRestAPIError';
 import validationErrorHandler from '@error/validationErrorHandler';
+import celebrateErrorHandler from '@error/celebrateErrorHandler';
+import { deleteImage } from '@utils/imageUtil';
 
 const app = express();
 
@@ -75,14 +78,18 @@ app.use(function (_req: Request, _res: Response, next: NextFunction) {
 //   ERROR HANDLER
 //---------------------
 app.use(function (err: Error, req: Request, res: Response, _next: NextFunction) {
+  req.file && deleteImage(req.originalUrl.split('/')[1], req.file?.filename);
+  if (isCelebrateError(err)) {
+    return celebrateErrorHandler(err, req, res);
+  }
+  if (err instanceof mongoose.Error.ValidationError) {
+    return validationErrorHandler(err, req, res);
+  }
   if (err instanceof HttpError || err instanceof RestAPIError) {
     const status = err.status || 500;
     return res
       .status(status)
       .send({ status, name: err.name, message: err.message, method: req.method, path: req.path });
-  }
-  if (err instanceof mongoose.Error.ValidationError) {
-    return validationErrorHandler(err, req, res);
   }
   if (err instanceof Error) {
     return res

@@ -83,8 +83,7 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
 
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
-    const data = JSON.parse(req.body?.data);
-    if (!data) throw createRestAPIError('INV_REQ_BODY');
+    const data = req.body?.data;
 
     data.image = req.file?.filename;
 
@@ -99,7 +98,6 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
     await ingredient.depopulate().save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
-    req.file && deleteImage('ingredients', req.file?.filename);
     return next(err);
   }
 };
@@ -107,9 +105,7 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
 export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
-
-    const data = JSON.parse(req.body?.data);
-    if (!data) throw createRestAPIError('INV_REQ_BODY');
+    const data = req.body?.data;
 
     const ingredient = await Ingredient.findById(id).setOptions({ autopopulate: false }).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
@@ -137,7 +133,6 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
-    req.file && deleteImage('ingredients', req.file?.filename);
     return next(err);
   }
 };

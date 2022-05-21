@@ -37,7 +37,7 @@ export interface RecipeInterface extends Document {
   countComment?: number;
   averageRating?: number;
   updatedAt: Date;
-  // nutritionalDetail: Object;
+  nutritionalDetail: Object;
 }
 
 export interface AverageCountInterface {
@@ -114,6 +114,7 @@ export const recipeSchema = new Schema<
       autopopulate: { select: 'username' },
     },
     likedBy: [{ type: 'ObjectId', ref: 'Account' }],
+    nutritionalDetail: {}
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

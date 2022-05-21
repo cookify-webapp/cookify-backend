@@ -1,13 +1,13 @@
-import createError from 'http-errors';
+import HTTP from 'http';
 
 import { allowedExt } from '@utils/imageUtil';
 
 const ErrorDetail = Object.freeze({
-  BAD_REQUEST: { name: createError(400).name, status: 400 },
-  UNAUTHORIZED: { name: createError(401).name, status: 401 },
-  FORBIDDEN: { name: createError(403).name, status: 403 },
-  NOT_FOUND: { name: createError(404).name, status: 404 },
-  INTERNAL_SERVER_ERROR: { name: createError(500).name, status: 500 },
+  BAD_REQUEST: { name: HTTP.STATUS_CODES[400], status: 400 },
+  UNAUTHORIZED: { name: HTTP.STATUS_CODES[401], status: 401 },
+  FORBIDDEN: { name: HTTP.STATUS_CODES[403], status: 403 },
+  NOT_FOUND: { name: HTTP.STATUS_CODES[404], status: 404 },
+  INTERNAL_SERVER_ERROR: { name: HTTP.STATUS_CODES[500], status: 500 },
 });
 
 const ErrorResponse = Object.freeze({
@@ -52,7 +52,7 @@ export class RestAPIError extends Error {
   constructor(error: keyof typeof ErrorResponse) {
     super(ErrorResponse[error].msg);
     this.status = ErrorResponse[error].status;
-    this.name = ErrorResponse[error].name;
+    this.name = ErrorResponse[error].name || '';
   }
 }
 

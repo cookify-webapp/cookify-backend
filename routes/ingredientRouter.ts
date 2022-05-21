@@ -12,6 +12,8 @@ import {
 } from '@controllers/ingredientsController';
 import { adminAuth } from '@middleware/auth';
 import imageUtil from '@utils/imageUtil';
+import { ingredientValidator, tokenValidator } from '@middleware/requestValidator';
+import bodyParser from '../middleware/bodyParser';
 
 const ingredientRouter = express.Router();
 
@@ -25,10 +27,26 @@ ingredientRouter.get('/:ingredientId', getIngredientDetail);
 
 ingredientRouter.get('/:ingredientId/sample', sampleByType);
 
-ingredientRouter.post('/create', adminAuth, imageUtil.single('ingredientImage'), createIngredient);
+ingredientRouter.post(
+  '/create',
+  tokenValidator,
+  adminAuth,
+  imageUtil.single('ingredientImage'),
+  bodyParser,
+  ingredientValidator,
+  createIngredient
+);
 
-ingredientRouter.put('/:ingredientId/edit', adminAuth, imageUtil.single('ingredientImage'), editIngredient);
+ingredientRouter.put(
+  '/:ingredientId/edit',
+  tokenValidator,
+  adminAuth,
+  imageUtil.single('ingredientImage'),
+  bodyParser,
+  ingredientValidator,
+  editIngredient
+);
 
-ingredientRouter.delete('/:ingredientId/delete', adminAuth, deleteIngredient);
+ingredientRouter.delete('/:ingredientId/delete', tokenValidator, adminAuth, deleteIngredient);
 
 export default ingredientRouter;
