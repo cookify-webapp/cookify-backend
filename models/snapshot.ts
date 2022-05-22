@@ -1,6 +1,7 @@
 import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 import { RecipeInstanceInterface } from '@models/recipe';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -46,7 +47,7 @@ export const snapshotSchema = new Schema<
   SnapshotQueryHelpers
 >(
   {
-    caption: { type: String, required: true, maxlength: 500 },
+    caption: { type: String, required: true, maxlength: constraint.caption.max },
     image: { type: String, required: true },
     author: {
       type: 'ObjectId',

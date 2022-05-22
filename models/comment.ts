@@ -1,4 +1,5 @@
 import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -47,7 +48,7 @@ const commentSchema = new Schema<
       required: true,
       autopopulate: { select: 'username image' },
     },
-    comment: { type: String, required: true, maxlength: 500 },
+    comment: { type: String, required: true, maxlength: constraint.comment.max },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

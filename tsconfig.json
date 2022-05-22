@@ -26,7 +26,8 @@
       "@utils/*": ["utils/*"],
       "@error/*": ["error/*"],
       "@db/*": ["db/*"],
-      "@tests/*": ["tests/*"]
+      "@tests/*": ["tests/*"],
+      "@config/*": ["config/*"]
     }
   },
   "include": ["**/*.ts", "**/*.d.ts", "**/*.test.ts"],

@@ -2,6 +2,8 @@ import { celebrate, Joi, Segments } from 'celebrate';
 import oJoi from 'joi';
 import mongoose from 'mongoose';
 
+import constraint from '@config/constraint';
+
 const opts: oJoi.ValidationOptions = {
   stripUnknown: true,
   abortEarly: false,
@@ -13,6 +15,12 @@ const opts: oJoi.ValidationOptions = {
     },
   },
 };
+
+const paginateQuery = (extra: oJoi.PartialSchemaMap<any>) => ({
+  page: Joi.number().required().min(1),
+  perPage: Joi.number().required().min(1),
+  ...extra,
+});
 
 const baseBody = (body: oJoi.PartialSchemaMap<any>, extra?: oJoi.PartialSchemaMap<any>) =>
   Joi.object().keys({
@@ -31,18 +39,8 @@ const objectIdVal: oJoi.CustomValidator<any> = (value, helper) => {
 };
 
 //---------------------
-//   MIDDLEWARE
+//   BODY
 //---------------------
-export const tokenValidator = celebrate({
-  [Segments.HEADERS]: Joi.object()
-    .keys({
-      authorization: Joi.string()
-        .required()
-        .pattern(/^Bearer [\s\S]+$/),
-    })
-    .unknown(true),
-});
-
 export const loginValidator = celebrate(
   {
     [Segments.BODY]: baseBody({
@@ -56,9 +54,9 @@ export const loginValidator = celebrate(
 export const registerValidator = celebrate(
   {
     [Segments.BODY]: baseBody({
-      username: Joi.string().required().min(6).max(30),
+      username: Joi.string().required().min(constraint.username.min).max(constraint.username.max),
       email: Joi.string().required().email(),
-      password: Joi.string().required().min(8).max(32),
+      password: Joi.string().required().min(constraint.password.min).max(constraint.password.max),
       allergy: Joi.array().required().items(Joi.string().custom(objectIdVal)),
     }),
   },
@@ -76,6 +74,19 @@ export const ingredientValidator = celebrate(
         then: Joi.string().required().uri(),
         otherwise: Joi.string().default(''),
       }),
+    }),
+  },
+  opts
+);
+
+//---------------------
+//   QUERY
+//---------------------
+export const ingredientListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery({
+      searchWord: Joi.string().required(),
+      type: Joi.string().required().custom(objectIdVal),
     }),
   },
   opts

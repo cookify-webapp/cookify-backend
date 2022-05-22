@@ -20,7 +20,8 @@
     "@utils": "./utils",
     "@error": "./error",
     "@db": "./db",
-    "@tests": "./tests"
+    "@tests": "./tests",
+    "@config": "./config"
   },
   "dependencies": {
     "axios": "^0.27.2",

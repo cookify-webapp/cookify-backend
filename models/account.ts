@@ -3,6 +3,7 @@ import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoos
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
 import { comparePassword, hashPassword, signToken } from '@functions/accountFunction';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -54,15 +55,21 @@ export const accountSchema = new Schema<
   AccountQueryHelpers
 >(
   {
-    username: { type: String, required: true, unique: true, minlength: 6, maxlength: 30 },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: constraint.username.min,
+      maxlength: constraint.username.max,
+    },
     email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true, select: false, match: /^\$2[ab]\$10\$\S{53}/ },
     accountType: {
       type: String,
       required: true,
       enum: {
         values: ['user', 'admin'],
-        message: 'accountType must be either `user` or `admin`'
+        message: 'accountType must be either `user` or `admin`',
       },
       default: 'user',
     },

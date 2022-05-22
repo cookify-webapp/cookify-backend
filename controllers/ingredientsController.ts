@@ -84,7 +84,6 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
-
     data.image = req.file?.filename;
 
     const ingredient = new Ingredient(data);

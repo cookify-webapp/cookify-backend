@@ -11,6 +11,7 @@ import {
 import { CommentInstanceInterface } from '@models/comment';
 import { RatingInstanceInterface } from '@models/rating';
 import { getRecipeDetail, listRecipe } from '@functions/recipeFunction';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -88,7 +89,7 @@ export const recipeSchema = new Schema<
 >(
   {
     name: { type: String, required: true },
-    desc: { type: String, required: true, maxlength: 500 },
+    desc: { type: String, required: true, maxlength: constraint.desc.max },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
     methods: [
       {
