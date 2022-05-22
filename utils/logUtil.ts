@@ -34,6 +34,6 @@ export const seedLogger: RequestHandler = morgan(format, {
 });
 
 export const accessLogger: RequestHandler = morgan(format, {
-  skip: (req, _res) => req.baseUrl !== '/coverage',
+  skip: (req, _res) => req.baseUrl === '/coverage',
   stream: createStream(logName('access'), logOpt),
 });
