@@ -51,6 +51,8 @@ describe('Account model', () => {
   it('should validate unique fields', async () => {
     const user = new Account(userData);
     const userDup = new Account(userData);
+    await user.hashPassword();
+    await userDup.hashPassword();
     await user.save();
 
     await expect(userDup.save()).rejects.toThrow(
@@ -60,6 +62,7 @@ describe('Account model', () => {
 
   it('should return the correct document when searched', async () => {
     const user = new Account(userData);
+    await user.hashPassword();
     const savedUser = await user.save();
     const foundUser = await Account.findOne().byName(userData.username).exec();
 

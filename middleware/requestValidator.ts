@@ -6,6 +6,7 @@ import constraint from '@config/constraint';
 
 const opts: oJoi.ValidationOptions = {
   stripUnknown: true,
+  messages: { 'objectId.invalid': 'must be a valid ObjectId or hex string' },
   abortEarly: false,
   errors: {
     label: false,
@@ -32,9 +33,7 @@ const baseBody = (body: oJoi.PartialSchemaMap<any>, extra?: oJoi.PartialSchemaMa
 //   VALIDATORS
 //---------------------
 const objectIdVal: oJoi.CustomValidator<any> = (value, helper) => {
-  if (!mongoose.isObjectIdOrHexString(value)) {
-    return helper.message({ custom: 'must be a valid ObjectId or hex string' });
-  }
+  if (!mongoose.isObjectIdOrHexString(value)) return helper.error('objectId.invalid')
   return value;
 };
 

@@ -18,22 +18,12 @@ export default (err: mongoose.Error.ValidationError, req: Request, res: Response
 
   _.forEach(Object.keys(err.errors), (path) => {
     const baseErr = err.errors[path];
-    if (baseErr instanceof mongoose.Error.ValidatorError) {
-      error[path] = {
-        name: baseErr.name,
-        type: baseErr.kind,
-        message: baseErr.properties.message,
-        value: baseErr.value,
-      };
-    }
-    if (baseErr instanceof mongoose.Error.CastError) {
-      error[path] = {
-        name: baseErr.name,
-        type: baseErr.kind,
-        message: baseErr.message,
-        value: baseErr.value,
-      };
-    }
+    error[path] = {
+      name: baseErr.name,
+      type: baseErr.kind,
+      message: baseErr instanceof mongoose.Error.ValidatorError ? baseErr.properties.message : baseErr.message,
+      value: baseErr.value,
+    };
   });
 
   const result = { status, name: err.name, errors: error, method: req.method, path: req.path };
