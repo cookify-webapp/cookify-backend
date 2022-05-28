@@ -10,7 +10,6 @@ export const login: RequestHandler = async (req, res, next) => {
   try {
     const username = req.body?.data?.username;
     const password = req.body?.data?.password;
-    if (!username || !password) throw createRestAPIError('INV_REQ_BODY');
 
     const secret = process.env.JWT_SECRET;
     if (!secret) throw createRestAPIError('MISSING_SECRET');
