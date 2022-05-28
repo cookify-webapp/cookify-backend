@@ -14,10 +14,7 @@ const ErrorResponse = Object.freeze({
   //---------------------
   //   400
   //---------------------
-  AUTH_HEADER: { ...ErrorDetail.BAD_REQUEST, msg: 'Multiple authentication headers detected' },
   IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: `Invalid image extension, only ${allowedExt?.join(' ')} are allowed` },
-  INV_QUERY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request query(s)' },
-  INV_REQ_BODY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request body' },
 
   //---------------------
   //   401
@@ -44,6 +41,13 @@ const ErrorResponse = Object.freeze({
   //---------------------
   MISSING_SECRET: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing token secret in environment' },
   MISSING_IMAGE_DIR: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing seed image directory in environment' },
+
+  //---------------------
+  //   DEPRECATED
+  //---------------------
+  // AUTH_HEADER: { ...ErrorDetail.BAD_REQUEST, msg: 'Multiple authentication headers detected' },
+  // INV_QUERY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request query(s)' },
+  // INV_REQ_BODY: { ...ErrorDetail.BAD_REQUEST, msg: 'Invalid request body' },
 });
 
 export class RestAPIError extends Error {

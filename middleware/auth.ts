@@ -5,7 +5,7 @@ import _ from 'lodash';
 import createRestAPIError from '@error/createRestAPIError';
 
 const getPayload = (req: Request): JwtPayload => {
-  let authHeader = req.headers['authorization'];
+  let authHeader = req.headers.authorization;
   if (!authHeader) throw createRestAPIError('AUTH');
 
   const token = authHeader.split(' ')[1];

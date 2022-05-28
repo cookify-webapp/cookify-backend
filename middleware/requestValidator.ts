@@ -23,17 +23,16 @@ const paginateQuery = (extra: oJoi.PartialSchemaMap<any>) => ({
   ...extra,
 });
 
-const baseBody = (body: oJoi.PartialSchemaMap<any>, extra?: oJoi.PartialSchemaMap<any>) =>
+const baseBody = (body: oJoi.PartialSchemaMap<any>) =>
   Joi.object().keys({
-    data: Joi.object().required().keys(body),
-    ...extra,
+    data: Joi.object(body).required(),
   });
 
 //---------------------
 //   VALIDATORS
 //---------------------
 const objectIdVal: oJoi.CustomValidator<any> = (value, helper) => {
-  if (!mongoose.isObjectIdOrHexString(value)) return helper.error('objectId.invalid')
+  if (!mongoose.isObjectIdOrHexString(value)) return helper.error('objectId.invalid');
   return value;
 };
 
@@ -56,7 +55,7 @@ export const registerValidator = celebrate(
       username: Joi.string().required().min(constraint.username.min).max(constraint.username.max),
       email: Joi.string().required().email(),
       password: Joi.string().required().min(constraint.password.min).max(constraint.password.max),
-      allergy: Joi.array().required().items(Joi.string().custom(objectIdVal)),
+      allergy: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
     }),
   },
   opts
@@ -84,7 +83,7 @@ export const ingredientValidator = celebrate(
 export const ingredientListValidator = celebrate(
   {
     [Segments.QUERY]: paginateQuery({
-      searchWord: Joi.string().required(),
+      searchWord: Joi.string().required().allow(''),
       type: Joi.string().required().custom(objectIdVal),
     }),
   },
