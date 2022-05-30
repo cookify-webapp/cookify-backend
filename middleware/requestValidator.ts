@@ -84,7 +84,18 @@ export const ingredientListValidator = celebrate(
   {
     [Segments.QUERY]: paginateQuery({
       searchWord: Joi.string().required().allow(''),
-      type: Joi.string().required().allow('').custom(objectIdVal),
+      typeId: Joi.string().required().allow('').custom(objectIdVal),
+    }),
+  },
+  opts
+);
+
+export const recipeListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery({
+      searchWord: Joi.string().required().allow(''),
+      ingredientId: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
+      methodId: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
     }),
   },
   opts
