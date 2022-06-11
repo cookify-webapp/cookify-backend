@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { Types, AggregatePaginateResult } from 'mongoose';
+import { Types, AggregatePaginateResult, AnyObject } from 'mongoose';
 
-import { Recipe, RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
+import { RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
 
 export const listRecipe: (
   this: RecipeModelInterface,
@@ -10,7 +10,7 @@ export const listRecipe: (
   name: string,
   ingredients: string[],
   method: string,
-  bookmark?: Types.Array<Types.ObjectId>
+  bookmark?: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
   page,
   perPage,
@@ -19,14 +19,15 @@ export const listRecipe: (
   method,
   bookmark
 ) {
+  const match: AnyObject = {
+    $and: [{ name: { $regex: name, $options: 'i' } }],
+  };
+  method && match.$and.push({ method: new Types.ObjectId(method) });
+  _.size(ingredients) &&
+    match.$and.push({ 'ingredients.ingredient': { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) } });
+
   const aggregate = this.aggregate<RecipeInstanceInterface>()
-    .match({
-      $and: [
-        { name: { $regex: name, $options: 'i' } },
-        { method: method ? new Types.ObjectId(method) : '' },
-        { 'ingredients.ingredient': { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) } },
-      ],
-    })
+    .match(match)
     .lookup({
       from: 'cookingmethods',
       localField: 'method',
@@ -47,7 +48,20 @@ export const listRecipe: (
       as: 'ratings',
       pipeline: [{ $project: { rating: 1 } }],
     })
-    .unwind('ratings')
+    .unwind(
+      {
+        path: '$method',
+        preserveNullAndEmptyArrays: true,
+      },
+      {
+        path: '$author',
+        preserveNullAndEmptyArrays: true,
+      },
+      {
+        path: '$ratings',
+        preserveNullAndEmptyArrays: true,
+      }
+    )
     .group({
       _id: '$_id',
       root: { $first: '$$ROOT' },
@@ -57,16 +71,24 @@ export const listRecipe: (
       $mergeObjects: [
         '$root',
         {
-          averageRating: { $round: ['$averageRating', 1] },
-          bookmarked: { $in: ['$_id', _.map(bookmark, (item) => new Types.ObjectId(item)) || []] },
+          averageRating: { $ifNull: [{ $round: ['$averageRating', 1] }, 0] },
+          bookmarked: { $in: ['$_id', bookmark || []] },
         },
       ],
+    })
+    .project({
+      name: 1,
+      method: 1,
+      image: 1,
+      averageRating: 1,
+      author: 1,
+      bookmarked: 1,
+      createdAt: 1,
     });
 
-  return Recipe.aggregatePaginate(aggregate, {
+  return this.aggregatePaginate(aggregate, {
     page: page,
     limit: perPage,
-    select: 'name methods image averageRating author bookmarked',
     sort: '-createdAt',
   });
 };

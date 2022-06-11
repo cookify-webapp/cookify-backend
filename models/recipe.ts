@@ -12,7 +12,7 @@ import constraint from '@config/constraint';
 //---------------------
 export interface IngredientQuantityInterface {
   _id: Types.ObjectId;
-  ingredient: Types.ObjectId;
+  ingredient: Types.ObjectId & IngredientInterface;
   quantity: number;
 }
 
@@ -50,7 +50,7 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
     name: string,
     ingredients: string[],
     method: string,
-    bookmark: Types.Array<Types.ObjectId>
+    bookmark: Types.ObjectId[]
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 
@@ -60,7 +60,7 @@ interface RecipeQueryHelpers {}
 //   SCHEMA
 //---------------------
 export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true },
+  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true, autopopulate: { select: 'name unit' } },
   quantity: { type: Number, required: true, min: 0 },
 });
 
@@ -96,8 +96,6 @@ export const recipeSchema = new Schema<
     autoCreate: process.env.NODE_ENV !== 'production',
     collation: { locale: 'th' },
     timestamps: { createdAt: true, updatedAt: false },
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
     versionKey: false,
   }
 );

@@ -6,6 +6,7 @@ import { Account } from '@models/account';
 import { CookingMethod } from '@models/type';
 
 import createRestAPIError from '@error/createRestAPIError';
+import nutritionDetailService from '@services/nutritionDetailService';
 
 export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
@@ -54,8 +55,29 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 
-    const recipe = await Recipe.findById(id).sort('-createdAt').exec();
+    const recipe = await Recipe.findById(id).sort('-createdAt').lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+
+    const account = await Account.findOne()
+      .setOptions({ autopopulate: false })
+      .byName(res.locals.username)
+      .select('username bookmark')
+      .lean()
+      .exec();
+
+    recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
+    recipe.isMe = account?.username === recipe.author.username;
+    recipe.bookmarked = _.includes(account?.bookmark, recipe._id);
+
+    res.status(200).send({ recipe });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const createRecipe: RequestHandler = async (req, res, next) => {
+  try {
+    const data = req.body?.data;
 
     const account = await Account.findOne()
       .setOptions({ autopopulate: false })
@@ -63,11 +85,25 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
       .select('username bookmark')
       .exec();
 
-    recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1));
-    recipe.isMe = account?.username === recipe.author.username;
-    recipe.bookmarked = _.includes(account?.bookmark, recipe._id);
+    data.image = req.file?.filename;
+    data.author = account._id;
 
-    res.status(200).send({ recipe });
+    const recipe = new Recipe(data);
+
+    await recipe.populate({
+      path: 'ingredients.ingredient',
+      populate: 'unit',
+    });
+    recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
+      recipe.ingredients.map((item) => ({
+        name: item.ingredient.queryKey,
+        quantity: item.quantity,
+        unit: item.ingredient.unit.queryKey,
+      }))
+    );
+
+    await recipe.depopulate().save();
+    res.status(200).send({ id: recipe.id });
   } catch (err) {
     return next(err);
   }

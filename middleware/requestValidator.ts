@@ -92,6 +92,7 @@ export const recipeValidator = celebrate(
             quantity: Joi.number().required().positive(),
           })
         )
+        .unique('ingredient')
         .min(1),
       subIngredients: Joi.array().required().items(Joi.string().custom(objectIdVal)),
       steps: Joi.array().required().items(Joi.string()),

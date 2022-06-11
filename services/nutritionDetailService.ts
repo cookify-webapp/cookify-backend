@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 import process from 'process';
 
 type ingredientNutritionList = {
@@ -15,11 +16,11 @@ type ingredientNutritionList = {
   NA: any;
 };
 
-const url = 'https://api.edamam.com/api/nutrition-data';
+const url = 'https://api.edamam.com/api';
 
 const getByIngredient = async (unit: string, ingredient: string) => {
   const res = await axios.get(
-    `${url}?app_id=${process.env.EDAMAM_APP_ID}&app_key=${process.env.EDAMAM_APP_KEY}&ingr=${
+    `${url}/nutrition-data?app_id=${process.env.EDAMAM_APP_ID}&app_key=${process.env.EDAMAM_APP_KEY}&ingr=${
       unit === 'gram' ? 100 : unit === 'milliliter' ? 10 : 1
     } ${unit} ${ingredient}`
   );
@@ -38,4 +39,24 @@ const getByIngredient = async (unit: string, ingredient: string) => {
   }
 };
 
-export default Object.freeze({ getByIngredient });
+const getByRecipe = async (ingredients: { name: string; quantity: number; unit: string }[]) => {
+  const res = await axios.post(
+    `${url}/nutrition-details?app_id=${process.env.EDAMAM_APP_ID}&app_key=${process.env.EDAMAM_APP_KEY}`,
+    { ingr: _.map(ingredients, (item) => `${item.quantity} ${item.unit} ${item.name}`) }
+  );
+  if (res.status === 200) {
+    const data = res.data;
+
+    data.totalNutrients = ((props: ingredientNutritionList) => ({ ...props }))(data.totalNutrients);
+
+    delete data.uri;
+    delete data.yield;
+    delete data.dietLabels;
+    delete data.healthLabels;
+    delete data.cautions;
+
+    return data;
+  }
+};
+
+export default Object.freeze({ getByIngredient, getByRecipe });
