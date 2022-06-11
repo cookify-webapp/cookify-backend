@@ -117,8 +117,8 @@ export const recipeListValidator = celebrate(
   {
     [Segments.QUERY]: paginateQuery({
       searchWord: Joi.string().required().allow(''),
-      ingredientId: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
-      methodId: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
+      ingredientId: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique().min(0),
+      methodId: Joi.string().required().allow('').custom(objectIdVal),
     }),
   },
   opts

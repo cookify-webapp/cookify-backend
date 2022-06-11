@@ -7,9 +7,9 @@ const getPayload = (req: Request, byPass: boolean): JwtPayload => {
   let authHeader = req.headers.authorization;
   if (!authHeader)
     if (byPass) {
-      throw createRestAPIError('AUTH');
-    } else {
       return {};
+    } else {
+      throw createRestAPIError('AUTH');
     }
 
   const token = authHeader.split(' ')[1];

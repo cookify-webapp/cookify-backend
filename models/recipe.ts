@@ -4,7 +4,7 @@ import { CommentInstanceInterface } from '@models/comment';
 import { AccountInterface } from '@models/account';
 import { TypeInterface } from '@models/type';
 import { IngredientInterface, ingredientSchema } from '@models/ingredient';
-import { getRecipeDetail, listRecipe } from '@functions/recipeFunction';
+import { listRecipe } from '@functions/recipeFunction';
 import constraint from '@config/constraint';
 
 //---------------------
@@ -52,8 +52,6 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
     method: string,
     bookmark: Types.Array<Types.ObjectId>
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
-
-  getRecipeDetail: (id: string) => Promise<RecipeInstanceInterface | null>;
 }
 
 interface RecipeQueryHelpers {}
@@ -108,23 +106,6 @@ export const recipeSchema = new Schema<
 //   STATICS
 //---------------------
 recipeSchema.statics.listRecipe = listRecipe;
-recipeSchema.statics.getRecipeDetail = getRecipeDetail;
-
-//---------------------
-//   VIRTUAL
-//---------------------
-recipeSchema.virtual('comments', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post',
-});
-
-recipeSchema.virtual('countComment', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post',
-  count: true,
-});
 
 //---------------------
 //   MODEL

@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { Types, AggregatePaginateResult } from 'mongoose';
 
 import { Recipe, RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
@@ -22,8 +23,8 @@ export const listRecipe: (
     .match({
       $and: [
         { name: { $regex: name, $options: 'i' } },
-        { method },
-        { 'ingredients.ingredient': { $all: ingredients } },
+        { method: method ? new Types.ObjectId(method) : '' },
+        { 'ingredients.ingredient': { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) } },
       ],
     })
     .lookup({
@@ -57,7 +58,7 @@ export const listRecipe: (
         '$root',
         {
           averageRating: { $round: ['$averageRating', 1] },
-          bookmarked: { $in: ['$_id', bookmark || []] },
+          bookmarked: { $in: ['$_id', _.map(bookmark, (item) => new Types.ObjectId(item)) || []] },
         },
       ],
     });
@@ -69,13 +70,3 @@ export const listRecipe: (
     sort: '-createdAt',
   });
 };
-
-export const getRecipeDetail: (this: RecipeModelInterface, id: string) => Promise<RecipeInstanceInterface | null> =
-  async function (id) {
-    return this.findById(id)
-      .populate('ratings')
-      .populate('comments')
-      .populate('countComment')
-      .sort('-createdAt')
-      .exec();
-  };

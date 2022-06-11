@@ -54,7 +54,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 
-    const recipe = await Recipe.getRecipeDetail(id);
+    const recipe = await Recipe.findById(id).sort('-createdAt').exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
     const account = await Account.findOne()
