@@ -26,9 +26,10 @@ const ErrorResponse = Object.freeze({
   //   403
   //---------------------
   CORS: { ...ErrorDetail.FORBIDDEN, msg: 'Not allowed by CORS' },
-  WRONG_USERNAME: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect username' },
-  WRONG_PASSWORD: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect password' },
   DEL_REFERENCE: { ...ErrorDetail.FORBIDDEN, msg: 'Cannot delete referenced document' },
+  NOT_OWNER: { ...ErrorDetail.FORBIDDEN, msg: 'You are not the owner of this document' },
+  WRONG_PASSWORD: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect password' },
+  WRONG_USERNAME: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect username' },
 
   //---------------------
   //   404
@@ -39,8 +40,8 @@ const ErrorResponse = Object.freeze({
   //---------------------
   //   500
   //---------------------
-  MISSING_SECRET: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing token secret in environment' },
   MISSING_IMAGE_DIR: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing seed image directory in environment' },
+  MISSING_SECRET: { ...ErrorDetail.INTERNAL_SERVER_ERROR, msg: 'Missing token secret in environment' },
 
   //---------------------
   //   DEPRECATED

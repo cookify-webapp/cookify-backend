@@ -1,12 +1,15 @@
+import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
 import { Account } from '@models/account';
 import { CookingMethod } from '@models/type';
+import { Snapshot } from '@models/snapshot';
 
 import createRestAPIError from '@error/createRestAPIError';
 import nutritionDetailService from '@services/nutritionDetailService';
+import { deleteImage } from '@utils/imageUtil';
 
 export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
@@ -55,7 +58,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 
-    const recipe = await Recipe.findById(id).sort('-createdAt').lean({ autopopulate: true }).exec();
+    const recipe = await Recipe.findById(id).lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
     const account = await Account.findOne()
@@ -104,6 +107,26 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
 
     await recipe.depopulate().save();
     res.status(200).send({ id: recipe.id });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteRecipe: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params?.recipeId;
+
+    const ref = await Snapshot.exists({ recipe: new Types.ObjectId(id) }).exec();
+    if (ref) throw createRestAPIError('DEL_REFERENCE');
+
+    const recipe = await Recipe.findById(id).exec();
+    if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+    if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
+
+    await recipe.deleteOne();
+    deleteImage('recipes', recipe.image);
+
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
