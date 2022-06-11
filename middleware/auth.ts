@@ -1,12 +1,16 @@
 import { Request, RequestHandler } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import _ from 'lodash';
 
 import createRestAPIError from '@error/createRestAPIError';
 
-const getPayload = (req: Request): JwtPayload => {
+const getPayload = (req: Request, byPass: boolean): JwtPayload => {
   let authHeader = req.headers.authorization;
-  if (!authHeader) throw createRestAPIError('AUTH');
+  if (!authHeader)
+    if (byPass) {
+      throw createRestAPIError('AUTH');
+    } else {
+      return {};
+    }
 
   const token = authHeader.split(' ')[1];
   const secret = process.env.JWT_SECRET;
@@ -15,23 +19,34 @@ const getPayload = (req: Request): JwtPayload => {
   return jwt.verify(token, secret) as JwtPayload;
 };
 
-export const auth: RequestHandler = async (req, _res, next) => {
+export const auth: RequestHandler = async (req, res, next) => {
   try {
-    const decoded = getPayload(req);
+    const decoded = getPayload(req, false);
 
-    req.username = decoded.username;
+    res.locals.username = decoded.username;
     return next();
   } catch (err) {
     return next(err);
   }
 };
 
-export const adminAuth: RequestHandler = async (req, _res, next) => {
+export const adminAuth: RequestHandler = async (req, res, next) => {
   try {
-    const decoded = getPayload(req);
+    const decoded = getPayload(req, false);
     if (!decoded.isAdmin) throw createRestAPIError('AUTH_ADMIN');
 
-    req.username = decoded.username;
+    res.locals.username = decoded.username;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const byPassAuth: RequestHandler = async (req, res, next) => {
+  try {
+    const decoded = getPayload(req, true);
+
+    res.locals.username = decoded.username;
     return next();
   } catch (err) {
     return next(err);

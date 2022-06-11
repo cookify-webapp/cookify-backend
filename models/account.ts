@@ -19,7 +19,6 @@ export interface AccountInterface extends Document {
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
   recipes?: Types.Array<RecipeInstanceInterface>;
-  likedRecipes?: Types.Array<RecipeInstanceInterface>;
   snapshots?: Types.Array<SnapshotInstanceInterface>;
 }
 
@@ -41,7 +40,7 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface, A
 interface AccountQueryHelpers {
   byName(
     this: QueryWithHelpers<any, AccountInstanceInterface, AccountQueryHelpers>,
-    name: string
+    name?: string
   ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers>;
 }
 
@@ -91,8 +90,9 @@ export const accountSchema = new Schema<
 //   QUERY HELPERS
 //---------------------
 accountSchema.query.byName = function (
-  name: string
+  name?: string
 ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers> {
+  if (!name) return this;
   return this.where({ username: name });
 };
 
@@ -110,12 +110,6 @@ accountSchema.virtual('recipes', {
   ref: 'Recipe',
   localField: '_id',
   foreignField: 'author',
-});
-
-accountSchema.virtual('likedRecipes', {
-  ref: 'Recipe',
-  localField: '_id',
-  foreignField: 'likedBy',
 });
 
 accountSchema.virtual('snapshots', {

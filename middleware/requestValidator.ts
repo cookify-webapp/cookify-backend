@@ -18,8 +18,8 @@ const opts: oJoi.ValidationOptions = {
 };
 
 const paginateQuery = (extra: oJoi.PartialSchemaMap<any>) => ({
-  page: Joi.number().required().min(1),
-  perPage: Joi.number().required().min(1),
+  page: Joi.number().required().integer().min(1),
+  perPage: Joi.number().required().integer().min(1),
   ...extra,
 });
 
@@ -72,6 +72,29 @@ export const ingredientValidator = celebrate(
         then: Joi.string().required().uri(),
         otherwise: Joi.string().default(''),
       }),
+    }),
+  },
+  opts
+);
+
+export const recipeValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      name: Joi.string().required(),
+      desc: Joi.string().required().max(constraint.desc.max),
+      method: Joi.string().required().custom(objectIdVal),
+      serving: Joi.number().required().integer().min(1),
+      ingredients: Joi.array()
+        .required()
+        .items(
+          Joi.object({
+            ingredient: Joi.string().required().custom(objectIdVal),
+            quantity: Joi.number().required().positive(),
+          })
+        )
+        .min(1),
+      subIngredients: Joi.array().required().items(Joi.string().custom(objectIdVal)),
+      steps: Joi.array().required().items(Joi.string()),
     }),
   },
   opts

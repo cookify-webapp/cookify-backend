@@ -12,7 +12,6 @@ export interface SnapshotInterface extends Document {
   image: string;
   author: Types.ObjectId;
   recipe: Types.ObjectId;
-  likedBy: Types.Array<Types.ObjectId>;
   updatedAt: Date;
 }
 
@@ -61,7 +60,6 @@ export const snapshotSchema = new Schema<
       required: true,
       autopopulate: { select: 'name' },
     },
-    likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

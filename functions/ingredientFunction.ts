@@ -1,4 +1,4 @@
-import { PaginateResult, FilterQuery, Types } from 'mongoose';
+import { PaginateResult, FilterQuery } from 'mongoose';
 
 import { IngredientInstanceInterface, IngredientModelInterface } from '@models/ingredient';
 
@@ -25,7 +25,7 @@ export const sampleByType: (
   if (!self) throw createRestAPIError('DOC_NOT_FOUND');
 
   return this.aggregate<IngredientInstanceInterface>()
-    .match({ _id: { $ne: new Types.ObjectId(ingredientId) }, type: self.type })
+    .match({ _id: { $ne: ingredientId }, type: self.type })
     .project({ name: 1, type: 1, image: 1 })
     .sample(4)
     .lookup({

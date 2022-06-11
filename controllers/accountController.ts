@@ -36,12 +36,10 @@ export const getAllAccounts: RequestHandler = async (_req, res, next) => {
   }
 };
 
-export const getMe: RequestHandler = async (req, res, next) => {
+export const getMe: RequestHandler = async (_req, res, next) => {
   try {
-    if (!req.username) throw createRestAPIError('AUTH');
-
     const account = await Account.findOne()
-      .byName(req.username)
+      .byName(res.locals.username)
       .select('username email accountType image bookmark')
       .lean()
       .exec();
@@ -70,9 +68,7 @@ export const register: RequestHandler = async (req, res, next) => {
 
 export const setBookmark: RequestHandler = async (req, res, next) => {
   try {
-    if (!req.username) throw createRestAPIError('AUTH');
-
-    const account = await Account.findOne().byName(req.username).exec();
+    const account = await Account.findOne().byName(res.locals.username).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     const id = req.params?.recipeId;
@@ -91,11 +87,9 @@ export const setBookmark: RequestHandler = async (req, res, next) => {
 
 export const editProfile: RequestHandler = async (req, res, next) => {
   try {
-    if (!req.username) throw createRestAPIError('AUTH');
-
     const data = req.body?.data;
 
-    const account = await Account.findOne().byName(req.username).setOptions({ autopopulate: false }).exec();
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     account.set({
