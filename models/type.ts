@@ -33,8 +33,6 @@ const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeIns
 //---------------------
 //   MODEL
 //---------------------
-export const RecipeType = model<TypeInstanceInterface, TypeModelInterface>('RecipeType', typeSchema);
-
 export const IngredientType = model<TypeInstanceInterface, TypeModelInterface>('IngredientType', typeSchema);
 
 export const CookingMethod = model<TypeInstanceInterface, TypeModelInterface>('CookingMethod', typeSchema);
