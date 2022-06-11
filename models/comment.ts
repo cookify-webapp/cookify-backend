@@ -10,7 +10,8 @@ export interface CommentInterface extends Document {
   post: Types.ObjectId;
   author: Types.ObjectId;
   comment: string;
-  updatedAt: Date;
+  rating?: number;
+  createdAt: Date;
 }
 
 export interface CommentInstanceMethods {
@@ -49,6 +50,7 @@ const commentSchema = new Schema<
       autopopulate: { select: 'username image' },
     },
     comment: { type: String, required: true, maxlength: constraint.comment.max },
+    rating: { type: Number, min: 1, max: 5 },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',
