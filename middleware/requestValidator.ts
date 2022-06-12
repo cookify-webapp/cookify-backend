@@ -17,7 +17,7 @@ const opts: oJoi.ValidationOptions = {
   },
 };
 
-const paginateQuery = (extra: oJoi.PartialSchemaMap<any>) => ({
+const paginateQuery = (extra?: oJoi.PartialSchemaMap<any>) => ({
   page: Joi.number().required().integer().min(1),
   perPage: Joi.number().required().integer().min(1),
   ...extra,
@@ -27,6 +27,15 @@ const baseBody = (body: oJoi.PartialSchemaMap<any>) =>
   Joi.object().keys({
     data: Joi.object(body).required(),
   });
+
+const commentBody = baseBody({
+  comment: Joi.string()
+    .required()
+    .when('rating', {
+      then: Joi.allow(''),
+    }),
+  rating: Joi.number().required().min(0).max(5),
+});
 
 //---------------------
 //   VALIDATORS
@@ -95,8 +104,29 @@ export const recipeValidator = celebrate(
         .unique('ingredient')
         .min(1),
       subIngredients: Joi.array().required().items(Joi.string().custom(objectIdVal)),
-      steps: Joi.array().required().items(Joi.string()),
+      steps: Joi.array().required().items(Joi.string()).min(1),
     }),
+  },
+  opts
+);
+
+export const createCommentValidator = celebrate(
+  {
+    [Segments.PARAMS]: {
+      sourceType: Joi.string().required().valid('recipe', 'snapshot'),
+      sourceId: Joi.string().required().custom(objectIdVal),
+    },
+    [Segments.BODY]: commentBody,
+  },
+  opts
+);
+
+export const editCommentValidator = celebrate(
+  {
+    [Segments.PARAMS]: {
+      commentId: Joi.string().required().custom(objectIdVal),
+    },
+    [Segments.BODY]: commentBody,
   },
   opts
 );
@@ -104,6 +134,13 @@ export const recipeValidator = celebrate(
 //---------------------
 //   QUERY
 //---------------------
+export const genericListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery(),
+  },
+  opts
+);
+
 export const ingredientListValidator = celebrate(
   {
     [Segments.QUERY]: paginateQuery({

@@ -1,5 +1,18 @@
-import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
+import {
+  model,
+  Schema,
+  Document,
+  Types,
+  QueryWithHelpers,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+} from 'mongoose';
 import constraint from '@config/constraint';
+
+import { AccountInterface } from '@models/account';
+import { RecipeInterface } from '@models/recipe';
+import { SnapshotInterface } from '@models/snapshot';
+import { listAll } from '@functions/commentFunction';
 
 //---------------------
 //   INTERFACE
@@ -7,8 +20,8 @@ import constraint from '@config/constraint';
 export interface CommentInterface extends Document {
   _id: Types.ObjectId;
   type: 'Recipe' | 'Snapshot';
-  post: Types.ObjectId;
-  author: Types.ObjectId;
+  post: Types.ObjectId & (RecipeInterface | SnapshotInterface);
+  author: Types.ObjectId & AccountInterface;
   comment: string;
   rating?: number;
   createdAt: Date;
@@ -20,8 +33,15 @@ export interface CommentInstanceMethods {
 
 export interface CommentInstanceInterface extends CommentInterface, CommentInstanceMethods {}
 
-export interface CommentModelInterface extends Model<CommentInstanceInterface, CommentQueryHelpers> {
+export interface CommentModelInterface extends AggregatePaginateModel<CommentInstanceInterface> {
   // declare any static methods here
+  listAll: (
+    page: number,
+    perPage: number,
+    post: string,
+    type: string,
+    username: string
+  ) => Promise<AggregatePaginateResult<CommentInstanceInterface>>;
 }
 
 interface CommentQueryHelpers {
@@ -50,7 +70,7 @@ const commentSchema = new Schema<
       autopopulate: { select: 'username image' },
     },
     comment: { type: String, required: true, maxlength: constraint.comment.max },
-    rating: { type: Number, min: 1, max: 5 },
+    rating: { type: Number, min: 0, max: 5 },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',
@@ -59,6 +79,11 @@ const commentSchema = new Schema<
     versionKey: false,
   }
 );
+
+//---------------------
+//   STATICS
+//---------------------
+commentSchema.statics.listAll = listAll;
 
 //---------------------
 //   QUERY HELPERS
