@@ -59,6 +59,11 @@ export const createComment: RequestHandler = async (req, res, next) => {
     const comment = new Comment(data);
 
     await comment.save();
+    await comment.populate({
+      path: 'author',
+      select: 'username image',
+      options: { lean: true },
+    });
     res.status(200).send({ comment });
   } catch (err) {
     return next(err);
@@ -73,7 +78,11 @@ export const editComment: RequestHandler = async (req, res, next) => {
 
     const comment = await Comment.findById(id)
       .setOptions({ autopopulate: false })
-      .populate('author', 'username')
+      .populate({
+        path: 'author',
+        select: 'username image',
+        options: { lean: true },
+      })
       .exec();
     if (!comment) throw createRestAPIError('DOC_NOT_FOUND');
     if (comment.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');

@@ -31,6 +31,7 @@ const baseBody = (body: oJoi.PartialSchemaMap<any>) =>
 const commentBody = baseBody({
   comment: Joi.string()
     .required()
+    .max(constraint.comment.max)
     .when('rating', {
       then: Joi.allow(''),
     }),

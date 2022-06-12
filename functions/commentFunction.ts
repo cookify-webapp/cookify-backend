@@ -21,7 +21,7 @@ export const listAll: (
       localField: 'author',
       foreignField: '_id',
       as: 'author',
-      pipeline: [{ $project: { username: 1 } }],
+      pipeline: [{ $project: { username: 1, image: 1 } }],
     })
     .unwind({
       path: '$author',
@@ -35,6 +35,5 @@ export const listAll: (
     page,
     limit: perPage,
     sort: '-createdAt',
-    lean: true,
   });
 };
