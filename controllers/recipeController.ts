@@ -19,13 +19,13 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     const ingredients = req.query?.ingredientId as string[];
     const method = req.query?.methodId as string;
 
-    const account = await Account.findOne()
+    const { bookmark, allergy } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
-      .select('bookmark')
+      .select('bookmark allergy')
       .exec();
 
-    const recipes = await Recipe.listRecipe(page, perPage, searchWord, ingredients, method, account?.bookmark);
+    const recipes = await Recipe.listRecipe(page, perPage, searchWord, ingredients, method, bookmark, allergy);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -61,7 +61,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(id).lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const account = await Account.findOne()
+    const { username, bookmark } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
       .select('username bookmark')
@@ -69,8 +69,8 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
       .exec();
 
     recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
-    recipe.isMe = account?.username === recipe.author.username;
-    recipe.bookmarked = _.includes(account?.bookmark, recipe._id);
+    recipe.isMe = username === recipe.author.username;
+    recipe.bookmarked = _.includes(bookmark, recipe._id);
 
     res.status(200).send({ recipe });
   } catch (err) {
@@ -82,14 +82,10 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
 
-    const account = await Account.findOne()
-      .setOptions({ autopopulate: false })
-      .byName(res.locals.username)
-      .select('username bookmark')
-      .exec();
+    const account = await Account.exists({ username: res.locals.username }).exec();
 
     data.image = req.file?.filename;
-    data.author = account._id;
+    data.author = account?._id;
 
     const recipe = new Recipe(data);
 

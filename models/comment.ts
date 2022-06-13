@@ -9,9 +9,9 @@ import {
 } from 'mongoose';
 import constraint from '@config/constraint';
 
-import { AccountInterface } from '@models/account';
-import { RecipeInterface } from '@models/recipe';
-import { SnapshotInterface } from '@models/snapshot';
+import { AccountInstanceInterface } from '@models/account';
+import { RecipeInstanceInterface } from '@models/recipe';
+import { SnapshotInstanceInterface, } from '@models/snapshot';
 import { listAll } from '@functions/commentFunction';
 
 //---------------------
@@ -20,8 +20,8 @@ import { listAll } from '@functions/commentFunction';
 export interface CommentInterface extends Document {
   _id: Types.ObjectId;
   type: 'Recipe' | 'Snapshot';
-  post: Types.ObjectId & (RecipeInterface | SnapshotInterface);
-  author: Types.ObjectId & AccountInterface;
+  post: Types.ObjectId & (RecipeInstanceInterface | SnapshotInstanceInterface);
+  author: Types.ObjectId & AccountInstanceInterface;
   comment: string;
   rating?: number;
   createdAt: Date;

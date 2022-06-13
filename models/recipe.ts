@@ -1,9 +1,9 @@
 import { model, Schema, Document, Types, AggregatePaginateModel, AggregatePaginateResult } from 'mongoose';
 
 import { CommentInstanceInterface } from '@models/comment';
-import { AccountInterface } from '@models/account';
-import { TypeInterface } from '@models/type';
-import { IngredientInterface, ingredientSchema } from '@models/ingredient';
+import { AccountInstanceInterface } from '@models/account';
+import { TypeInstanceInterface } from '@models/type';
+import { IngredientInstanceInterface, ingredientSchema } from '@models/ingredient';
 import { listRecipe } from '@functions/recipeFunction';
 import constraint from '@config/constraint';
 
@@ -12,7 +12,7 @@ import constraint from '@config/constraint';
 //---------------------
 export interface IngredientQuantityInterface {
   _id: Types.ObjectId;
-  ingredient: Types.ObjectId & IngredientInterface;
+  ingredient: Types.ObjectId & IngredientInstanceInterface;
   quantity: number;
 }
 
@@ -22,13 +22,12 @@ export interface RecipeInterface extends Document {
   desc: string;
   serving: number;
   ingredients: Types.DocumentArray<IngredientQuantityInterface>;
-  subIngredients: Types.Array<Types.ObjectId> & Types.DocumentArray<IngredientInterface>;
-  method: Types.ObjectId & TypeInterface;
+  subIngredients: Types.Array<Types.ObjectId> & Types.DocumentArray<IngredientInstanceInterface>;
+  method: Types.ObjectId & TypeInstanceInterface;
   steps: Types.Array<string>;
   image: string;
-  author: Types.ObjectId & AccountInterface;
+  author: Types.ObjectId & AccountInstanceInterface;
   comments?: Types.DocumentArray<CommentInstanceInterface>;
-  countComment?: number;
   averageRating?: number;
   bookmarked?: boolean;
   isMe?: boolean;
@@ -50,7 +49,8 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
     name: string,
     ingredients: string[],
     method: string,
-    bookmark: Types.ObjectId[]
+    bookmark?: Types.ObjectId[],
+    allergy?: Types.ObjectId[]
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 

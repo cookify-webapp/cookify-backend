@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { createComment, editComment, getCommentList } from '@controllers/commentController';
+import { createComment, deleteComment, editComment, getCommentList } from '@controllers/commentController';
 import { createCommentValidator, editCommentValidator, genericListValidator } from '@middleware/requestValidator';
 import { auth, byPassAuth } from '@middleware/auth';
 
@@ -11,5 +11,7 @@ commentRouter.get('/:sourceType/:sourceId/list', byPassAuth, genericListValidato
 commentRouter.post('/:sourceType/:sourceId/create', auth, createCommentValidator, createComment);
 
 commentRouter.put('/:commentId/edit', auth, editCommentValidator, editComment);
+
+commentRouter.delete('/:commentId/delete', auth, deleteComment);
 
 export default commentRouter;

@@ -10,17 +10,19 @@ export const listRecipe: (
   name: string,
   ingredients: string[],
   method: string,
-  bookmark?: Types.ObjectId[]
+  bookmark?: Types.ObjectId[],
+  allergy?: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
   page,
   perPage,
   name,
   ingredients,
   method,
-  bookmark
+  bookmark = [],
+  allergy = []
 ) {
   const match: AnyObject = {
-    $and: [{ name: { $regex: name, $options: 'i' } }],
+    $and: [{ name: { $regex: name, $options: 'i' } }, { 'ingredients.ingredient': { $nin: allergy } }],
   };
   method && match.$and.push({ method: new Types.ObjectId(method) });
   _.size(ingredients) &&
@@ -72,7 +74,7 @@ export const listRecipe: (
         '$root',
         {
           averageRating: { $ifNull: [{ $round: ['$averageRating', 1] }, 0] },
-          bookmarked: { $in: ['$_id', bookmark || []] },
+          bookmarked: { $in: ['$_id', bookmark] },
         },
       ],
     })
