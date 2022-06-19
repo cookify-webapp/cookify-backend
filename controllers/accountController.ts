@@ -68,7 +68,7 @@ export const register: RequestHandler = async (req, res, next) => {
 
 export const setBookmark: RequestHandler = async (req, res, next) => {
   try {
-    const account = await Account.findOne().byName(res.locals.username).exec();
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     const id = req.params?.recipeId;

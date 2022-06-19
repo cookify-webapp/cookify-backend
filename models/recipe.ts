@@ -88,7 +88,7 @@ export const recipeSchema = new Schema<
       type: 'ObjectId',
       ref: 'Account',
       required: true,
-      autopopulate: { select: 'username' },
+      autopopulate: { select: 'username image' },
     },
     nutritionalDetail: {},
   },
