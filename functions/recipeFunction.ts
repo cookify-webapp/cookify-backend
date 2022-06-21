@@ -8,16 +8,16 @@ export const listRecipe: (
   page: number,
   perPage: number,
   name: string,
-  ingredients: string[],
   method: string,
+  ingredients: string[] | '',
   bookmark?: Types.ObjectId[],
   allergy?: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
   page,
   perPage,
   name,
-  ingredients,
   method,
+  ingredients = [],
   bookmark = [],
   allergy = []
 ) {

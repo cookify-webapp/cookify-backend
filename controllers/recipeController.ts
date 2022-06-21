@@ -25,7 +25,7 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
       .select('bookmark allergy')
       .exec();
 
-    const recipes = await Recipe.listRecipe(page, perPage, searchWord, ingredients, method, bookmark, allergy);
+    const recipes = await Recipe.listRecipe(page, perPage, searchWord, method, ingredients, bookmark, allergy);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
