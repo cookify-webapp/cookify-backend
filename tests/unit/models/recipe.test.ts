@@ -52,8 +52,8 @@ describe('Ingredient model', () => {
       1,
       10,
       '',
-      ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
       '',
+      ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
       []
     );
 

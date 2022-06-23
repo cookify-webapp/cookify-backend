@@ -75,7 +75,7 @@ export const recipeSchema = new Schema<
     desc: { type: String, required: true, maxlength: constraint.desc.max },
     serving: { type: Number, required: true, min: 1 },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
-    subIngredients: [ingredientSchema],
+    subIngredients: [{ type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit' } }],
     method: {
       type: 'ObjectId',
       ref: 'CookingMethod',
