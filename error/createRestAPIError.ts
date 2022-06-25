@@ -27,6 +27,7 @@ const ErrorResponse = Object.freeze({
   //---------------------
   CORS: { ...ErrorDetail.FORBIDDEN, msg: 'Not allowed by CORS' },
   DEL_REFERENCE: { ...ErrorDetail.FORBIDDEN, msg: 'Cannot delete referenced document' },
+  DUP_COMMENT: { ...ErrorDetail.FORBIDDEN, msg: 'You have already commented on this post' },
   NOT_OWNER: { ...ErrorDetail.FORBIDDEN, msg: 'You are not the owner of this document' },
   WRONG_PASSWORD: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect password' },
   WRONG_USERNAME: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect username' },

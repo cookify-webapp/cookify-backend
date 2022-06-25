@@ -33,6 +33,26 @@ export const getCommentList: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getMyComment: RequestHandler = async (req, res, next) => {
+  try {
+    const type = req.params?.sourceType;
+    const id = req.params?.sourceId;
+
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const comment = await Comment.findOne({ post: id, type: _.capitalize(type), author: account._id }).exec();
+
+    if (comment) {
+      res.status(200).send({ comment });
+    } else {
+      res.status(204).send();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const createComment: RequestHandler = async (req, res, next) => {
   try {
     const type = req.params?.sourceType;
@@ -40,17 +60,23 @@ export const createComment: RequestHandler = async (req, res, next) => {
 
     const data = req.body?.data;
 
+    const account = await Account.findOne().byName(res.locals.username).select('username').exec();
+
     if (type === 'recipe') {
       const recipe = await Recipe.findById(id).exec();
       if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+
+      const dup = await Comment.findOne({ post: recipe._id, author: account._id }).lean().exec();
+      if (dup) throw createRestAPIError('DUP_COMMENT');
     }
 
     if (type === 'snapshot') {
       const snapshot = await Snapshot.findById(id).exec();
       if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
-    }
 
-    const account = await Account.findOne().byName(res.locals.username).select('username').exec();
+      const dup = await Comment.findOne({ post: snapshot._id, author: account._id }).lean().exec();
+      if (dup) throw createRestAPIError('DUP_COMMENT');
+    }
 
     data.author = account._id;
     data.type = _.capitalize(type);

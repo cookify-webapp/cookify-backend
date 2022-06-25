@@ -11,7 +11,7 @@ import constraint from '@config/constraint';
 
 import { AccountInstanceInterface } from '@models/account';
 import { RecipeInstanceInterface } from '@models/recipe';
-import { SnapshotInstanceInterface, } from '@models/snapshot';
+import { SnapshotInstanceInterface } from '@models/snapshot';
 import { listAll } from '@functions/commentFunction';
 
 //---------------------
@@ -79,6 +79,11 @@ const commentSchema = new Schema<
     versionKey: false,
   }
 );
+
+//---------------------
+//   INDEX
+//---------------------
+commentSchema.index({ post: 1, author: 1 }, { unique: true });
 
 //---------------------
 //   STATICS

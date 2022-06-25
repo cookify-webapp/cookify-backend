@@ -1,10 +1,18 @@
 import express from 'express';
 
-import { createComment, deleteComment, editComment, getCommentList } from '@controllers/commentController';
+import {
+  createComment,
+  deleteComment,
+  editComment,
+  getCommentList,
+  getMyComment,
+} from '@controllers/commentController';
 import { createCommentValidator, editCommentValidator, genericListValidator } from '@middleware/requestValidator';
 import { auth, byPassAuth } from '@middleware/auth';
 
 const commentRouter = express.Router();
+
+commentRouter.get('/:sourceType/:sourceId', auth, getMyComment);
 
 commentRouter.get('/:sourceType/:sourceId/list', byPassAuth, genericListValidator, getCommentList);
 
