@@ -60,7 +60,7 @@ interface RecipeQueryHelpers {}
 //   SCHEMA
 //---------------------
 export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true, autopopulate: { select: 'name unit' } },
+  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true, autopopulate: { select: 'name unit type image' } },
   quantity: { type: Number, required: true, min: 0 },
 });
 
@@ -75,7 +75,7 @@ export const recipeSchema = new Schema<
     desc: { type: String, required: true, maxlength: constraint.desc.max },
     serving: { type: Number, required: true, min: 1 },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
-    subIngredients: [{ type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit' } }],
+    subIngredients: [{ type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit type image' } }],
     method: {
       type: 'ObjectId',
       ref: 'CookingMethod',
@@ -104,6 +104,15 @@ export const recipeSchema = new Schema<
 //   STATICS
 //---------------------
 recipeSchema.statics.listRecipe = listRecipe;
+
+//---------------------
+//   VIRTUALS
+//---------------------
+recipeSchema.virtual('comments', {
+  localField: '_id',
+  foreignField: 'post',
+  ref: 'Comment',
+});
 
 //---------------------
 //   MODEL

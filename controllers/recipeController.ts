@@ -58,7 +58,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 
-    const recipe = await Recipe.findById(id).lean({ autopopulate: true }).exec();
+    const recipe = await Recipe.findById(id).populate('comments').lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
     const { username, bookmark } = await Account.findOne()
@@ -71,6 +71,8 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
     recipe.isMe = username === recipe.author.username;
     recipe.bookmarked = _.includes(bookmark, recipe._id);
+
+    delete recipe.comments;
 
     res.status(200).send({ recipe });
   } catch (err) {
