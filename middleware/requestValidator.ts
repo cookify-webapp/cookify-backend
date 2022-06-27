@@ -100,6 +100,7 @@ export const recipeValidator = celebrate(
           Joi.object({
             ingredient: Joi.string().required().custom(objectIdVal),
             quantity: Joi.number().required().positive(),
+            unit: Joi.string().required().custom(objectIdVal),
           })
         )
         .unique('ingredient')

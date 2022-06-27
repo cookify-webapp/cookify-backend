@@ -91,15 +91,12 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
 
     const recipe = new Recipe(data);
 
-    await recipe.populate({
-      path: 'ingredients.ingredient',
-      populate: 'unit',
-    });
+    await recipe.populate('ingredients.ingredient');
     recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
       recipe.ingredients.map((item) => ({
         name: item.ingredient.queryKey,
         quantity: item.quantity,
-        unit: item.ingredient.unit.queryKey,
+        unit: item.unit.queryKey,
       }))
     );
 

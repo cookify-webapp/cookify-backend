@@ -3,17 +3,18 @@ import { model, Schema, Document, Types, AggregatePaginateModel, AggregatePagina
 import { CommentInstanceInterface } from '@models/comment';
 import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
-import { IngredientInstanceInterface, ingredientSchema } from '@models/ingredient';
+import { IngredientInstanceInterface } from '@models/ingredient';
 import { listRecipe } from '@functions/recipeFunction';
 import constraint from '@config/constraint';
+import { UnitInstanceInterface } from './unit';
 
 //---------------------
 //   INTERFACE
 //---------------------
 export interface IngredientQuantityInterface {
-  _id: Types.ObjectId;
   ingredient: Types.ObjectId & IngredientInstanceInterface;
   quantity: number;
+  unit: Types.ObjectId & UnitInstanceInterface;
 }
 
 export interface RecipeInterface extends Document {
@@ -59,10 +60,19 @@ interface RecipeQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true, autopopulate: { select: 'name unit type image' } },
-  quantity: { type: Number, required: true, min: 0 },
-});
+export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
+  {
+    ingredient: {
+      type: 'ObjectId',
+      ref: 'Ingredient',
+      required: true,
+      autopopulate: { select: 'name type image' },
+    },
+    quantity: { type: Number, required: true, min: 0 },
+    unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
+  },
+  { _id: false }
+);
 
 export const recipeSchema = new Schema<
   RecipeInstanceInterface,

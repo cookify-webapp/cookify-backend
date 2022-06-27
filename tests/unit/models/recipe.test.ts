@@ -9,8 +9,8 @@ const ingredientData = {
   method: '6264263d50eda11fe1a2b8f4',
   serving: 1,
   ingredients: [
-    { ingredient: '6264263d50eda11fe1a2b8f4', quantity: 50 },
-    { ingredient: '6264263d50eda11fe1a2b8f5', quantity: 20 },
+    { ingredient: '6264263d50eda11fe1a2b8f4', quantity: 50, unit: '6264263d50eda11fe1a2b8f4' },
+    { ingredient: '6264263d50eda11fe1a2b8f5', quantity: 20, unit: '6264263d50eda11fe1a2b8f4' },
   ],
   subIngredients: [],
   steps: ['Cut', 'Grill'],
