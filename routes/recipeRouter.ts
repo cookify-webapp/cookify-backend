@@ -7,6 +7,7 @@ import {
   createRecipe,
   getRecipeDetail,
   deleteRecipe,
+  editRecipe,
 } from '@controllers/recipeController';
 import { auth, byPassAuth } from '@middleware/auth';
 import { recipeListValidator, recipeValidator } from '@middleware/requestValidator';
@@ -24,6 +25,8 @@ recipeRouter.get('/methods', getCookingMethods);
 recipeRouter.get('/:recipeId', byPassAuth, getRecipeDetail);
 
 recipeRouter.post('/create', middleware, createRecipe);
+
+recipeRouter.put('/:recipeId/edit', middleware, editRecipe);
 
 recipeRouter.put('/:recipeId/bookmark', auth, setBookmark);
 

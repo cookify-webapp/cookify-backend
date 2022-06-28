@@ -10,6 +10,18 @@ import { Snapshot } from '@models/snapshot';
 import createRestAPIError from '@error/createRestAPIError';
 import nutritionDetailService from '@services/nutritionDetailService';
 import { deleteImage } from '@utils/imageUtil';
+import { RecipeInstanceInterface } from '../models/recipe';
+
+const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
+  await recipe.populate(['ingredients.ingredient', 'ingredients.unit']);
+  recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
+    recipe.ingredients.map((item) => ({
+      name: item.ingredient.queryKey,
+      quantity: item.quantity,
+      unit: item.unit.queryKey,
+    }))
+  );
+};
 
 export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
@@ -91,17 +103,52 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
 
     const recipe = new Recipe(data);
 
-    await recipe.populate('ingredients.ingredient');
-    recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
-      recipe.ingredients.map((item) => ({
-        name: item.ingredient.queryKey,
-        quantity: item.quantity,
-        unit: item.unit.queryKey,
-      }))
-    );
+    await getNutritionalDetail(recipe);
 
     await recipe.depopulate().save();
     res.status(200).send({ id: recipe.id });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const editRecipe: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params?.recipeId;
+    const data = req.body?.data;
+
+    const recipe = await Recipe.findById(id).setOptions({ autopopulate: false }).populate('author').exec();
+    if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+    if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
+
+    const oldImage = recipe.image;
+
+    recipe.set({
+      name: data?.name || recipe.name,
+      desc: data?.desc || recipe.desc,
+      method: data?.method || recipe.method,
+      image: req.file?.filename || recipe.image,
+      serving: data?.serving || recipe.serving,
+      subIngredients: data?.subIngredients || recipe.subIngredients,
+      steps: data?.steps || recipe.steps,
+    });
+
+    let isSame = false;
+
+    if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
+      _.forEach(data?.ingredients, (item) => {
+        isSame = _.includes(recipe.ingredients, item);
+      });
+    }
+
+    if (!isSame) {
+      recipe.set('ingredients', data?.ingredients);
+      await getNutritionalDetail(recipe);
+    }
+
+    await recipe.depopulate().save({ validateModifiedOnly: true });
+    recipe.image !== oldImage && deleteImage('recipes', oldImage);
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
