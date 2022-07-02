@@ -12,7 +12,7 @@
     "skipLibCheck": true,
     "noEmit": true,
     "isolatedModules": true,
-    "typeRoots": ["types"],
+    "types": ["jest", "node"],
     "baseUrl": ".",
     "paths": {
       "@models/*": ["models/*"],

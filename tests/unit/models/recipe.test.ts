@@ -1,9 +1,6 @@
-import { describe, it, expect } from '@jest/globals';
-
-import '@models/unit';
 import { Recipe } from '@models/recipe';
 
-const ingredientData = {
+const recipeData = {
   name: 'สเต็กริบอายซอสพริกไทยดำ',
   desc: 'สเต็กริบอายสูตรเฉพาะของไรเดน โชกุน อร่อยที่สุดในเมืองอินาซุมะ คุโจว ซาระลองชิม แล้วถึงกับต้องขอเพิ่ม...',
   method: '6264263d50eda11fe1a2b8f4',
@@ -18,25 +15,25 @@ const ingredientData = {
   image: 'image',
 };
 
-describe('Ingredient model', () => {
-  it('should be able to create a valid ingredient', async () => {
-    const validRecipe = new Recipe(ingredientData);
+describe('Recipe model', () => {
+  it('should be able to create a valid recipe', async () => {
+    const validRecipe = new Recipe(recipeData);
     const savedRecipe = await validRecipe.save();
 
     // Test insert
     expect(savedRecipe.id).toBeDefined();
-    expect(savedRecipe.name).toStrictEqual(ingredientData.name);
-    expect(savedRecipe.desc).toStrictEqual(ingredientData.desc);
-    expect(savedRecipe.method.toString()).toStrictEqual(ingredientData.method);
+    expect(savedRecipe.name).toStrictEqual(recipeData.name);
+    expect(savedRecipe.desc).toStrictEqual(recipeData.desc);
+    expect(savedRecipe.method.toString()).toStrictEqual(recipeData.method);
     savedRecipe.ingredients.forEach((item, index) => {
-      expect(item.ingredient.toString()).toStrictEqual(ingredientData.ingredients[index].ingredient);
-      expect(item.quantity).toStrictEqual(ingredientData.ingredients[index].quantity);
+      expect(item.ingredient.toString()).toStrictEqual(recipeData.ingredients[index].ingredient);
+      expect(item.quantity).toStrictEqual(recipeData.ingredients[index].quantity);
     });
-    expect(savedRecipe.subIngredients).toStrictEqual(ingredientData.subIngredients);
-    expect(savedRecipe.serving).toStrictEqual(ingredientData.serving);
-    expect(savedRecipe.serving).toStrictEqual(ingredientData.serving);
-    expect(savedRecipe.author.toString()).toStrictEqual(ingredientData.author);
-    expect(savedRecipe.image).toStrictEqual(ingredientData.image);
+    expect(savedRecipe.subIngredients).toStrictEqual(recipeData.subIngredients);
+    expect(savedRecipe.serving).toStrictEqual(recipeData.serving);
+    expect(savedRecipe.serving).toStrictEqual(recipeData.serving);
+    expect(savedRecipe.author.toString()).toStrictEqual(recipeData.author);
+    expect(savedRecipe.image).toStrictEqual(recipeData.image);
   });
 
   it('should not allow insertion without required fields', async () => {
@@ -46,7 +43,7 @@ describe('Ingredient model', () => {
   });
 
   it('should paginate', async () => {
-    const recipe = new Recipe(ingredientData);
+    const recipe = new Recipe(recipeData);
     const savedRecipe = await recipe.save();
     const foundRecipe = await Recipe.listRecipe(
       1,
