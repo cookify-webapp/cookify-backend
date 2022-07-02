@@ -71,7 +71,7 @@ export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
     quantity: { type: Number, required: true, min: 0 },
     unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
   },
-  { _id: false }
+  { _id: false, autoIndex: false, autoCreate: false }
 );
 
 export const recipeSchema = new Schema<
@@ -85,7 +85,9 @@ export const recipeSchema = new Schema<
     desc: { type: String, required: true, maxlength: constraint.desc.max },
     serving: { type: Number, required: true, min: 1 },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
-    subIngredients: [{ type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit type image' } }],
+    subIngredients: [
+      { type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit type image' }, excludeIndexes: true },
+    ],
     method: {
       type: 'ObjectId',
       ref: 'CookingMethod',
