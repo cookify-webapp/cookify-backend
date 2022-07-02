@@ -11,7 +11,7 @@ export const comparePassword: (this: AccountInstanceInterface, password: string)
 
 export const hashPassword: (this: AccountInstanceInterface) => Promise<void> = async function () {
   const saltRounds = 10;
-  this.password = await bcrypt.hash(this.password, saltRounds);
+  this.password = encodeURIComponent(await bcrypt.hash(this.password, saltRounds));
 };
 
 export const signToken: (this: AccountInstanceInterface, secret: string) => string = function (secret) {
