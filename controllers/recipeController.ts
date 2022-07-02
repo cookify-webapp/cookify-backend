@@ -11,6 +11,7 @@ import createRestAPIError from '@error/createRestAPIError';
 import nutritionDetailService from '@services/nutritionDetailService';
 import { deleteImage } from '@utils/imageUtil';
 import { RecipeInstanceInterface } from '../models/recipe';
+import { Comment } from '@models/comment';
 
 const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
   await recipe.populate(['ingredients.ingredient', 'ingredients.unit']);
@@ -166,6 +167,8 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
     await recipe.deleteOne();
+    const comments = await Comment.find({ post: recipe._id }).exec();
+    comments.forEach((comment) => comment.deleteOne());
     deleteImage('recipes', recipe.image);
 
     res.status(200).send({ message: 'success' });
