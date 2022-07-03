@@ -9,6 +9,11 @@ export const comparePassword: (this: AccountInstanceInterface, password: string)
   return bcrypt.compare(password, decodeURIComponent(this.password));
 };
 
+export const hashPassword: (this: AccountInstanceInterface) => Promise<void> = async function () {
+  const saltRounds = 10;
+  this.password = encodeURIComponent(await bcrypt.hash(this.password, saltRounds));
+};
+
 export const signToken: (this: AccountInstanceInterface, secret: string) => string = function (secret) {
   return jwt.sign({ username: this.username, isAdmin: this.accountType === 'admin' }, secret, {
     expiresIn: '24h',

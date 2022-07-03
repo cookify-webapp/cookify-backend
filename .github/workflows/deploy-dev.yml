@@ -1,0 +1,73 @@
+name: deploy-be-dev
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: pull seed-image
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd cookify-devops/seed-image
+            git pull origin master
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - run: docker build -f Dockerfile-dev . --tag ghcr.io/cookify-webapp/cookify-backend:dev
+      - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - run: docker push ghcr.io/cookify-webapp/cookify-backend:dev
+  deploy:
+    needs: build
+    runs-on: ubuntu-20.04
+    steps:
+      - name: pull images and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd cookify-devops/cookify-backend
+            git checkout develop
+            git pull origin develop
+            docker rm -f expressjs-dev
+            docker rmi ghcr.io/cookify-webapp/cookify-backend:dev
+            docker-compose -f docker-compose.dev.yml up -d
+            docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
+  test:
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: npm install
+      - name: Run Test
+        run: npm run test:all
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-20.04
+    needs:
+      - build
+      - deploy
+      - test
+    if: ${{ always() }}
+    steps:
+      - name: Notify
+        uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: 'Cookify Webapp Bot'
+          avatar-url: 'https://i.ibb.co/9nD72C9/Mini-logo-with-bg.png'
+          title: '${{ github.workflow }}: {{STATUS}}'
+          color-success: '#63AB2A'
+          color-failure: '#E00000'
+          color-cancelled: '#FFB800'

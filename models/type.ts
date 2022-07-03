@@ -23,15 +23,16 @@ interface TypeQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeInstanceMethods, TypeQueryHelpers>({
-  name: { type: String, required: true, unique: true },
-});
+const typeSchema = new Schema<TypeInstanceInterface, TypeModelInterface, TypeInstanceMethods, TypeQueryHelpers>(
+  {
+    name: { type: String, required: true, unique: true },
+  },
+  { autoCreate: process.env.NODE_ENV !== 'production', collation: { locale: 'th' }, versionKey: false }
+);
 
 //---------------------
 //   MODEL
 //---------------------
-export const RecipeType = model<TypeInstanceInterface, TypeModelInterface>('RecipeType', typeSchema);
-
 export const IngredientType = model<TypeInstanceInterface, TypeModelInterface>('IngredientType', typeSchema);
 
 export const CookingMethod = model<TypeInstanceInterface, TypeModelInterface>('CookingMethod', typeSchema);

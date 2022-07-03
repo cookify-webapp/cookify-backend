@@ -1,4 +1,18 @@
-import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
+import {
+  model,
+  Schema,
+  Document,
+  Types,
+  QueryWithHelpers,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+} from 'mongoose';
+import constraint from '@config/constraint';
+
+import { AccountInstanceInterface } from '@models/account';
+import { RecipeInstanceInterface } from '@models/recipe';
+import { SnapshotInstanceInterface } from '@models/snapshot';
+import { listAll } from '@functions/commentFunction';
 
 //---------------------
 //   INTERFACE
@@ -6,10 +20,11 @@ import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoos
 export interface CommentInterface extends Document {
   _id: Types.ObjectId;
   type: 'Recipe' | 'Snapshot';
-  post: Types.ObjectId;
-  author: Types.ObjectId;
+  post: Types.ObjectId & (RecipeInstanceInterface | SnapshotInstanceInterface);
+  author: Types.ObjectId & AccountInstanceInterface;
   comment: string;
-  updatedAt: Date;
+  rating?: number;
+  createdAt: Date;
 }
 
 export interface CommentInstanceMethods {
@@ -18,8 +33,15 @@ export interface CommentInstanceMethods {
 
 export interface CommentInstanceInterface extends CommentInterface, CommentInstanceMethods {}
 
-export interface CommentModelInterface extends Model<CommentInstanceInterface, CommentQueryHelpers> {
+export interface CommentModelInterface extends AggregatePaginateModel<CommentInstanceInterface> {
   // declare any static methods here
+  listAll: (
+    page: number,
+    perPage: number,
+    post: string,
+    type: string,
+    username: string
+  ) => Promise<AggregatePaginateResult<CommentInstanceInterface>>;
 }
 
 interface CommentQueryHelpers {
@@ -47,10 +69,26 @@ const commentSchema = new Schema<
       required: true,
       autopopulate: { select: 'username image' },
     },
-    comment: { type: String, required: true },
+    comment: { type: String, required: true, maxlength: constraint.comment.max },
+    rating: { type: Number, min: 0, max: 5 },
   },
-  { timestamps: { createdAt: false, updatedAt: true } }
+  {
+    autoCreate: process.env.NODE_ENV !== 'production',
+    collation: { locale: 'th' },
+    timestamps: { createdAt: true, updatedAt: false },
+    versionKey: false,
+  }
 );
+
+//---------------------
+//   INDEX
+//---------------------
+commentSchema.index({ post: 1, author: 1 }, { unique: true });
+
+//---------------------
+//   STATICS
+//---------------------
+commentSchema.statics.listAll = listAll;
 
 //---------------------
 //   QUERY HELPERS

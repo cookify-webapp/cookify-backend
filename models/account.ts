@@ -1,9 +1,9 @@
-import { comparePassword, signToken } from '@functions/account';
-
 import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
+import { comparePassword, hashPassword, signToken } from '@functions/accountFunction';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -19,13 +19,15 @@ export interface AccountInterface extends Document {
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
   recipes?: Types.Array<RecipeInstanceInterface>;
-  likedRecipes?: Types.Array<RecipeInstanceInterface>;
   snapshots?: Types.Array<SnapshotInstanceInterface>;
 }
 
 export interface AccountInstanceMethods {
   // declare any instance methods here
   comparePassword: (this: AccountInstanceInterface, password: string) => Promise<boolean>;
+
+  hashPassword: (this: AccountInstanceInterface) => Promise<void>;
+
   signToken: (this: AccountInstanceInterface, secret: string) => string;
 }
 
@@ -38,7 +40,7 @@ export interface AccountModelInterface extends Model<AccountInstanceInterface, A
 interface AccountQueryHelpers {
   byName(
     this: QueryWithHelpers<any, AccountInstanceInterface, AccountQueryHelpers>,
-    name: string
+    name?: string
   ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers>;
 }
 
@@ -52,29 +54,45 @@ export const accountSchema = new Schema<
   AccountQueryHelpers
 >(
   {
-    username: { type: String, required: true, unique: true },
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      minlength: constraint.username.min,
+      maxlength: constraint.username.max,
+    },
     email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
-    password: { type: String, required: true, select: false },
+    password: { type: String, required: true, select: false, match: /^%242[ab]%2410%24\S{53,}/ },
     accountType: {
       type: String,
       required: true,
-      enum: ['user', 'admin'],
+      enum: {
+        values: ['user', 'admin'],
+        message: 'accountType must be either `user` or `admin`',
+      },
       default: 'user',
     },
-    image: { type: String, default: null },
+    image: { type: String, default: '' },
     following: [{ type: 'ObjectId', ref: 'Account' }],
     allergy: [{ type: 'ObjectId', ref: 'Ingredient' }],
     bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],
   },
-  { toJSON: { virtuals: true }, toObject: { virtuals: true } }
+  {
+    autoCreate: process.env.NODE_ENV !== 'production',
+    collation: { locale: 'th' },
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+    versionKey: false,
+  }
 );
 
 //---------------------
 //   QUERY HELPERS
 //---------------------
 accountSchema.query.byName = function (
-  name: string
+  name?: string
 ): QueryWithHelpers<AccountInstanceInterface, AccountInstanceInterface, AccountQueryHelpers> {
+  if (!name) return this;
   return this.where({ username: name });
 };
 
@@ -83,6 +101,7 @@ accountSchema.query.byName = function (
 //---------------------
 accountSchema.methods.comparePassword = comparePassword;
 accountSchema.methods.signToken = signToken;
+accountSchema.methods.hashPassword = hashPassword;
 
 //---------------------
 //   VIRTUAL
@@ -91,12 +110,6 @@ accountSchema.virtual('recipes', {
   ref: 'Recipe',
   localField: '_id',
   foreignField: 'author',
-});
-
-accountSchema.virtual('likedRecipes', {
-  ref: 'Recipe',
-  localField: '_id',
-  foreignField: 'likedBy',
 });
 
 accountSchema.virtual('snapshots', {

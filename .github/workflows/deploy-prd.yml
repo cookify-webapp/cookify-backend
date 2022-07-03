@@ -1,0 +1,60 @@
+name: deploy-be-prd
+on:
+  workflow_dispatch:
+    inputs:
+      deploy-version:
+        description: 'Version to deploy'
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: refs/tags/${{ github.event.inputs.deploy-version }}
+      - name: pull images and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd cookify-devops/cookify-backend
+            git checkout master
+            git pull origin master
+            docker rm -f expressjs-prd
+            docker rmi ghcr.io/cookify-webapp/cookify-backend:${{ github.event.inputs.deploy-version }}
+            docker-compose up -d
+            docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
+  test:
+    needs: deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install modules
+        run: npm install
+      - name: Run Test
+        run: npm run test:all
+  notify:
+    name: Discord Notification
+    runs-on: ubuntu-20.04
+    needs:
+      - build
+      - deploy
+      - test
+    if: ${{ always() }}
+    steps:
+      - name: Notify
+        uses: nobrayner/discord-webhook@v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          discord-webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          username: 'Cookify Webapp Bot'
+          avatar-url: 'https://i.ibb.co/9nD72C9/Mini-logo-with-bg.png'
+          title: '${{ github.workflow }}: {{STATUS}}'
+          color-success: '#63AB2A'
+          color-failure: '#E00000'
+          color-cancelled: '#FFB800'

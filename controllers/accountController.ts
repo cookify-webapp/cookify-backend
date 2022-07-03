@@ -1,28 +1,24 @@
-import { Types } from 'mongoose';
-import createError from 'http-errors';
-import bcrypt from 'bcrypt';
-import { NextFunction, Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Account } from '@models/account';
-import { errorText } from '@coreTypes/core';
-import seedAccounts from '@mock/seedAccounts';
 import { Recipe } from '@models/recipe';
 
-export const login = async (req: Request, res: Response, next: NextFunction) => {
+import createRestAPIError from '@error/createRestAPIError';
+
+export const login: RequestHandler = async (req, res, next) => {
   try {
     const username = req.body?.data?.username;
     const password = req.body?.data?.password;
-    if (!username || !password) throw createError(400, errorText.DATA);
 
     const secret = process.env.JWT_SECRET;
-    if (!secret) throw createError(500, errorText.SECRET);
+    if (!secret) throw createRestAPIError('MISSING_SECRET');
 
-    const account = await Account.findOne().byName(username).exec();
-    if (!account) throw createError(403, errorText.USERNAME);
+    const account = await Account.findOne().byName(username).select('username password accountType').exec();
+    if (!account) throw createRestAPIError('WRONG_USERNAME');
 
     const result = await account.comparePassword(password);
-    if (!result) throw createError(403, errorText.PASSWORD);
+    if (!result) throw createRestAPIError('WRONG_PASSWORD');
 
     const token = account.signToken(secret);
     res.status(200).send({ token });
@@ -31,7 +27,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const getAllAccounts = async (_req: Request, res: Response, next: NextFunction) => {
+export const getAllAccounts: RequestHandler = async (_req, res, next) => {
   try {
     const accounts = await Account.find().lean().exec();
     res.status(200).send({ accounts });
@@ -40,17 +36,15 @@ export const getAllAccounts = async (_req: Request, res: Response, next: NextFun
   }
 };
 
-export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+export const getMe: RequestHandler = async (_req, res, next) => {
   try {
-    if (!req.username) throw createError(401, errorText.AUTH);
-
     const account = await Account.findOne()
-      .byName(req.username)
+      .byName(res.locals.username)
       .select('username email accountType image bookmark')
       .lean()
       .exec();
 
-    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     res.status(200).send({ account });
   } catch (err) {
@@ -58,19 +52,12 @@ export const getMe = async (req: Request, res: Response, next: NextFunction) => 
   }
 };
 
-export const register = async (req: Request, res: Response, next: NextFunction) => {
+export const register: RequestHandler = async (req, res, next) => {
   try {
-    const data = req.body?.data;
-    const saltRounds = 10;
-    const hash = await bcrypt.hash(data?.password, saltRounds);
-    const allergyIds = _.map(data?.allergy, (item: string) => new Types.ObjectId(item));
+    const data = req.body.data;
 
-    const account = new Account({
-      username: data?.username,
-      password: encodeURIComponent(hash),
-      email: data?.email,
-      allergy: allergyIds,
-    });
+    const account = new Account(data);
+    await account.hashPassword();
 
     await account.save();
     res.status(200).send({ message: 'success' });
@@ -79,55 +66,38 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
   }
 };
 
-export const setBookmark = async (req: Request, res: Response, next: NextFunction) => {
+export const setBookmark: RequestHandler = async (req, res, next) => {
   try {
-    if (!req.username) throw createError(401, errorText.AUTH);
-
-    const account = await Account.findOne().byName(req.username).exec();
-    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     const id = req.params?.recipeId;
 
     const recipe = await Recipe.findById(id).exec();
-    if (!recipe) throw createError(404, errorText.ID);
+    if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    await account
-      .updateOne({
-        [_.includes(account.bookmark, recipe._id) ? '$pull' : '$addToSet']: {
-          bookmark: recipe._id,
-        },
-      })
-      .exec();
+    account.bookmark[_.includes(account.bookmark, recipe._id) ? 'pull' : 'push'](recipe._id);
 
+    await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
 };
 
-export const editProfile = async (req: Request, res: Response, next: NextFunction) => {
+export const editProfile: RequestHandler = async (req, res, next) => {
   try {
-    if (!req.username) throw createError(401, errorText.AUTH);
-
     const data = req.body?.data;
 
-    const account = await Account.findOne().byName(req.username).exec();
-    if (!account) throw createError(404, errorText.ACCOUNT_NOT_FOUND);
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    account.username = data?.username;
-    account.email = data?.email;
+    account.set({
+      username: data?.username || account.username,
+      email: data?.email || account.email,
+    });
 
-    await account.save();
-    res.status(200).send({ message: 'success' });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const seedAccount = async (_req: Request, res: Response, next: NextFunction) => {
-  try {
-    await Account.deleteMany().exec();
-    await Account.insertMany(seedAccounts);
+    await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

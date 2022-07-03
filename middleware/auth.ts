@@ -1,40 +1,52 @@
-import createError from 'http-errors';
-import { NextFunction, Request, Response } from 'express';
+import { Request, RequestHandler } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import _ from 'lodash';
 
-import { errorText } from '@coreTypes/core';
+import createRestAPIError from '@error/createRestAPIError';
 
-const getPayload = (req: Request): JwtPayload => {
-  let authHeader = req.headers['authorization'];
-  if (!authHeader) throw createError(401, errorText.AUTH);
-  if (_.isArray(authHeader)) throw createError(400, errorText.AUTH_HEADER);
+const getPayload = (req: Request, byPass: boolean): JwtPayload => {
+  let authHeader = req.headers.authorization;
+  if (!authHeader)
+    if (byPass) {
+      return {};
+    } else {
+      throw createRestAPIError('AUTH');
+    }
 
   const token = authHeader.split(' ')[1];
   const secret = process.env.JWT_SECRET;
-  if (!secret) throw createError(500, errorText.SECRET);
+  if (!secret) throw createRestAPIError('MISSING_SECRET');
 
   return jwt.verify(token, secret) as JwtPayload;
 };
 
-export const auth = async (req: Request, _res: Response, next: NextFunction) => {
+export const auth: RequestHandler = async (req, res, next) => {
   try {
-    const decoded = getPayload(req);
+    const decoded = getPayload(req, false);
 
-    req.username = decoded.username;
+    res.locals.username = decoded.username;
     return next();
   } catch (err) {
     return next(err);
   }
 };
 
-export const adminAuth = async (req: Request, _res: Response, next: NextFunction) => {
+export const adminAuth: RequestHandler = async (req, res, next) => {
   try {
-    const decoded = getPayload(req);
+    const decoded = getPayload(req, false);
+    if (!decoded.isAdmin) throw createRestAPIError('AUTH_ADMIN');
 
-    if (!decoded.isAdmin) throw createError(401, errorText.ADMIN);
+    res.locals.username = decoded.username;
+    return next();
+  } catch (err) {
+    return next(err);
+  }
+};
 
-    req.username = decoded.username;
+export const byPassAuth: RequestHandler = async (req, res, next) => {
+  try {
+    const decoded = getPayload(req, true);
+
+    res.locals.username = decoded.username;
     return next();
   } catch (err) {
     return next(err);

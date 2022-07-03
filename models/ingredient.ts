@@ -1,8 +1,8 @@
-/// <reference path="../functions/ingredient.ts" />
-
 import { model, Schema, Document, Types, PaginateModel, PaginateResult } from 'mongoose';
 
-import { findSameType, listAll } from '@functions/ingredient';
+import { sampleByType, listAll } from '@functions/ingredientFunction';
+import { TypeInstanceInterface } from '@models/type';
+import { UnitInstanceInterface } from '@models/unit';
 
 //---------------------
 //   INTERFACE
@@ -11,11 +11,11 @@ export interface IngredientInterface extends Document {
   _id: Types.ObjectId;
   name: string;
   queryKey: string;
-  unit: Types.ObjectId;
-  type: Types.ObjectId;
-  image?: string;
+  unit: Types.ObjectId & UnitInstanceInterface;
+  type: Types.ObjectId & TypeInstanceInterface;
+  image: string;
   shopUrl?: string;
-  // nutritionalDetail: Object;
+  nutritionalDetail: any;
 }
 
 export interface IngredientInstanceMethods {
@@ -33,7 +33,7 @@ export interface IngredientModelInterface extends PaginateModel<IngredientInstan
     type: string
   ) => Promise<PaginateResult<IngredientInstanceInterface>>;
 
-  findSameType: (type: string) => Promise<IngredientInstanceInterface[]>;
+  sampleByType: (ingredientId: string) => Promise<IngredientInstanceInterface[]>;
 }
 
 interface IngredientQueryHelpers {}
@@ -46,25 +46,35 @@ export const ingredientSchema = new Schema<
   IngredientModelInterface,
   IngredientInstanceMethods,
   IngredientQueryHelpers
->({
-  name: { type: String, required: true, unique: true },
-  queryKey: { type: String, required: true, unique: true },
-  unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
-  type: {
-    type: 'ObjectId',
-    ref: 'IngredientType',
-    required: true,
-    autopopulate: true,
+>(
+  {
+    name: { type: String, required: true, unique: true },
+    queryKey: { type: String, required: true, unique: true },
+    unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
+    type: {
+      type: 'ObjectId',
+      ref: 'IngredientType',
+      required: true,
+      autopopulate: true,
+    },
+    image: { type: String, required: true },
+    shopUrl: { type: String, default: '' },
+    nutritionalDetail: {},
   },
-  image: { type: String, required: true },
-  shopUrl: String,
-});
+  {
+    autoCreate: process.env.NODE_ENV !== 'production',
+    collation: { locale: 'th' },
+    timestamps: { createdAt: true, updatedAt: false },
+    versionKey: false,
+    selectPopulatedPaths: false,
+  }
+);
 
 //---------------------
 //   STATICS
 //---------------------
 ingredientSchema.statics.listAll = listAll;
-ingredientSchema.statics.findSameType = findSameType;
+ingredientSchema.statics.sampleByType = sampleByType;
 
 //---------------------
 //   MODEL

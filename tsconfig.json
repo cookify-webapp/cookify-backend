@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ESNext",
     "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["ESNext"],
     "allowJs": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
     "isolatedModules": true,
-    "typeRoots": ["types"],
+    "types": ["jest", "node"],
     "baseUrl": ".",
     "paths": {
       "@models/*": ["models/*"],
@@ -22,9 +23,13 @@
       "@services/*": ["services/*"],
       "@coreTypes/*": ["types/*"],
       "@mock/*": ["mock/*"],
-      "@utils/*": ["utils/*"]
+      "@utils/*": ["utils/*"],
+      "@error/*": ["error/*"],
+      "@db/*": ["db/*"],
+      "@tests/*": ["tests/*"],
+      "@config/*": ["config/*"]
     }
   },
-  "include": ["**/*.ts", "**/*.d.ts"],
-  "exclude": ["node_modules"]
+  "include": ["**/*.ts", "**/*.d.ts", "**/*.test.ts"],
+  "exclude": ["node_modules", "coverage"]
 }

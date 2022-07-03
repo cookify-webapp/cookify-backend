@@ -1,6 +1,7 @@
 import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
 
 import { RecipeInstanceInterface } from '@models/recipe';
+import constraint from '@config/constraint';
 
 //---------------------
 //   INTERFACE
@@ -11,7 +12,6 @@ export interface SnapshotInterface extends Document {
   image: string;
   author: Types.ObjectId;
   recipe: Types.ObjectId;
-  likedBy: Types.Array<Types.ObjectId>;
   updatedAt: Date;
 }
 
@@ -46,7 +46,7 @@ export const snapshotSchema = new Schema<
   SnapshotQueryHelpers
 >(
   {
-    caption: { type: String, required: true },
+    caption: { type: String, required: true, maxlength: constraint.caption.max },
     image: { type: String, required: true },
     author: {
       type: 'ObjectId',
@@ -60,12 +60,14 @@ export const snapshotSchema = new Schema<
       required: true,
       autopopulate: { select: 'name' },
     },
-    likedBy: [{ type: 'ObjectId', ref: 'Account' }],
   },
   {
-    timestamps: { createdAt: false, updatedAt: true },
+    autoCreate: process.env.NODE_ENV !== 'production',
+    collation: { locale: 'th' },
+    timestamps: { createdAt: true, updatedAt: false },
     toJSON: { virtuals: true },
     toObject: { virtuals: true },
+    versionKey: false,
   }
 );
 

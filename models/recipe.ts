@@ -1,49 +1,39 @@
-import {
-  model,
-  Schema,
-  Document,
-  Types,
-  QueryWithHelpers,
-  AggregatePaginateModel,
-  AggregatePaginateResult,
-} from 'mongoose';
+import { model, Schema, Document, Types, AggregatePaginateModel, AggregatePaginateResult } from 'mongoose';
 
 import { CommentInstanceInterface } from '@models/comment';
-import { RatingInstanceInterface } from '@models/rating';
-import { getRecipeDetail, listRecipe } from '@functions/recipe';
+import { AccountInstanceInterface } from '@models/account';
+import { TypeInstanceInterface } from '@models/type';
+import { IngredientInstanceInterface } from '@models/ingredient';
+import { listRecipe } from '@functions/recipeFunction';
+import constraint from '@config/constraint';
+import { UnitInstanceInterface } from './unit';
 
 //---------------------
 //   INTERFACE
 //---------------------
 export interface IngredientQuantityInterface {
-  _id: Types.ObjectId;
-  ingredient: Types.ObjectId;
+  ingredient: Types.ObjectId & IngredientInstanceInterface;
   quantity: number;
+  unit: Types.ObjectId & UnitInstanceInterface;
 }
 
 export interface RecipeInterface extends Document {
   _id: Types.ObjectId;
   name: string;
   desc: string;
+  serving: number;
   ingredients: Types.DocumentArray<IngredientQuantityInterface>;
-  methods: Types.Array<Types.ObjectId>;
-  types: Types.Array<Types.ObjectId>;
+  subIngredients: Types.Array<Types.ObjectId> & Types.DocumentArray<IngredientInstanceInterface>;
+  method: Types.ObjectId & TypeInstanceInterface;
+  steps: Types.Array<string>;
   image: string;
-  author: Types.ObjectId;
-  likedBy: Types.Array<Types.ObjectId>;
-  ratings?: Types.DocumentArray<RatingInstanceInterface>;
+  author: Types.ObjectId & AccountInstanceInterface;
   comments?: Types.DocumentArray<CommentInstanceInterface>;
-  countRating?: number;
-  countComment?: number;
   averageRating?: number;
-  updatedAt: Date;
-  // nutritionalDetail: Object;
-}
-
-export interface AverageCountInterface {
-  _id: string;
-  average: number;
-  count: number;
+  bookmarked?: boolean;
+  isMe?: boolean;
+  createdAt: Date;
+  nutritionalDetail: Object;
 }
 
 export interface RecipeInstanceMethods {
@@ -58,27 +48,31 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
     page: number,
     perPage: number,
     name: string,
-    ingredients: string[],
-    methods: string[]
+    method: string,
+    ingredients: string[] | '',
+    bookmark?: Types.ObjectId[],
+    allergy?: Types.ObjectId[]
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
-
-  getRecipeDetail: (id: string) => Promise<RecipeInstanceInterface | null>;
 }
 
-interface RecipeQueryHelpers {
-  byName(
-    this: QueryWithHelpers<any, RecipeInstanceInterface, RecipeQueryHelpers>,
-    name: string
-  ): QueryWithHelpers<RecipeInstanceInterface, RecipeInstanceInterface, RecipeQueryHelpers>;
-}
+interface RecipeQueryHelpers {}
 
 //---------------------
 //   SCHEMA
 //---------------------
-export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>({
-  ingredient: { type: 'ObjectId', ref: 'Ingredient', required: true },
-  quantity: { type: Number, required: true, min: 0 },
-});
+export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
+  {
+    ingredient: {
+      type: 'ObjectId',
+      ref: 'Ingredient',
+      required: true,
+      autopopulate: { select: 'name type image' },
+    },
+    quantity: { type: Number, required: true, min: 0 },
+    unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
+  },
+  { _id: false, autoIndex: false, autoCreate: false }
+);
 
 export const recipeSchema = new Schema<
   RecipeInstanceInterface,
@@ -88,87 +82,51 @@ export const recipeSchema = new Schema<
 >(
   {
     name: { type: String, required: true },
-    desc: { type: String, required: true },
+    desc: { type: String, required: true, maxlength: constraint.desc.max },
+    serving: { type: Number, required: true, min: 1 },
     ingredients: [{ type: ingredientQuantitySchema, required: true }],
-    methods: [
-      {
-        type: 'ObjectId',
-        ref: 'CookingMethod',
-        required: true,
-        autopopulate: true,
-      },
+    subIngredients: [
+      { type: 'ObjectId', ref: 'Ingredient', autopopulate: { select: 'name unit type image' }, excludeIndexes: true },
     ],
-    types: [
-      {
-        type: 'ObjectId',
-        ref: 'RecipeType',
-        required: true,
-        autopopulate: true,
-      },
-    ],
+    method: {
+      type: 'ObjectId',
+      ref: 'CookingMethod',
+      required: true,
+      autopopulate: true,
+    },
+    steps: [{ type: String, required: true }],
     image: { type: String, required: true },
     author: {
       type: 'ObjectId',
       ref: 'Account',
       required: true,
-      autopopulate: { select: 'username' },
+      autopopulate: { select: 'username image' },
     },
-    likedBy: [{ type: 'ObjectId', ref: 'Account' }],
+    nutritionalDetail: {},
   },
   {
-    timestamps: { createdAt: false, updatedAt: true },
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    autoCreate: process.env.NODE_ENV !== 'production',
+    collation: { locale: 'th' },
+    timestamps: { createdAt: true, updatedAt: false },
+    versionKey: false,
   }
 );
-
-//---------------------
-//   QUERY HELPERS
-//---------------------
-recipeSchema.query.byName = function (
-  name: string
-): QueryWithHelpers<RecipeInstanceInterface, RecipeInstanceInterface, RecipeQueryHelpers> {
-  return this.where({ name });
-};
 
 //---------------------
 //   STATICS
 //---------------------
 recipeSchema.statics.listRecipe = listRecipe;
-recipeSchema.statics.getRecipeDetail = getRecipeDetail;
 
 //---------------------
-//   VIRTUAL
+//   VIRTUALS
 //---------------------
-recipeSchema.virtual('ratings', {
-  ref: 'Rating',
-  localField: '_id',
-  foreignField: 'post',
-});
-
 recipeSchema.virtual('comments', {
+  localField: '_id',
+  foreignField: 'post',
   ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post',
-});
-
-recipeSchema.virtual('countRating', {
-  ref: 'Rating',
-  localField: '_id',
-  foreignField: 'post',
-  count: true,
-});
-
-recipeSchema.virtual('countComment', {
-  ref: 'Comment',
-  localField: '_id',
-  foreignField: 'post',
-  count: true,
 });
 
 //---------------------
 //   MODEL
 //---------------------
 export const Recipe = model<RecipeInstanceInterface, RecipeModelInterface>('Recipe', recipeSchema);
-
-export const IngredientQuantity = model<IngredientQuantityInterface>('IngredientQuantity', ingredientQuantitySchema);
