@@ -11,17 +11,20 @@ jobs:
     steps:
       - name: pull images and deploy
         uses: appleboy/ssh-action@master
+        env:
+          BE_VERSION: ${{ github.event.inputs.deploy-version }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           password: ${{ secrets.SSH_PASSWORD }}
           port: ${{ secrets.SSH_PORT }}
+          env: BE_VERSION
           script: |
             cd cookify-devops/cookify-backend
             git checkout master
             git pull origin master
+            echo "BE_VERSION=${BE_VERSION}" >> .env
             docker rm -f expressjs-prd
-            docker rmi ghcr.io/cookify-webapp/cookify-backend:${{ github.event.inputs.deploy-version }}
             docker-compose up -d
             docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
   test:

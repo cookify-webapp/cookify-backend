@@ -1,7 +1,7 @@
 version: "3"
 services:
   expressjs-prd:
-    image: ghcr.io/cookify-webapp/cookify-backend:prd
+    image: ghcr.io/cookify-webapp/cookify-backend:${BE_VERSION}
     restart: unless-stopped
     container_name: "expressjs-prd"
     env_file:
