@@ -9,10 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-        with:
-          ref: refs/tags/${{ github.event.inputs.deploy-version }}
       - name: pull images and deploy
         uses: appleboy/ssh-action@master
         with:
