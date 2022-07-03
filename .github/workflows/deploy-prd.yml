@@ -25,8 +25,8 @@ jobs:
             git checkout master
             git pull origin master
             docker rm -f expressjs-prd
-            docker rmi ghcr.io/cookify-webapp/cookify-backend:prd
-            docker-compose -f docker-compose.prd.yml up -d
+            docker rmi ghcr.io/cookify-webapp/cookify-backend:${{ github.event.inputs.deploy-version }}
+            docker-compose up -d
             docker cp /home/cookifywebapp/cookify-devops/seed-image expressjs-dev:/usr/src/app/public/images/
   test:
     needs: deploy
