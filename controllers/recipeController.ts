@@ -137,8 +137,13 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     let isSame = false;
 
     if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
+      const mapped = recipe.ingredients.map((item) => ({
+        ingredient: item.ingredient.toString(),
+        quantity: item.quantity,
+        unit: item.unit.toString(),
+      }));
       _.forEach(data?.ingredients, (item) => {
-        isSame = _.includes(recipe.ingredients, item);
+        isSame = _.some(mapped, item);
       });
     }
 
