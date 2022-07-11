@@ -47,11 +47,14 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
   listRecipe: (
     page: number,
     perPage: number,
-    name: string,
-    method: string,
-    ingredients: string[] | '',
-    bookmark?: Types.ObjectId[],
-    allergy?: Types.ObjectId[]
+    query: {
+      name: string;
+      method: string;
+      ingredients: string[] | '';
+      bookmark?: Types.ObjectId[];
+      allergy?: Types.ObjectId[];
+    },
+    author?: Types.ObjectId
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 

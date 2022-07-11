@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
+import { model, Schema, Document, QueryWithHelpers, Types, PaginateModel } from 'mongoose';
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
@@ -15,7 +15,7 @@ export interface AccountInterface extends Document {
   password: string;
   accountType: 'user' | 'admin';
   image?: string;
-  following: Types.Array<Types.ObjectId>;
+  following?: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
   recipes?: Types.Array<RecipeInstanceInterface>;
@@ -33,7 +33,7 @@ export interface AccountInstanceMethods {
 
 export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
 
-export interface AccountModelInterface extends Model<AccountInstanceInterface, AccountQueryHelpers> {
+export interface AccountModelInterface extends PaginateModel<AccountInstanceInterface, AccountQueryHelpers> {
   // declare any static methods here
 }
 
