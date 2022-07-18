@@ -133,6 +133,25 @@ export const editCommentValidator = celebrate(
   opts
 );
 
+export const userValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      email: Joi.string().required().email(),
+      allergy: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
+    }),
+  },
+  opts
+);
+
+export const adminValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      email: Joi.string().required().email(),
+    }),
+  },
+  opts
+);
+
 //---------------------
 //   QUERY
 //---------------------
@@ -162,6 +181,15 @@ export const recipeListValidator = celebrate(
         otherwise: Joi.string().valid(''),
       }),
       methodId: Joi.string().required().allow('').custom(objectIdVal),
+    }),
+  },
+  opts
+);
+
+export const adminListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery({
+      searchWord: Joi.string().required().allow(''),
     }),
   },
   opts

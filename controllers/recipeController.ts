@@ -28,7 +28,7 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
-    const searchWord = req.query?.searchWord as string;
+    const name = req.query?.searchWord as string;
     const ingredients = req.query?.ingredientId as string[];
     const method = req.query?.methodId as string;
 
@@ -38,13 +38,7 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
       .select('bookmark allergy')
       .exec();
 
-    const recipes = await Recipe.listRecipe(page, perPage, {
-      name: searchWord,
-      method,
-      ingredients,
-      bookmark,
-      allergy,
-    });
+    const recipes = await Recipe.listRecipe(page, perPage, { name, method, ingredients, bookmark, allergy });
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -70,18 +64,7 @@ export const getMyRecipeList: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).select('_id').lean().exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const recipes = await Recipe.listRecipe(
-      page,
-      perPage,
-      {
-        name: '',
-        method: '',
-        ingredients: [],
-        bookmark: [],
-        allergy: [],
-      },
-      account._id
-    );
+    const recipes = await Recipe.listRecipe(page, perPage, {}, [account._id]);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -210,11 +193,10 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     const ref = await Snapshot.exists({ recipe: new Types.ObjectId(id) }).exec();
     if (ref) throw createRestAPIError('DEL_REFERENCE');
 
-    const recipe = await Recipe.findById(id).exec();
+    const recipe = await Recipe.findByIdAndDelete(id).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
-    await recipe.deleteOne();
     const comments = await Comment.find({ post: recipe._id }).exec();
     comments.forEach((comment) => comment.deleteOne());
     deleteImage('recipes', recipe.image);

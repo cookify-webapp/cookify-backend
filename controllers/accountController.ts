@@ -1,10 +1,13 @@
 import { RequestHandler } from 'express';
+import { Types } from 'mongoose';
 import _ from 'lodash';
 
 import { Account } from '@models/account';
 import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
+import { deleteImage } from '@utils/imageUtil';
+import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 
 export const login: RequestHandler = async (req, res, next) => {
   try {
@@ -31,9 +34,13 @@ export const getAdmins: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
+    const searchWord = parseInt(req.query?.searchWord as string);
 
     const accounts = await Account.paginate(
-      { accountType: 'admin' },
+      {
+        accountType: 'admin',
+        $or: [{ username: { $regex: searchWord, $options: 'i' } }, { email: { $regex: searchWord, $options: 'i' } }],
+      },
       { page: page, limit: perPage, select: 'image username email', lean: true, leanWithId: false }
     );
 
@@ -162,6 +169,84 @@ export const getUser: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const listPending: RequestHandler = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query?.page as string);
+    const perPage = parseInt(req.query?.perPage as string);
+
+    const accounts = await Account.paginate(
+      { accountType: 'pending' },
+      {
+        page: page,
+        limit: perPage,
+        select: 'email',
+        lean: true,
+        leanWithId: false,
+      }
+    );
+
+    if (_.size(accounts.docs) > 0 || accounts.totalDocs > 0) {
+      res.status(200).send({
+        accounts: accounts.docs,
+        page: accounts.page,
+        perPage: accounts.limit,
+        totalCount: accounts.totalDocs,
+        totalPages: accounts.totalPages,
+      });
+    } else {
+      res.status(204).send();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const verifyPending: RequestHandler = async (req, res, next) => {
+  try {
+    const uniqueKey = req.params?.uniqueKey;
+
+    const account = await Account.findOne().byName(uniqueKey).exec();
+    if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    res.status(200).send({ email: account?.email });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const addPending: RequestHandler = async (req, res, next) => {
+  try {
+    const data = req.body.data;
+
+    const account = new Account({
+      username: new Types.ObjectId().toString(),
+      email: data?.email,
+      accountType: 'pending',
+    });
+
+    await account.save();
+    await sendAdminConfirmation(account.email, account.username);
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const revokeRequest: RequestHandler = async (req, res, next) => {
+  try {
+    const email = req.params?.email;
+
+    const account = await Account.findOne({ email }).exec();
+    if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    await account.deleteOne();
+    await sendAdminRevocation(account.email);
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const register: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body.data;
@@ -202,12 +287,31 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
+    const oldImage = account.image || '';
+
     account.set({
-      username: data?.username || account.username,
       email: data?.email || account.email,
+      allergy: data?.allergy || account.allergy,
+      image: req.file?.filename || account.image,
     });
 
     await account.save({ validateModifiedOnly: true });
+    account.image !== oldImage && deleteImage('accounts', oldImage);
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const deleteProfile: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params.userId;
+
+    const account = await Account.findById(id).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    await account.deleteOne();
+    deleteImage('accounts', account.image);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
