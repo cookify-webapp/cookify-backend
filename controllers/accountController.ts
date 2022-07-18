@@ -41,7 +41,7 @@ export const getAdmins: RequestHandler = async (req, res, next) => {
         accountType: 'admin',
         $or: [{ username: { $regex: searchWord, $options: 'i' } }, { email: { $regex: searchWord, $options: 'i' } }],
       },
-      { page: page, limit: perPage, select: 'image username email', lean: true, leanWithId: false }
+      { page: page, limit: perPage, select: 'image username email', sort: 'username', lean: true, leanWithId: false }
     );
 
     if (_.size(accounts.docs) > 0 || accounts.totalDocs > 0) {
@@ -70,6 +70,7 @@ export const getFollowing: RequestHandler = async (req, res, next) => {
     const account = await Account.findById(id)
       .select('following')
       .populate('following', 'image username email')
+      .sort('username')
       .lean()
       .exec();
 
@@ -102,7 +103,7 @@ export const getFollower: RequestHandler = async (req, res, next) => {
 
     const accounts = await Account.paginate(
       { following: id },
-      { page: page, limit: perPage, select: 'image username email', lean: true, leanWithId: false }
+      { page: page, limit: perPage, select: 'image username email', sort: 'username', lean: true, leanWithId: false }
     );
 
     if (_.size(accounts.docs) > 0 || accounts.totalDocs > 0) {
@@ -180,6 +181,7 @@ export const listPending: RequestHandler = async (req, res, next) => {
         page: page,
         limit: perPage,
         select: 'email',
+        sort: 'email',
         lean: true,
         leanWithId: false,
       }
