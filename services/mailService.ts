@@ -42,7 +42,7 @@ export const sendAdminRevocation = async (email: string) => {
     from: user,
     to: email,
     subject: 'คุณได้ถูกถอดสิทธิ์ในการเป็นผู้ดูแลระบบของ Cookify Web Application',
-    template: 'revoke_admin',
+    template: 'admin_revocation',
     context: { link: `${url}/register` },
   };
   await transport.sendMail(options);

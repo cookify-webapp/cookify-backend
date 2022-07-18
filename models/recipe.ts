@@ -1,7 +1,7 @@
 import { model, Schema, Document, Types, AggregatePaginateModel, AggregatePaginateResult } from 'mongoose';
 
 import { CommentInstanceInterface } from '@models/comment';
-import { accountSchema, AccountInstanceInterface } from '@models/account';
+import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
 import { UnitInstanceInterface, unitSchema } from '@models/unit';
 import { IngredientInstanceInterface } from '@models/ingredient';
