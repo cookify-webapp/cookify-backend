@@ -140,7 +140,7 @@ export const deleteIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const ref = await Recipe.exists({ ingredients: new Types.ObjectId(id) }).exec();
+    const ref = await Recipe.exists({ 'ingredients.ingredient': id }).exec();
     if (ref) throw createRestAPIError('DEL_REFERENCE');
 
     const result = await Ingredient.findByIdAndDelete(id).exec();
