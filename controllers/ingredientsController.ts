@@ -94,7 +94,7 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
       ingredient.queryKey
     );
 
-    await ingredient.depopulate().save();
+    await ingredient.save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -128,7 +128,7 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
       );
     }
 
-    await ingredient.depopulate().save({ validateModifiedOnly: true });
+    await ingredient.save({ validateModifiedOnly: true });
     ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {

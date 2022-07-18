@@ -38,13 +38,6 @@ export const listRecipe: (
       as: 'method',
     })
     .lookup({
-      from: 'accounts',
-      localField: 'author',
-      foreignField: '_id',
-      as: 'author',
-      pipeline: [{ $project: { username: 1 } }],
-    })
-    .lookup({
       from: 'comments',
       localField: '_id',
       foreignField: 'post',
@@ -54,10 +47,6 @@ export const listRecipe: (
     .unwind(
       {
         path: '$method',
-        preserveNullAndEmptyArrays: true,
-      },
-      {
-        path: '$author',
         preserveNullAndEmptyArrays: true,
       },
       {

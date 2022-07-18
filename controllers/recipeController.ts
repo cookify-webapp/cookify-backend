@@ -12,9 +12,10 @@ import nutritionDetailService from '@services/nutritionDetailService';
 import { deleteImage } from '@utils/imageUtil';
 import { RecipeInstanceInterface } from '../models/recipe';
 import { Comment } from '@models/comment';
+import { Unit } from '@models/unit';
 
 const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
-  await recipe.populate(['ingredients.ingredient', 'ingredients.unit']);
+  await recipe.populate('ingredients.ingredient');
   recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
     recipe.ingredients.map((item) => ({
       name: item.ingredient.queryKey,
@@ -106,10 +107,12 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
       .select('username bookmark')
       .lean()
       .exec();
+    const account = await Account.findById(recipe.author._id).select('image').lean().exec();
 
     recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
     recipe.isMe = username === recipe.author.username;
     recipe.bookmarked = _.includes(bookmark, recipe._id);
+    recipe.author.image = account?.image || '';
 
     delete recipe.comments;
 
@@ -123,16 +126,22 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
 
-    const account = await Account.exists({ username: res.locals.username }).exec();
+    const account = await Account.findOne().byName(res.locals.username).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    for (const ingredient of data.ingredients) {
+      const unit = await Unit.findById(ingredient?.unit).lean().exec();
+      ingredient.unit = unit;
+    }
 
     data.image = req.file?.filename;
-    data.author = account?._id;
+    data.author = { _id: account._id, username: account.username };
 
     const recipe = new Recipe(data);
 
     await getNutritionalDetail(recipe);
 
-    await recipe.depopulate().save();
+    await recipe.save();
     res.status(200).send({ id: recipe.id });
   } catch (err) {
     return next(err);
@@ -144,7 +153,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     const id = req.params?.recipeId;
     const data = req.body?.data;
 
-    const recipe = await Recipe.findById(id).setOptions({ autopopulate: false }).populate('author').exec();
+    const recipe = await Recipe.findById(id).setOptions({ autopopulate: false }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
@@ -166,7 +175,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
       const mapped = recipe.ingredients.map((item) => ({
         ingredient: item.ingredient.toString(),
         quantity: item.quantity,
-        unit: item.unit.toString(),
+        unit: item.unit._id.toString(),
       }));
       _.forEach(data?.ingredients, (item) => {
         isSame = _.some(mapped, item);
@@ -174,11 +183,15 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     }
 
     if (!isSame) {
+      for (const ingredient of data.ingredients) {
+        const unit = await Unit.findById(ingredient?.unit).lean().exec();
+        ingredient.unit = unit;
+      }
       recipe.set('ingredients', data?.ingredients);
       await getNutritionalDetail(recipe);
     }
 
-    await recipe.depopulate().save({ validateModifiedOnly: true });
+    await recipe.save({ validateModifiedOnly: true });
     recipe.image !== oldImage && deleteImage('recipes', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {

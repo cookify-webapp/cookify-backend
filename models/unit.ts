@@ -24,7 +24,7 @@ interface UnitQueryHelpers {}
 //---------------------
 //   SCHEMA
 //---------------------
-const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>(
+export const unitSchema = new Schema<UnitInstanceInterface, UnitModelInterface, UnitInstanceMethods, UnitQueryHelpers>(
   {
     name: { type: String, required: true, unique: true },
     queryKey: { type: String, required: true },
