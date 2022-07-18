@@ -210,8 +210,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
-    const comments = await Comment.find({ post: recipe._id }).exec();
-    comments.forEach((comment) => comment.deleteOne());
+    await Comment.deleteMany({ post: recipe._id }).exec();
     deleteImage('recipes', recipe.image);
 
     res.status(200).send({ message: 'success' });
