@@ -32,7 +32,7 @@ export const sendAdminConfirmation = async (email: string, uniqueKey: string) =>
     to: email,
     subject: 'คุณได้รับคำเชิญให้เป็นผู้ดูแลระบบของ Cookify Web Application',
     template: 'admin_invitation',
-    context: { link: `${url}/register?uniqueKey=${uniqueKey}` },
+    context: { link: `${url}/register?uk=${uniqueKey}` },
   };
   await transport.sendMail(options);
 };
