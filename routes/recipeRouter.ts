@@ -9,6 +9,7 @@ import {
   deleteRecipe,
   editRecipe,
   getMyRecipeList,
+  getMyBookmarkedRecipe,
 } from '@controllers/recipeController';
 import { auth, byPassAuth } from '@middleware/auth';
 import { genericListValidator, recipeListValidator, recipeValidator } from '@middleware/requestValidator';
@@ -22,6 +23,8 @@ const recipeRouter = express.Router();
 recipeRouter.get('/list', byPassAuth, recipeListValidator, getRecipeList);
 
 recipeRouter.get('/list/me', auth, genericListValidator, getMyRecipeList);
+
+recipeRouter.get('/list/bookmark', auth, genericListValidator, getMyBookmarkedRecipe);
 
 recipeRouter.get('/methods', getCookingMethods);
 

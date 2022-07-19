@@ -33,13 +33,13 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     const ingredients = req.query?.ingredientId as string[];
     const method = req.query?.methodId as string;
 
-    const { bookmark, allergy } = await Account.findOne()
+    const { allergy } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
-      .select('bookmark allergy')
+      .select('allergy')
       .exec();
 
-    const recipes = await Recipe.listRecipe(page, perPage, { name, method, ingredients, bookmark, allergy });
+    const recipes = await Recipe.listRecipeByQuery(page, perPage, { name, method, ingredients, allergy });
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -65,7 +65,33 @@ export const getMyRecipeList: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).select('_id').lean().exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const recipes = await Recipe.listRecipe(page, perPage, {}, [account._id]);
+    const recipes = await Recipe.listRecipeByAuthors(page, perPage, [account._id]);
+
+    if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
+      res.status(200).send({
+        recipes: recipes.docs,
+        page: recipes.page,
+        perPage: recipes.limit,
+        totalCount: recipes.totalDocs,
+        totalPages: recipes.totalPages,
+      });
+    } else {
+      res.status(204).send();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getMyBookmarkedRecipe: RequestHandler = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query?.page as string);
+    const perPage = parseInt(req.query?.perPage as string);
+
+    const account = await Account.findOne().byName(res.locals.username).select('bookmark').exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const recipes = await Recipe.listRecipeByIds(page, perPage, account.bookmark);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({

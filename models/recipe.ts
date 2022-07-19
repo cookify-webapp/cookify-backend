@@ -5,7 +5,7 @@ import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
 import { UnitInstanceInterface, unitSchema } from '@models/unit';
 import { IngredientInstanceInterface } from '@models/ingredient';
-import { listRecipe } from '@functions/recipeFunction';
+import { listRecipeByAuthors, listRecipeByIds, listRecipeByQuery } from '@functions/recipeFunction';
 import constraint from '@config/constraint';
 
 //---------------------
@@ -44,17 +44,27 @@ export interface RecipeInstanceInterface extends RecipeInterface, RecipeInstance
 
 export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInstanceInterface> {
   // declare any static methods here
-  listRecipe: (
+  listRecipeByAuthors: (
+    page: number,
+    perPage: number,
+    author?: Types.ObjectId[]
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  listRecipeByIds: (
+    page: number,
+    perPage: number,
+    only?: Types.ObjectId[]
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  listRecipeByQuery: (
     page: number,
     perPage: number,
     query: {
       name?: string;
       method?: string;
       ingredients?: string[] | '';
-      bookmark?: Types.ObjectId[];
       allergy?: Types.ObjectId[];
-    },
-    author?: Types.ObjectId[]
+    }
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 
@@ -113,7 +123,9 @@ export const recipeSchema = new Schema<
 //---------------------
 //   STATICS
 //---------------------
-recipeSchema.statics.listRecipe = listRecipe;
+recipeSchema.statics.listRecipeByIds = listRecipeByIds;
+recipeSchema.statics.listRecipeByAuthors = listRecipeByAuthors;
+recipeSchema.statics.listRecipeByQuery = listRecipeByQuery;
 
 //---------------------
 //   VIRTUALS

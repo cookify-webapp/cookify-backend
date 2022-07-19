@@ -61,7 +61,7 @@ describe('Recipe model', () => {
   it('should paginate', async () => {
     const recipe = new Recipe(recipeData);
     const savedRecipe = await recipe.save();
-    const foundRecipe = await Recipe.listRecipe(1, 10, {
+    const foundRecipe = await Recipe.listRecipeByQuery(1, 10, {
       name: '',
       method: '',
       ingredients: ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
