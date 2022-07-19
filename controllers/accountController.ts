@@ -180,7 +180,7 @@ export const listPending: RequestHandler = async (req, res, next) => {
       {
         page: page,
         limit: perPage,
-        select: 'email',
+        projection: { _id: 0, email: 1, uniqueKey: '$username' },
         sort: 'email',
         lean: true,
         leanWithId: false,
@@ -309,10 +309,9 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params.userId;
 
-    const account = await Account.findById(id).exec();
+    const account = await Account.findByIdAndDelete(id).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    await account.deleteOne();
     deleteImage('accounts', account.image);
     res.status(200).send({ message: 'success' });
   } catch (err) {

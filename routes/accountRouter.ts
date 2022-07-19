@@ -10,6 +10,7 @@ import {
   listPending,
   revokeRequest,
   verifyPending,
+  deleteProfile,
 } from '@controllers/accountController';
 import { adminAuth, auth, byPassAuth } from '@middleware/auth';
 import { adminListValidator, adminValidator, genericListValidator, userValidator } from '@middleware/requestValidator';
@@ -35,5 +36,7 @@ accountRouter.post('/admin/add', adminAuth, adminValidator, addPending);
 accountRouter.put('/edit', auth, imageUtil.single('userImage'), bodyParser, userValidator, editProfile);
 
 accountRouter.delete('/admin/:email/revoke', adminAuth, revokeRequest);
+
+accountRouter.delete('/admin/:userId/delete', adminAuth, deleteProfile);
 
 export default accountRouter;
