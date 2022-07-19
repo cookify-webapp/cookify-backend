@@ -56,11 +56,12 @@ export const accountSchema = new Schema<
   {
     username: {
       type: String,
+      required: true,
       unique: true,
       minlength: constraint.username.min,
       maxlength: constraint.username.max,
     },
-    email: { type: String, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
+    email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
     password: { type: String, select: false, match: /^%242[ab]%2410%24\S{53,}/ },
     accountType: {
       type: String,
