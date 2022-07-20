@@ -10,6 +10,9 @@ import { deleteImage } from '@utils/imageUtil';
 import createRestAPIError from '@error/createRestAPIError';
 import NutritionDetailService from '@services/nutritionDetailService';
 
+//---------------------
+//   FETCH MANY
+//---------------------
 export const getIngredientList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
@@ -67,6 +70,9 @@ export const sampleByType: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   FETCH ONE
+//---------------------
 export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
@@ -80,6 +86,9 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   CREATE
+//---------------------
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
@@ -100,6 +109,9 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   EDIT
+//---------------------
 export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
@@ -135,6 +147,9 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   DELETE
+//---------------------
 export const deleteIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;

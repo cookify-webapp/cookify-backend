@@ -21,7 +21,7 @@ export interface CommentInterface extends Document {
   _id: Types.ObjectId;
   type: 'Recipe' | 'Snapshot';
   post: Types.ObjectId & (RecipeInstanceInterface | SnapshotInstanceInterface);
-  author: Types.ObjectId & AccountInstanceInterface;
+  author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
   comment: string;
   rating?: number;
   createdAt: Date;
@@ -63,12 +63,7 @@ const commentSchema = new Schema<
   {
     type: { type: String, enum: ['Recipe', 'Snapshot'], required: true },
     post: { type: 'ObjectId', refPath: 'type', required: true },
-    author: {
-      type: 'ObjectId',
-      ref: 'Account',
-      required: true,
-      autopopulate: { select: 'username image' },
-    },
+    author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
     comment: { type: String, required: true, maxlength: constraint.comment.max },
     rating: { type: Number, min: 0, max: 5 },
   },

@@ -9,27 +9,9 @@ import createRestAPIError from '@error/createRestAPIError';
 import { deleteImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 
-export const login: RequestHandler = async (req, res, next) => {
-  try {
-    const username = req.body?.data?.username;
-    const password = req.body?.data?.password;
-
-    const secret = process.env.JWT_SECRET;
-    if (!secret) throw createRestAPIError('MISSING_SECRET');
-
-    const account = await Account.findOne().byName(username).select('username password accountType').exec();
-    if (!account) throw createRestAPIError('WRONG_USERNAME');
-
-    const result = await account.comparePassword(password);
-    if (!result) throw createRestAPIError('WRONG_PASSWORD');
-
-    const token = account.signToken(secret);
-    res.status(200).send({ token });
-  } catch (err) {
-    return next(err);
-  }
-};
-
+//---------------------
+//   FETCH MANY
+//---------------------
 export const getAdmins: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
@@ -122,6 +104,63 @@ export const getFollower: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const listPending: RequestHandler = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query?.page as string);
+    const perPage = parseInt(req.query?.perPage as string);
+
+    const accounts = await Account.paginate(
+      { accountType: 'pending' },
+      {
+        page: page,
+        limit: perPage,
+        projection: { _id: 0, email: 1, uniqueKey: '$username' },
+        sort: 'email',
+        lean: true,
+        leanWithId: false,
+      }
+    );
+
+    if (_.size(accounts.docs) > 0 || accounts.totalDocs > 0) {
+      res.status(200).send({
+        accounts: accounts.docs,
+        page: accounts.page,
+        perPage: accounts.limit,
+        totalCount: accounts.totalDocs,
+        totalPages: accounts.totalPages,
+      });
+    } else {
+      res.status(204).send();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+//---------------------
+//   FETCH ONE
+//---------------------
+export const login: RequestHandler = async (req, res, next) => {
+  try {
+    const username = req.body?.data?.username;
+    const password = req.body?.data?.password;
+
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw createRestAPIError('MISSING_SECRET');
+
+    const account = await Account.findOne().byName(username).select('username password accountType').exec();
+    if (!account || account.accountType === 'pending') throw createRestAPIError('WRONG_USERNAME');
+
+    const result = await account.comparePassword(password);
+    if (!result) throw createRestAPIError('WRONG_PASSWORD');
+
+    const token = account.signToken(secret);
+    res.status(200).send({ token });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const getMe: RequestHandler = async (_req, res, next) => {
   try {
     const account = await Account.findOne()
@@ -170,39 +209,6 @@ export const getUser: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const listPending: RequestHandler = async (req, res, next) => {
-  try {
-    const page = parseInt(req.query?.page as string);
-    const perPage = parseInt(req.query?.perPage as string);
-
-    const accounts = await Account.paginate(
-      { accountType: 'pending' },
-      {
-        page: page,
-        limit: perPage,
-        projection: { _id: 0, email: 1, uniqueKey: '$username' },
-        sort: 'email',
-        lean: true,
-        leanWithId: false,
-      }
-    );
-
-    if (_.size(accounts.docs) > 0 || accounts.totalDocs > 0) {
-      res.status(200).send({
-        accounts: accounts.docs,
-        page: accounts.page,
-        perPage: accounts.limit,
-        totalCount: accounts.totalDocs,
-        totalPages: accounts.totalPages,
-      });
-    } else {
-      res.status(204).send();
-    }
-  } catch (err) {
-    return next(err);
-  }
-};
-
 export const verifyPending: RequestHandler = async (req, res, next) => {
   try {
     const uniqueKey = req.params?.uniqueKey;
@@ -211,6 +217,23 @@ export const verifyPending: RequestHandler = async (req, res, next) => {
     if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     res.status(200).send({ email: account?.email });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+//---------------------
+//   CREATE
+//---------------------
+export const register: RequestHandler = async (req, res, next) => {
+  try {
+    const data = req.body.data;
+
+    const account = new Account(data);
+    await account.hashPassword();
+
+    await account.save();
+    res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
@@ -234,35 +257,9 @@ export const addPending: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const revokeRequest: RequestHandler = async (req, res, next) => {
-  try {
-    const email = req.params?.email;
-
-    const account = await Account.findOne({ email }).exec();
-    if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
-
-    await account.deleteOne();
-    await sendAdminRevocation(account.email);
-    res.status(200).send({ message: 'success' });
-  } catch (err) {
-    return next(err);
-  }
-};
-
-export const register: RequestHandler = async (req, res, next) => {
-  try {
-    const data = req.body.data;
-
-    const account = new Account(data);
-    await account.hashPassword();
-
-    await account.save();
-    res.status(200).send({ message: 'success' });
-  } catch (err) {
-    return next(err);
-  }
-};
-
+//---------------------
+//   EDIT
+//---------------------
 export const setBookmark: RequestHandler = async (req, res, next) => {
   try {
     const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
@@ -305,6 +302,9 @@ export const editProfile: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   DELETE
+//---------------------
 export const deleteProfile: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params.userId;
@@ -313,6 +313,21 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     deleteImage('accounts', account.image);
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const revokeRequest: RequestHandler = async (req, res, next) => {
+  try {
+    const email = req.params?.email;
+
+    const account = await Account.findOne({ email }).exec();
+    if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    await account.deleteOne();
+    await sendAdminRevocation(account.email);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

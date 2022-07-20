@@ -14,6 +14,9 @@ import { RecipeInstanceInterface } from '../models/recipe';
 import { Comment } from '@models/comment';
 import { Unit } from '@models/unit';
 
+//---------------------
+//   UTILITY
+//---------------------
 const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
   await recipe.populate('ingredients.ingredient');
   recipe.nutritionalDetail = await nutritionDetailService.getByRecipe(
@@ -25,6 +28,9 @@ const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
   );
 };
 
+//---------------------
+//   FETCH MANY
+//---------------------
 export const getRecipeList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
@@ -120,6 +126,9 @@ export const getCookingMethods: RequestHandler = async (_req, res, next) => {
   }
 };
 
+//---------------------
+//   FETCH ONE
+//---------------------
 export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
@@ -148,6 +157,9 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   CREATE
+//---------------------
 export const createRecipe: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
@@ -174,6 +186,9 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   EDIT
+//---------------------
 export const editRecipe: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
@@ -225,6 +240,9 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   DELETE
+//---------------------
 export const deleteRecipe: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;

@@ -70,15 +70,15 @@ export const listRecipeByQuery: (
   page: number,
   perPage: number,
   query: {
-    name?: string;
-    method?: string;
-    ingredients?: string[] | '';
-    allergy?: Types.ObjectId[];
+    name: string;
+    method: string;
+    ingredients: string[] | '';
+    allergy: Types.ObjectId[];
   }
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
   page,
   perPage,
-  { name = '', method = '', ingredients = [], allergy = [] }
+  { name, method, ingredients, allergy }
 ) {
   const match: AnyObject = {
     $and: [{ name: { $regex: name, $options: 'i' } }, { 'ingredients.ingredient': { $nin: allergy } }],
@@ -94,8 +94,8 @@ export const listRecipeByAuthors: (
   this: RecipeModelInterface,
   page: number,
   perPage: number,
-  author?: Types.ObjectId[]
-) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author = []) {
+  author: Types.ObjectId[]
+) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
   const match: AnyObject = { $and: [{ 'author._id': { $in: author } }] };
 
   return genericListRecipe(this, page, perPage, match);

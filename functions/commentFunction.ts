@@ -18,18 +18,26 @@ export const listAll: (
     })
     .lookup({
       from: 'accounts',
-      localField: 'author',
+      localField: 'author._id',
       foreignField: '_id',
-      as: 'author',
-      pipeline: [{ $project: { username: 1, image: 1 } }],
+      as: 'author_image',
+      pipeline: [{ $project: { _id: 0, image: 1 } }],
     })
     .unwind({
-      path: '$author',
+      path: '$author_image',
       preserveNullAndEmptyArrays: true,
     })
     .addFields({
       isMe: { $eq: ['$author.username', username] },
-    });
+      'author.image': {
+        $cond: [
+          { $cond: [{ $isArray: '$author_image.image' }, { $size: '$author_image.image' }, '$author_image.image'] },
+          '$author_image.image',
+          '',
+        ],
+      },
+    })
+    .project({ author_image: 0 });
 
   return this.aggregatePaginate(aggregate, {
     page,
