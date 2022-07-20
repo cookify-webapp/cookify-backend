@@ -16,7 +16,7 @@ export const getAdmins: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
-    const searchWord = parseInt(req.query?.searchWord as string);
+    const searchWord = req.query?.searchWord as string;
 
     const accounts = await Account.paginate(
       {
@@ -296,6 +296,30 @@ export const editProfile: RequestHandler = async (req, res, next) => {
 
     await account.save({ validateModifiedOnly: true });
     account.image !== oldImage && deleteImage('accounts', oldImage);
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const registerAdmin: RequestHandler = async (req, res, next) => {
+  try {
+    const uniqueKey = req.params?.uniqueKey;
+    const data = req.body.data;
+
+    const account = await Account.findOne().byName(uniqueKey).exec();
+    if (!account || account.accountType !== 'pending') throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    account.set({
+      username: data?.username,
+      email: data?.email || account.email,
+      password: data?.password,
+      allergy: data?.allergy || account.allergy,
+      accountType: 'admin',
+    });
+    await account.hashPassword();
+
+    await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

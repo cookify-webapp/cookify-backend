@@ -81,11 +81,12 @@ export const listRecipeByQuery: (
   { name, method, ingredients, allergy }
 ) {
   const match: AnyObject = {
-    $and: [{ name: { $regex: name, $options: 'i' } }, { 'ingredients.ingredient': { $nin: allergy } }],
+    name: { $regex: name, $options: 'i' },
+    'ingredients.ingredient': { $nin: allergy },
   };
-  method && match.$and.push({ method: new Types.ObjectId(method) });
-  _.size(ingredients) &&
-    match.$and.push({ 'ingredients.ingredient': { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) } });
+  if (method) match.method = new Types.ObjectId(method);
+  if (_.size(ingredients))
+    match['ingredients.ingredient'] = { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) };
 
   return genericListRecipe(this, page, perPage, match);
 };
@@ -96,9 +97,7 @@ export const listRecipeByAuthors: (
   perPage: number,
   author: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
-  const match: AnyObject = { $and: [{ 'author._id': { $in: author } }] };
-
-  return genericListRecipe(this, page, perPage, match);
+  return genericListRecipe(this, page, perPage, { 'author._id': { $in: author } });
 };
 
 export const listRecipeByIds: (
@@ -107,7 +106,5 @@ export const listRecipeByIds: (
   perPage: number,
   only: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, only) {
-  const match: AnyObject = { $and: [{ _id: { $in: only } }] };
-
-  return genericListRecipe(this, page, perPage, match);
+  return genericListRecipe(this, page, perPage, { _id: { $in: only } });
 };
