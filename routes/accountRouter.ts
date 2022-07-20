@@ -29,7 +29,7 @@ accountRouter.get('/:userId/following', genericListValidator, getFollowing);
 
 accountRouter.get('/:userId/follower', genericListValidator, getFollower);
 
-accountRouter.get('/admin/:uniqueKey/verify', adminAuth, verifyPending);
+accountRouter.get('/admin/:uniqueKey/verify', verifyPending);
 
 accountRouter.post('/admin/add', adminAuth, adminValidator, addPending);
 
