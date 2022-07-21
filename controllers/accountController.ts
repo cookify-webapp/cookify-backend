@@ -166,8 +166,8 @@ export const getMe: RequestHandler = async (_req, res, next) => {
     const account = await Account.findOne()
       .byName(res.locals.username)
       .select('username email accountType image bookmark allergy following')
-      .populate('allergy')
-      .lean()
+      .populate('allergy', 'name type image')
+      .lean({ autopopulate: true })
       .exec();
 
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
@@ -187,7 +187,7 @@ export const getUser: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params.userId;
 
-    const account = await Account.findById(id).select('username email image following').lean().exec();
+    const account = await Account.findById(id).select('username email accountType image following').lean().exec();
 
     const self = res.locals.username
       ? await Account.findOne().byName(res.locals.username).select('following').exec()
