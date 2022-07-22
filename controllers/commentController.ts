@@ -82,8 +82,7 @@ export const createComment: RequestHandler = async (req, res, next) => {
       const snapshot = await Snapshot.findById(id).exec();
       if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
 
-      const dup = await Comment.findOne({ post: snapshot._id, 'author._id': account._id }).lean().exec();
-      if (dup) throw createRestAPIError('DUP_COMMENT');
+      delete data.rating;
     }
 
     data.author = { _id: account._id, username: account.username };
@@ -122,7 +121,7 @@ export const editComment: RequestHandler = async (req, res, next) => {
 
     comment.set({
       comment: data.comment,
-      rating: data.rating,
+      rating: comment.type === 'Recipe' ? data.rating : undefined,
     });
 
     await comment.save();

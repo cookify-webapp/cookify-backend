@@ -63,12 +63,14 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const getMyRecipeList: RequestHandler = async (req, res, next) => {
+export const getUserRecipeList: RequestHandler = async (req, res, next) => {
   try {
+    const username = req.params?.username;
+
     const page = parseInt(req.query?.page as string);
     const perPage = parseInt(req.query?.perPage as string);
 
-    const account = await Account.findOne().byName(res.locals.username).select('_id').lean().exec();
+    const account = await Account.findOne().byName(username).select('_id').lean().exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     const recipes = await Recipe.listRecipeByAuthors(page, perPage, [account._id]);

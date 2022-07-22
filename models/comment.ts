@@ -76,11 +76,6 @@ const commentSchema = new Schema<
 );
 
 //---------------------
-//   INDEX
-//---------------------
-commentSchema.index({ post: 1, author: 1 }, { unique: true });
-
-//---------------------
 //   STATICS
 //---------------------
 commentSchema.statics.listAll = listAll;
