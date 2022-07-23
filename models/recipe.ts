@@ -84,8 +84,8 @@ export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
     quantity: { type: Number, required: true, min: 0 },
     unit: {
       type: {
-        _id: { type: 'ObjectId', ref: 'Unit', required: true, unique: true },
-        name: { type: String, required: true, unique: true },
+        _id: { type: 'ObjectId', ref: 'Unit', required: true },
+        name: { type: String, required: true },
         queryKey: { type: String, required: true },
       },
       required: true,
