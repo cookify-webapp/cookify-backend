@@ -91,6 +91,32 @@ export const getUserRecipeList: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getFollowingRecipeList: RequestHandler = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query?.page as string);
+    const perPage = parseInt(req.query?.perPage as string);
+
+    const account = await Account.findOne().byName(res.locals.username).select('_id following').lean().exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const recipes = await Recipe.listRecipeByAuthors(page, perPage, account.following || []);
+
+    if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
+      res.status(200).send({
+        recipes: recipes.docs,
+        page: recipes.page,
+        perPage: recipes.limit,
+        totalCount: recipes.totalDocs,
+        totalPages: recipes.totalPages,
+      });
+    } else {
+      res.status(204).send();
+    }
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const getMyBookmarkedRecipe: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);

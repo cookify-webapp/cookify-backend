@@ -82,7 +82,14 @@ export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
       autopopulate: { select: 'name type image' },
     },
     quantity: { type: Number, required: true, min: 0 },
-    unit: { type: unitSchema, required: true },
+    unit: {
+      type: {
+        _id: { type: 'ObjectId', ref: 'Unit', required: true, unique: true },
+        name: { type: String, required: true, unique: true },
+        queryKey: { type: String, required: true },
+      },
+      required: true,
+    },
   },
   { _id: false, autoIndex: false, autoCreate: false }
 );
