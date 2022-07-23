@@ -293,7 +293,7 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     });
 
     await account.save({ validateModifiedOnly: true });
-    account.image !== oldImage && deleteImage('accounts', oldImage);
+    oldImage && account.image !== oldImage && deleteImage('accounts', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -334,7 +334,7 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
     const account = await Account.findByIdAndDelete(id).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    deleteImage('accounts', account.image);
+    account.image && deleteImage('accounts', account.image);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

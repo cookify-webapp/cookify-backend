@@ -80,7 +80,7 @@ export const ingredientValidator = celebrate(
       type: Joi.string().required().custom(objectIdVal),
       shopUrl: Joi.string().when('.', {
         then: Joi.string().required().uri(),
-        otherwise: Joi.string().default(''),
+        otherwise: Joi.string().allow('').default(''),
       }),
     }),
   },
