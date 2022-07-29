@@ -17,23 +17,10 @@ export const listAll: (
       as: 'author_image',
       pipeline: [{ $project: { _id: 0, image: 1 } }],
     })
-    .lookup({
-      from: 'recipes',
-      localField: 'recipe',
-      foreignField: '_id',
-      as: 'recipe',
-      pipeline: [{ $project: { name: 1 } }],
+    .unwind({
+      path: '$author_image',
+      preserveNullAndEmptyArrays: true,
     })
-    .unwind(
-      {
-        path: '$author_image',
-        preserveNullAndEmptyArrays: true,
-      },
-      {
-        path: '$recipe',
-        preserveNullAndEmptyArrays: true,
-      }
-    )
     .addFields({
       'author.image': {
         $cond: [

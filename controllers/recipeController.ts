@@ -285,7 +285,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     await recipe.deleteOne();
 
     await Comment.deleteMany({ post: recipe._id }).exec();
-    deleteImage('recipes', recipe.image);
+    recipe.image && deleteImage('recipes', recipe.image);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

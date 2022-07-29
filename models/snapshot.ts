@@ -21,7 +21,7 @@ export interface SnapshotInterface extends Document {
   caption: string;
   image: string;
   author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
-  recipe: Types.ObjectId & RecipeInstanceInterface;
+  recipe: Pick<RecipeInstanceInterface, '_id' | 'name'>;
   isMe?: boolean;
   createdAt: Date;
 }
@@ -66,12 +66,7 @@ export const snapshotSchema = new Schema<
     caption: { type: String, required: true, maxlength: constraint.caption.max },
     image: { type: String, required: true },
     author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
-    recipe: {
-      type: 'ObjectId',
-      ref: 'Recipe',
-      required: true,
-      autopopulate: { select: 'name', maxDepth: 1 },
-    },
+    recipe: { type: { _id: 'ObjectId', name: String }, required: true },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

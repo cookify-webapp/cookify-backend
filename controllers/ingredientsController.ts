@@ -140,7 +140,7 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     }
 
     await ingredient.save({ validateModifiedOnly: true });
-    ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
+    oldImage && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -160,7 +160,7 @@ export const deleteIngredient: RequestHandler = async (req, res, next) => {
     const result = await Ingredient.findByIdAndDelete(id).exec();
     if (!result) throw createRestAPIError('DOC_NOT_FOUND');
 
-    deleteImage('ingredients', result.image);
+    result.image && deleteImage('ingredients', result.image);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

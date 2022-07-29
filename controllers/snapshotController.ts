@@ -43,7 +43,7 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.snapshotId;
 
-    const snapshot = await Snapshot.findById(id).lean({ autopopulate: true }).exec();
+    const snapshot = await Snapshot.findById(id).lean().exec();
     if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
 
     const account = await Account.findById(snapshot.author._id).select('image').lean().exec();
@@ -71,6 +71,7 @@ export const createSnapshot: RequestHandler = async (req, res, next) => {
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
     data.image = req.file?.filename;
+    data.recipe = { _id: recipe._id, name: recipe.name };
     data.author = { _id: account._id, username: account.username };
 
     const snapshot = new Snapshot(data);
@@ -99,9 +100,17 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
 
     snapshot.set({
       caption: data.caption,
-      recipe: data.recipe,
       image: req.file?.filename || snapshot.image,
     });
+
+    if (data.recipe !== snapshot.recipe._id.toHexString()) {
+      const recipe = await Recipe.findById(data?.recipe).exec();
+      if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+
+      snapshot.set({
+        recipe: { _id: recipe._id, name: recipe.name },
+      });
+    }
 
     await snapshot.save();
     oldImage && snapshot.image !== oldImage && deleteImage('snapshots', oldImage);
@@ -125,7 +134,7 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
     await snapshot.deleteOne();
 
     await Comment.deleteMany({ post: snapshot._id }).exec();
-    deleteImage('snapshots', snapshot.image);
+    snapshot.image && deleteImage('snapshots', snapshot.image);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
