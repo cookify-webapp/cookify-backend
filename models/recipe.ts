@@ -138,9 +138,10 @@ recipeSchema.statics.listRecipeByQuery = listRecipeByQuery;
 //   VIRTUALS
 //---------------------
 recipeSchema.virtual('comments', {
+  ref: 'Comment',
   localField: '_id',
   foreignField: 'post',
-  ref: 'Comment',
+  match: { type: 'Recipe' },
 });
 
 //---------------------

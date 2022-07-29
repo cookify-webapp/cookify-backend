@@ -112,6 +112,16 @@ export const recipeValidator = celebrate(
   opts
 );
 
+export const snapshotValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      caption: Joi.string().required().max(constraint.caption.max),
+      recipe: Joi.string().required().custom(objectIdVal),
+    }),
+  },
+  opts
+);
+
 export const createCommentValidator = celebrate(
   {
     [Segments.PARAMS]: {

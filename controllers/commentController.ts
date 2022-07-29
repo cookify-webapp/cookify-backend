@@ -108,14 +108,7 @@ export const editComment: RequestHandler = async (req, res, next) => {
 
     const data = req.body?.data;
 
-    const comment = await Comment.findById(id)
-      .setOptions({ autopopulate: false })
-      .populate({
-        path: 'author',
-        select: 'username image',
-        options: { lean: true },
-      })
-      .exec();
+    const comment = await Comment.findById(id).exec();
     if (!comment) throw createRestAPIError('DOC_NOT_FOUND');
     if (comment.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
@@ -138,9 +131,11 @@ export const deleteComment: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.commentId;
 
-    const comment = await Comment.findByIdAndDelete(id).exec();
+    const comment = await Comment.findById(id).exec();
     if (!comment) throw createRestAPIError('DOC_NOT_FOUND');
     if (comment.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
+
+    await comment.deleteOne();
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

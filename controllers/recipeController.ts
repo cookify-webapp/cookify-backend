@@ -261,7 +261,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     }
 
     await recipe.save({ validateModifiedOnly: true });
-    recipe.image !== oldImage && deleteImage('recipes', oldImage);
+    oldImage && recipe.image !== oldImage && deleteImage('recipes', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -278,9 +278,11 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     const ref = await Snapshot.exists({ recipe: new Types.ObjectId(id) }).exec();
     if (ref) throw createRestAPIError('DEL_REFERENCE');
 
-    const recipe = await Recipe.findByIdAndDelete(id).exec();
+    const recipe = await Recipe.findById(id).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
+
+    await recipe.deleteOne();
 
     await Comment.deleteMany({ post: recipe._id }).exec();
     deleteImage('recipes', recipe.image);
