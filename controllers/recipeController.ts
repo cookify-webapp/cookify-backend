@@ -174,7 +174,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
     recipe.isMe = username === recipe.author.username;
-    recipe.bookmarked = _.includes(bookmark, recipe._id);
+    recipe.bookmarked = _.some(bookmark, (item) => item.equals(recipe._id));
     recipe.author.image = account?.image || '';
 
     delete recipe.comments;

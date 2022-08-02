@@ -24,7 +24,7 @@ recipeRouter.get('/list', byPassAuth, recipeListValidator, getRecipeList);
 
 recipeRouter.get('/list/:username', genericListValidator, getUserRecipeList);
 
-recipeRouter.get('/list/bookmark', auth, genericListValidator, getMyBookmarkedRecipe);
+recipeRouter.get('/bookmark', auth, genericListValidator, getMyBookmarkedRecipe);
 
 recipeRouter.get('/methods', getCookingMethods);
 

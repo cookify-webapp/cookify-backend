@@ -26,6 +26,6 @@ snapshotRouter.post('/create', middleware, createSnapshot);
 
 snapshotRouter.put('/:snapshotId/edit', middleware, editSnapshot);
 
-snapshotRouter.delete('/:recipeId/delete', auth, deleteSnapshot);
+snapshotRouter.delete('/:snapshotId/delete', auth, deleteSnapshot);
 
 export default snapshotRouter;

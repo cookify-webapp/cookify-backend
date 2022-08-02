@@ -77,7 +77,7 @@ export const createSnapshot: RequestHandler = async (req, res, next) => {
     const snapshot = new Snapshot(data);
 
     await snapshot.save();
-    res.status(200).send({ message: 'success' });
+    res.status(200).send({ id: snapshot.id });
   } catch (err) {
     return next(err);
   }

@@ -89,17 +89,13 @@ snapshotSchema.statics.listAll = listAll;
 snapshotSchema.query.byRecipe = function (
   recipeId: string | Types.ObjectId
 ): QueryWithHelpers<SnapshotInstanceInterface, SnapshotInstanceInterface, SnapshotQueryHelpers> {
-  return this.where({ recipe: recipeId });
+  return this.where({ 'recipe._id': recipeId });
 };
 
 snapshotSchema.query.byRecipeName = function (
   name: string
 ): QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers> {
-  return this.populate<{ recipe: RecipeInstanceInterface }>({
-    path: 'recipe',
-    match: { name },
-    select: '-_id name',
-  });
+  return this.where({ 'recipe.name': name });
 };
 
 //---------------------

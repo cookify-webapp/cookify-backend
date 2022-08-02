@@ -22,6 +22,7 @@ const getPayload = (req: Request, byPass: boolean): JwtPayload => {
 export const auth: RequestHandler = async (req, res, next) => {
   try {
     const decoded = getPayload(req, false);
+    console.log('h')
 
     res.locals.username = decoded.username;
     return next();
