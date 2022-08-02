@@ -13,6 +13,7 @@ import { deleteImage } from '@utils/imageUtil';
 import { RecipeInstanceInterface } from '../models/recipe';
 import { Comment } from '@models/comment';
 import { Unit } from '@models/unit';
+import { includesId } from '@utils/includesIdUtil';
 
 //---------------------
 //   UTILITY
@@ -174,7 +175,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     recipe.averageRating = parseFloat(_.meanBy(recipe.comments, 'rating').toFixed(1)) || 0;
     recipe.isMe = username === recipe.author.username;
-    recipe.bookmarked = _.some(bookmark, (item) => item.equals(recipe._id));
+    recipe.bookmarked = includesId(bookmark, recipe._id);
     recipe.author.image = account?.image || '';
 
     delete recipe.comments;
