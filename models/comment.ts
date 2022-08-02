@@ -13,6 +13,7 @@ import { AccountInstanceInterface } from '@models/account';
 import { RecipeInstanceInterface } from '@models/recipe';
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { listAll } from '@functions/commentFunction';
+import _ from 'lodash';
 
 //---------------------
 //   INTERFACE
@@ -64,7 +65,7 @@ const commentSchema = new Schema<
     type: { type: String, enum: ['Recipe', 'Snapshot'], required: true },
     post: { type: 'ObjectId', refPath: 'type', required: true },
     author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
-    comment: { type: String, required: true, maxlength: constraint.comment.max },
+    comment: { type: String, maxlength: constraint.comment.max, validate: { validator: (v: any) => _.isString(v) } },
     rating: { type: Number, min: 0, max: 5 },
   },
   {
