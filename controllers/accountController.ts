@@ -268,7 +268,7 @@ export const setBookmark: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(id).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    account.bookmark[_.includes(account.bookmark, recipe._id) ? 'pull' : 'push'](recipe._id);
+    account.bookmark[_.some(account.bookmark, (item) => item.equals(recipe._id)) ? 'pull' : 'push'](recipe._id);
 
     await account.save({ validateModifiedOnly: true });
     res.status(200).send({ message: 'success' });
