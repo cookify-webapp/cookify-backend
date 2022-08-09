@@ -9,6 +9,9 @@ import createRestAPIError from '@error/createRestAPIError';
 import { deleteImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 import { includesId } from '@utils/includesIdUtil';
+import { Notification } from '@models/notifications';
+import { createFollowNotification } from '@config/notificationTemplate';
+import { createNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -278,6 +281,36 @@ export const setBookmark: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const setFollow: RequestHandler = async (req, res, next) => {
+  try {
+    const id = req.params?.userId;
+
+    const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const target = await Account.findById(id).setOptions({ autopopulate: false }).exec();
+    if (!target) throw createRestAPIError('DOC_NOT_FOUND');
+    if (target.id === account.id) throw createRestAPIError('FOLLOW_SELF');
+
+    const exist = includesId(account.following, target._id);
+
+    account.following?.[exist ? 'pull' : 'push'](target._id);
+
+    await account.save({ validateModifiedOnly: true });
+
+    !exist &&
+      (await createNotification({
+        type: 'follow',
+        caption: createFollowNotification(account.username),
+        link: `/users/${account.id}`,
+        receiver: target.id,
+      }));
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 export const editProfile: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
@@ -334,6 +367,8 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
 
     const account = await Account.findByIdAndDelete(id).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    await Notification.deleteMany({ receiver: account.id }).exec();
 
     account.image && deleteImage('accounts', account.image);
     res.status(200).send({ message: 'success' });

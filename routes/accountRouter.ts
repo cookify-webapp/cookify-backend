@@ -11,6 +11,7 @@ import {
   revokeRequest,
   verifyPending,
   deleteProfile,
+  setFollow,
 } from '@controllers/accountController';
 import { adminAuth, auth, byPassAuth } from '@middleware/auth';
 import { adminListValidator, adminValidator, genericListValidator, userValidator } from '@middleware/requestValidator';
@@ -34,6 +35,8 @@ accountRouter.get('/admin/:uniqueKey/verify', verifyPending);
 accountRouter.post('/admin/add', adminAuth, adminValidator, addPending);
 
 accountRouter.put('/edit', auth, imageUtil.single('userImage'), bodyParser, userValidator, editProfile);
+
+accountRouter.put('/follow/:userId', auth, setFollow);
 
 accountRouter.delete('/admin/:email/revoke', adminAuth, revokeRequest);
 

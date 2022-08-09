@@ -6,6 +6,8 @@ import { Account } from '@models/account';
 import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
+import { createCommentNotification } from '@config/notificationTemplate';
+import { createNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -69,10 +71,13 @@ export const createComment: RequestHandler = async (req, res, next) => {
     const data = req.body?.data;
 
     const account = await Account.findOne().byName(res.locals.username).select('username image').exec();
+    let receiver = null;
 
     if (type === 'recipe') {
       const recipe = await Recipe.findById(id).exec();
       if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
+
+      receiver = recipe.author._id;
 
       const dup = await Comment.findOne({ post: recipe._id, 'author._id': account._id }).lean().exec();
       if (dup) throw createRestAPIError('DUP_COMMENT');
@@ -82,6 +87,7 @@ export const createComment: RequestHandler = async (req, res, next) => {
       const snapshot = await Snapshot.findById(id).exec();
       if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
 
+      receiver = snapshot.author._id;
       delete data.rating;
     }
 
@@ -93,6 +99,14 @@ export const createComment: RequestHandler = async (req, res, next) => {
 
     await comment.save();
     comment.author.image = account.image;
+
+    account.id !== receiver?.toString() &&
+      (await createNotification({
+        type: 'comment',
+        caption: createCommentNotification(type as 'recipe' | 'snapshot', account.username),
+        link: `/${type}s/${id}`,
+        receiver,
+      }));
     res.status(200).send({ comment });
   } catch (err) {
     return next(err);
