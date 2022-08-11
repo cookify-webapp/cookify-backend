@@ -10,6 +10,7 @@ export interface NotificationInterface extends Document {
   caption: string;
   link: string;
   receiver: Types.ObjectId & AccountInstanceInterface;
+  read: boolean;
 }
 
 export interface NotificationInstanceMethods {
@@ -38,6 +39,7 @@ export const notificationSchema = new Schema<
     caption: { type: String, required: true },
     link: { type: String, required: true },
     receiver: { type: 'ObjectId', ref: 'Account', required: true },
+    read: { type: Boolean, required: true, default: false },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

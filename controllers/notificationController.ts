@@ -13,10 +13,25 @@ export const listNotification: RequestHandler = async (_req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
+    await Notification.updateMany({ receiver: account._id }, { read: true }).exec();
+
     const notifications = await Notification.find({ receiver: account._id }).sort('-createdAt').exec();
     if (!_.size(notifications)) res.status(204).send();
 
     res.status(200).send({ notifications });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const countUnreadNotification: RequestHandler = async (_req, res, next) => {
+  try {
+    const account = await Account.findOne().byName(res.locals.username).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const count = await Notification.find({ receiver: account._id, read: false }).count().exec();
+
+    res.status(200).send({ count });
   } catch (err) {
     return next(err);
   }
