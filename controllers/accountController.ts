@@ -176,12 +176,14 @@ export const getMe: RequestHandler = async (_req, res, next) => {
 
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
+    const unreadNotification = await Notification.find({ receiver: account._id, read: false }).count().exec();
+
     const followingCount = _.size(account.following);
     const followerCount = await Account.find({ following: account._id }).select('username').lean().count().exec();
 
     delete account.following;
 
-    res.status(200).send({ account, followingCount, followerCount });
+    res.status(200).send({ account, followingCount, followerCount, unreadNotification });
   } catch (err) {
     return next(err);
   }
