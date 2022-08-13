@@ -69,15 +69,24 @@ const genericListRecipe: (
         ],
       },
     })
-    .project({
-      name: 1,
-      method: 1,
-      image: 1,
-      averageRating: 1,
-      author: 1,
-      bookmarked: 1,
-      createdAt: 1,
-    });
+    .project(
+      withSnapshot
+        ? {
+            name: 1,
+            image: 1,
+            author: 1,
+            createdAt: 1,
+            desc: 1,
+          }
+        : {
+            name: 1,
+            method: 1,
+            image: 1,
+            averageRating: 1,
+            author: 1,
+            createdAt: 1,
+          }
+    );
 
   withSnapshot &&
     aggregate
@@ -105,6 +114,7 @@ const genericListRecipe: (
           },
           {
             $addFields: {
+              desc: '$caption',
               'author.image': {
                 $cond: [
                   {
@@ -121,7 +131,7 @@ const genericListRecipe: (
               type: 'snapshot',
             },
           },
-          { $project: { author_image: 0 } },
+          { $project: { author_image: 0, caption: 0 } },
         ],
       });
 
