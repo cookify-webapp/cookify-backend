@@ -203,7 +203,7 @@ export const getUser: RequestHandler = async (req, res, next) => {
 
     const followingCount = _.size(account.following);
     const followerCount = await Account.find({ following: account._id }).select('username').lean().count().exec();
-    const isFollowing = self?.following?.includes(account._id) || false;
+    const isFollowing = includesId(self?.following, account._id);
 
     delete account.following;
 
