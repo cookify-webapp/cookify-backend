@@ -30,7 +30,6 @@ const baseBody = (body: oJoi.PartialSchemaMap<any>) =>
 
 const commentBody = baseBody({
   comment: Joi.string()
-    .required()
     .max(constraint.comment.max)
     .when('rating', {
       then: Joi.allow(''),
@@ -80,7 +79,7 @@ export const ingredientValidator = celebrate(
       type: Joi.string().required().custom(objectIdVal),
       shopUrl: Joi.string().when('.', {
         then: Joi.string().required().uri(),
-        otherwise: Joi.string().default(''),
+        otherwise: Joi.string().allow('').default(''),
       }),
     }),
   },
@@ -112,6 +111,16 @@ export const recipeValidator = celebrate(
   opts
 );
 
+export const snapshotValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      caption: Joi.string().required().max(constraint.caption.max),
+      recipe: Joi.string().required().custom(objectIdVal),
+    }),
+  },
+  opts
+);
+
 export const createCommentValidator = celebrate(
   {
     [Segments.PARAMS]: {
@@ -129,6 +138,25 @@ export const editCommentValidator = celebrate(
       commentId: Joi.string().required().custom(objectIdVal),
     },
     [Segments.BODY]: commentBody,
+  },
+  opts
+);
+
+export const userValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      email: Joi.string().required().email(),
+      allergy: Joi.array().required().items(Joi.string().custom(objectIdVal)).unique(),
+    }),
+  },
+  opts
+);
+
+export const adminValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      email: Joi.string().required().email(),
+    }),
   },
   opts
 );
@@ -162,6 +190,15 @@ export const recipeListValidator = celebrate(
         otherwise: Joi.string().valid(''),
       }),
       methodId: Joi.string().required().allow('').custom(objectIdVal),
+    }),
+  },
+  opts
+);
+
+export const adminListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery({
+      searchWord: Joi.string().required().allow(''),
     }),
   },
   opts

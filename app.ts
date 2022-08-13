@@ -11,7 +11,9 @@ import indexRouter from '@routes/indexRouter';
 import accountRouter from '@routes/accountRouter';
 import ingredientRouter from '@routes/ingredientRouter';
 import recipeRouter from '@routes/recipeRouter';
+import snapshotRouter from '@routes/snapshotRouter';
 import commentRouter from '@routes/commentRouter';
+import notificationRouter from '@routes/notificationRouter';
 import seedRouter from '@routes/seedRouter';
 
 import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
@@ -60,7 +62,9 @@ app.use('/', indexRouter);
 app.use('/accounts', accountRouter);
 app.use('/ingredients', ingredientRouter);
 app.use('/recipes', recipeRouter);
+app.use('/snapshots', snapshotRouter);
 app.use('/comments', commentRouter);
+app.use('/notifications', notificationRouter);
 if (app.get('env') === 'development') {
   app.use('/seed', seedRouter);
   app.use('/coverage', express.static('coverage'));

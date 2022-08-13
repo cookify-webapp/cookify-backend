@@ -3,10 +3,10 @@ import { model, Schema, Document, Types, AggregatePaginateModel, AggregatePagina
 import { CommentInstanceInterface } from '@models/comment';
 import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
+import { UnitInstanceInterface, unitSchema } from '@models/unit';
 import { IngredientInstanceInterface } from '@models/ingredient';
-import { listRecipe } from '@functions/recipeFunction';
+import { listRecipeAndSnapshotByAuthors, listRecipeByAuthors, listRecipeByIds, listRecipeByQuery } from '@functions/recipeFunction';
 import constraint from '@config/constraint';
-import { UnitInstanceInterface } from './unit';
 
 //---------------------
 //   INTERFACE
@@ -14,7 +14,7 @@ import { UnitInstanceInterface } from './unit';
 export interface IngredientQuantityInterface {
   ingredient: Types.ObjectId & IngredientInstanceInterface;
   quantity: number;
-  unit: Types.ObjectId & UnitInstanceInterface;
+  unit: UnitInstanceInterface;
 }
 
 export interface RecipeInterface extends Document {
@@ -27,7 +27,7 @@ export interface RecipeInterface extends Document {
   method: Types.ObjectId & TypeInstanceInterface;
   steps: Types.Array<string>;
   image: string;
-  author: Types.ObjectId & AccountInstanceInterface;
+  author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
   comments?: Types.DocumentArray<CommentInstanceInterface>;
   averageRating?: number;
   bookmarked?: boolean;
@@ -44,14 +44,33 @@ export interface RecipeInstanceInterface extends RecipeInterface, RecipeInstance
 
 export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInstanceInterface> {
   // declare any static methods here
-  listRecipe: (
+  listRecipeByAuthors: (
     page: number,
     perPage: number,
-    name: string,
-    method: string,
-    ingredients: string[] | '',
-    bookmark?: Types.ObjectId[],
-    allergy?: Types.ObjectId[]
+    author: Types.ObjectId[]
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  listRecipeAndSnapshotByAuthors: (
+    page: number,
+    perPage: number,
+    author: Types.ObjectId[]
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  listRecipeByIds: (
+    page: number,
+    perPage: number,
+    only: Types.ObjectId[]
+  ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  listRecipeByQuery: (
+    page: number,
+    perPage: number,
+    query: {
+      name: string;
+      method: string;
+      ingredients: string[] | '';
+      allergy: Types.ObjectId[];
+    }
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
 }
 
@@ -69,7 +88,14 @@ export const ingredientQuantitySchema = new Schema<IngredientQuantityInterface>(
       autopopulate: { select: 'name type image' },
     },
     quantity: { type: Number, required: true, min: 0 },
-    unit: { type: 'ObjectId', ref: 'Unit', required: true, autopopulate: true },
+    unit: {
+      type: {
+        _id: { type: 'ObjectId', ref: 'Unit', required: true },
+        name: { type: String, required: true },
+        queryKey: { type: String, required: true },
+      },
+      required: true,
+    },
   },
   { _id: false, autoIndex: false, autoCreate: false }
 );
@@ -96,12 +122,7 @@ export const recipeSchema = new Schema<
     },
     steps: [{ type: String, required: true }],
     image: { type: String, required: true },
-    author: {
-      type: 'ObjectId',
-      ref: 'Account',
-      required: true,
-      autopopulate: { select: 'username image' },
-    },
+    author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
     nutritionalDetail: {},
   },
   {
@@ -115,15 +136,19 @@ export const recipeSchema = new Schema<
 //---------------------
 //   STATICS
 //---------------------
-recipeSchema.statics.listRecipe = listRecipe;
+recipeSchema.statics.listRecipeByIds = listRecipeByIds;
+recipeSchema.statics.listRecipeByAuthors = listRecipeByAuthors;
+recipeSchema.statics.listRecipeByQuery = listRecipeByQuery;
+recipeSchema.statics.listRecipeAndSnapshotByAuthors = listRecipeAndSnapshotByAuthors;
 
 //---------------------
 //   VIRTUALS
 //---------------------
 recipeSchema.virtual('comments', {
+  ref: 'Comment',
   localField: '_id',
   foreignField: 'post',
-  ref: 'Comment',
+  match: { type: 'Recipe' },
 });
 
 //---------------------

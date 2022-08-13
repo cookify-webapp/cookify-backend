@@ -1,4 +1,4 @@
-import { model, Schema, Model, Document, QueryWithHelpers, Types } from 'mongoose';
+import { model, Schema, Document, QueryWithHelpers, Types, PaginateModel } from 'mongoose';
 
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { RecipeInstanceInterface } from '@models/recipe';
@@ -13,9 +13,9 @@ export interface AccountInterface extends Document {
   username: string;
   email: string;
   password: string;
-  accountType: 'user' | 'admin';
-  image?: string;
-  following: Types.Array<Types.ObjectId>;
+  accountType: 'user' | 'admin' | 'pending';
+  image: string;
+  following?: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
   recipes?: Types.Array<RecipeInstanceInterface>;
@@ -33,7 +33,7 @@ export interface AccountInstanceMethods {
 
 export interface AccountInstanceInterface extends AccountInterface, AccountInstanceMethods {}
 
-export interface AccountModelInterface extends Model<AccountInstanceInterface, AccountQueryHelpers> {
+export interface AccountModelInterface extends PaginateModel<AccountInstanceInterface, AccountQueryHelpers> {
   // declare any static methods here
 }
 
@@ -62,13 +62,13 @@ export const accountSchema = new Schema<
       maxlength: constraint.username.max,
     },
     email: { type: String, required: true, unique: true, match: /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/ },
-    password: { type: String, required: true, select: false, match: /^%242[ab]%2410%24\S{53,}/ },
+    password: { type: String, select: false, match: /^%242[ab]%2410%24\S{53,}/ },
     accountType: {
       type: String,
       required: true,
       enum: {
-        values: ['user', 'admin'],
-        message: 'accountType must be either `user` or `admin`',
+        values: ['user', 'admin', 'pending'],
+        message: 'accountType must be either `user`, `pending` or `admin`',
       },
       default: 'user',
     },

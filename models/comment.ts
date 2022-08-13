@@ -13,6 +13,7 @@ import { AccountInstanceInterface } from '@models/account';
 import { RecipeInstanceInterface } from '@models/recipe';
 import { SnapshotInstanceInterface } from '@models/snapshot';
 import { listAll } from '@functions/commentFunction';
+import _ from 'lodash';
 
 //---------------------
 //   INTERFACE
@@ -21,7 +22,7 @@ export interface CommentInterface extends Document {
   _id: Types.ObjectId;
   type: 'Recipe' | 'Snapshot';
   post: Types.ObjectId & (RecipeInstanceInterface | SnapshotInstanceInterface);
-  author: Types.ObjectId & AccountInstanceInterface;
+  author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
   comment: string;
   rating?: number;
   createdAt: Date;
@@ -63,13 +64,8 @@ const commentSchema = new Schema<
   {
     type: { type: String, enum: ['Recipe', 'Snapshot'], required: true },
     post: { type: 'ObjectId', refPath: 'type', required: true },
-    author: {
-      type: 'ObjectId',
-      ref: 'Account',
-      required: true,
-      autopopulate: { select: 'username image' },
-    },
-    comment: { type: String, required: true, maxlength: constraint.comment.max },
+    author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
+    comment: { type: String, maxlength: constraint.comment.max, validate: { validator: (v: any) => _.isString(v) } },
     rating: { type: Number, min: 0, max: 5 },
   },
   {
@@ -79,11 +75,6 @@ const commentSchema = new Schema<
     versionKey: false,
   }
 );
-
-//---------------------
-//   INDEX
-//---------------------
-commentSchema.index({ post: 1, author: 1 }, { unique: true });
 
 //---------------------
 //   STATICS

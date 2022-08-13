@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
@@ -11,6 +10,9 @@ import { deleteImage } from '@utils/imageUtil';
 import createRestAPIError from '@error/createRestAPIError';
 import NutritionDetailService from '@services/nutritionDetailService';
 
+//---------------------
+//   FETCH MANY
+//---------------------
 export const getIngredientList: RequestHandler = async (req, res, next) => {
   try {
     const page = parseInt(req.query?.page as string);
@@ -68,6 +70,9 @@ export const sampleByType: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   FETCH ONE
+//---------------------
 export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
@@ -81,6 +86,9 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
   }
 };
 
+//---------------------
+//   CREATE
+//---------------------
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
@@ -94,13 +102,16 @@ export const createIngredient: RequestHandler = async (req, res, next) => {
       ingredient.queryKey
     );
 
-    await ingredient.depopulate().save();
+    await ingredient.save();
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
 };
 
+//---------------------
+//   EDIT
+//---------------------
 export const editIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
@@ -128,25 +139,28 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
       );
     }
 
-    await ingredient.depopulate().save({ validateModifiedOnly: true });
-    ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
+    await ingredient.save({ validateModifiedOnly: true });
+    oldImage && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
   }
 };
 
+//---------------------
+//   DELETE
+//---------------------
 export const deleteIngredient: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.ingredientId;
 
-    const ref = await Recipe.exists({ ingredients: new Types.ObjectId(id) }).exec();
+    const ref = await Recipe.exists({ 'ingredients.ingredient': id }).exec();
     if (ref) throw createRestAPIError('DEL_REFERENCE');
 
     const result = await Ingredient.findByIdAndDelete(id).exec();
     if (!result) throw createRestAPIError('DOC_NOT_FOUND');
 
-    deleteImage('ingredients', result.image);
+    result.image && deleteImage('ingredients', result.image);
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

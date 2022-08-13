@@ -1,7 +1,17 @@
-import { model, Schema, Model, Document, Types, QueryWithHelpers } from 'mongoose';
+import {
+  model,
+  Schema,
+  Document,
+  Types,
+  QueryWithHelpers,
+  AggregatePaginateModel,
+  AggregatePaginateResult,
+} from 'mongoose';
 
 import { RecipeInstanceInterface } from '@models/recipe';
+import { AccountInstanceInterface } from '@models/account';
 import constraint from '@config/constraint';
+import { listAll } from '@functions/snapshotFunction';
 
 //---------------------
 //   INTERFACE
@@ -10,9 +20,10 @@ export interface SnapshotInterface extends Document {
   _id: Types.ObjectId;
   caption: string;
   image: string;
-  author: Types.ObjectId;
-  recipe: Types.ObjectId;
-  updatedAt: Date;
+  author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
+  recipe: Pick<RecipeInstanceInterface, '_id' | 'name'>;
+  isMe?: boolean;
+  createdAt: Date;
 }
 
 export interface SnapshotInstanceMethods {
@@ -21,8 +32,14 @@ export interface SnapshotInstanceMethods {
 
 export interface SnapshotInstanceInterface extends SnapshotInterface, SnapshotInstanceMethods {}
 
-export interface SnapshotModelInterface extends Model<SnapshotInstanceInterface, SnapshotQueryHelpers> {
+export interface SnapshotModelInterface extends AggregatePaginateModel<SnapshotInstanceInterface> {
   // declare any static methods here
+  listAll(
+    this: SnapshotModelInterface,
+    page: number,
+    perPage: number,
+    username: string
+  ): Promise<AggregatePaginateResult<SnapshotInstanceInterface>>;
 }
 
 interface SnapshotQueryHelpers {
@@ -48,18 +65,8 @@ export const snapshotSchema = new Schema<
   {
     caption: { type: String, required: true, maxlength: constraint.caption.max },
     image: { type: String, required: true },
-    author: {
-      type: 'ObjectId',
-      ref: 'Account',
-      required: true,
-      autopopulate: { select: 'username image' },
-    },
-    recipe: {
-      type: 'ObjectId',
-      ref: 'Recipe',
-      required: true,
-      autopopulate: { select: 'name' },
-    },
+    author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
+    recipe: { type: { _id: 'ObjectId', name: String }, required: true },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',
@@ -72,22 +79,23 @@ export const snapshotSchema = new Schema<
 );
 
 //---------------------
+//   STATICS
+//---------------------
+snapshotSchema.statics.listAll = listAll;
+
+//---------------------
 //   QUERY HELPERS
 //---------------------
 snapshotSchema.query.byRecipe = function (
   recipeId: string | Types.ObjectId
 ): QueryWithHelpers<SnapshotInstanceInterface, SnapshotInstanceInterface, SnapshotQueryHelpers> {
-  return this.where({ recipe: recipeId });
+  return this.where({ 'recipe._id': recipeId });
 };
 
 snapshotSchema.query.byRecipeName = function (
   name: string
 ): QueryWithHelpers<any, SnapshotInstanceInterface, SnapshotQueryHelpers> {
-  return this.populate<{ recipe: RecipeInstanceInterface }>({
-    path: 'recipe',
-    match: { name },
-    select: 'name -_id',
-  });
+  return this.where({ 'recipe.name': name });
 };
 
 //---------------------
@@ -97,6 +105,7 @@ snapshotSchema.virtual('comments', {
   ref: 'Comment',
   localField: '_id',
   foreignField: 'post',
+  match: { type: 'Snapshot' },
 });
 
 //---------------------

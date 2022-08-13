@@ -1,21 +1,15 @@
-import _ from 'lodash';
-import { Types, AggregatePaginateResult } from 'mongoose';
+import { AggregatePaginateResult } from 'mongoose';
 
-import { CommentInstanceInterface, CommentModelInterface } from '@models/comment';
+import { SnapshotInstanceInterface, SnapshotModelInterface } from '@models/snapshot';
 
 export const listAll: (
-  this: CommentModelInterface,
+  this: SnapshotModelInterface,
   page: number,
   perPage: number,
-  post: string,
-  type: string,
   username: string
-) => Promise<AggregatePaginateResult<CommentInstanceInterface>> = async function (page, perPage, post, type, username) {
-  const aggregate = this.aggregate<CommentInstanceInterface>()
-    .match({
-      post: new Types.ObjectId(post),
-      type: _.capitalize(type),
-    })
+) => Promise<AggregatePaginateResult<SnapshotInstanceInterface>> = async function (page, perPage, username) {
+  const aggregate = this.aggregate<SnapshotInstanceInterface>()
+    .match(username ? { 'author.username': username } : {})
     .lookup({
       from: 'accounts',
       localField: 'author._id',
@@ -28,7 +22,6 @@ export const listAll: (
       preserveNullAndEmptyArrays: true,
     })
     .addFields({
-      isMe: { $eq: ['$author.username', username] },
       'author.image': {
         $cond: [
           { $cond: [{ $isArray: '$author_image.image' }, { $size: '$author_image.image' }, '$author_image.image'] },

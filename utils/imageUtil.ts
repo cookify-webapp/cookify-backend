@@ -10,8 +10,6 @@ const maxSize = 5 * 1024 * 1024;
 
 export const allowedExt = ['.png', '.jpg', '.gif', '.jpeg'];
 
-const genName = crypto.randomBytes(8).toString('hex');
-
 const storage = multer.diskStorage({
   destination: (req, _file, cb) => {
     const dir = path.resolve(process.cwd(), `public/images${req.baseUrl}`);
@@ -19,7 +17,7 @@ const storage = multer.diskStorage({
     cb(null, dir);
   },
   filename: (_req, file, cb) => {
-    cb(null, `${genName}${path.extname(file.originalname)}`);
+    cb(null, `${crypto.randomBytes(8).toString('hex')}${path.extname(file.originalname)}`);
   },
 });
 

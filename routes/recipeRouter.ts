@@ -8,9 +8,11 @@ import {
   getRecipeDetail,
   deleteRecipe,
   editRecipe,
+  getUserRecipeList,
+  getMyBookmarkedRecipe,
 } from '@controllers/recipeController';
 import { auth, byPassAuth } from '@middleware/auth';
-import { recipeListValidator, recipeValidator } from '@middleware/requestValidator';
+import { genericListValidator, recipeListValidator, recipeValidator } from '@middleware/requestValidator';
 import imageUtil from '@utils/imageUtil';
 import bodyParser from '@middleware/bodyParser';
 
@@ -19,6 +21,10 @@ const middleware = [auth, imageUtil.single('recipeImage'), bodyParser, recipeVal
 const recipeRouter = express.Router();
 
 recipeRouter.get('/list', byPassAuth, recipeListValidator, getRecipeList);
+
+recipeRouter.get('/list/:username', genericListValidator, getUserRecipeList);
+
+recipeRouter.get('/bookmark', auth, genericListValidator, getMyBookmarkedRecipe);
 
 recipeRouter.get('/methods', getCookingMethods);
 

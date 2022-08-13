@@ -6,12 +6,28 @@ const recipeData = {
   method: '6264263d50eda11fe1a2b8f4',
   serving: 1,
   ingredients: [
-    { ingredient: '6264263d50eda11fe1a2b8f4', quantity: 50, unit: '6264263d50eda11fe1a2b8f4' },
-    { ingredient: '6264263d50eda11fe1a2b8f5', quantity: 20, unit: '6264263d50eda11fe1a2b8f4' },
+    {
+      ingredient: '6264263d50eda11fe1a2b8f4',
+      quantity: 50,
+      unit: {
+        _id: '6264263d50eda11fe1a2b8f4',
+        name: 'unit1',
+        queryKey: 'q1',
+      },
+    },
+    {
+      ingredient: '6264263d50eda11fe1a2b8f5',
+      quantity: 20,
+      unit: {
+        _id: '6264263d50eda11fe1a2b8f4',
+        name: 'unit1',
+        queryKey: 'q1',
+      },
+    },
   ],
   subIngredients: [],
   steps: ['Cut', 'Grill'],
-  author: '6264263d50eda11fe1a2b8f6',
+  author: { _id: '6264263d50eda11fe1a2b8f6', username: 'John Doe' },
   image: 'image',
 };
 
@@ -32,7 +48,7 @@ describe('Recipe model', () => {
     expect(savedRecipe.subIngredients).toStrictEqual(recipeData.subIngredients);
     expect(savedRecipe.serving).toStrictEqual(recipeData.serving);
     expect(savedRecipe.serving).toStrictEqual(recipeData.serving);
-    expect(savedRecipe.author.toString()).toStrictEqual(recipeData.author);
+    expect(savedRecipe.author._id.toString()).toStrictEqual(recipeData.author._id);
     expect(savedRecipe.image).toStrictEqual(recipeData.image);
   });
 
@@ -45,14 +61,12 @@ describe('Recipe model', () => {
   it('should paginate', async () => {
     const recipe = new Recipe(recipeData);
     const savedRecipe = await recipe.save();
-    const foundRecipe = await Recipe.listRecipe(
-      1,
-      10,
-      '',
-      '',
-      ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
-      []
-    );
+    const foundRecipe = await Recipe.listRecipeByQuery(1, 10, {
+      name: '',
+      method: '',
+      ingredients: ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
+      allergy: [],
+    });
 
     expect(foundRecipe.totalDocs).toStrictEqual(1);
     expect(foundRecipe.docs[0]._id.toString()).toStrictEqual(savedRecipe.id);

@@ -9,7 +9,7 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      - "/home/cookifywebapp/cookify-devops/seed-image:/usr/src/app/init-images"
+      - "/home/ckfyadmin/cookify-devops/seed-image:/usr/src/app/init-images"
 networks:
   default:
     external:
