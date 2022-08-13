@@ -100,7 +100,8 @@ export const createComment: RequestHandler = async (req, res, next) => {
     await comment.save();
     comment.author.image = account.image;
 
-    account.id !== receiver?.toString() &&
+    receiver &&
+      account._id.equals(receiver) &&
       (await createNotification({
         type: 'comment',
         caption: createCommentNotification(type as 'recipe' | 'snapshot', account.username),
