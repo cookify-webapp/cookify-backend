@@ -247,9 +247,11 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
         quantity: item.quantity,
         unit: item.unit._id.toString(),
       }));
-      _.forEach(data?.ingredients, (item) => {
+
+      for (const item of data?.ingredients) {
         isSame = _.some(mapped, item);
-      });
+        if (!isSame) break;
+      }
     }
 
     if (!isSame) {

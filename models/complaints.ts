@@ -53,7 +53,7 @@ export const complaintSchema = new Schema<
     type: { type: String, enum: ['Recipe', 'Snapshot'], required: true },
     post: { type: 'ObjectId', refPath: 'type', required: true },
     reporter: { type: { _id: 'ObjectId', username: String }, required: true },
-    moderator: { type: { _id: 'ObjectId', username: String }, required: true },
+    moderator: { type: { _id: 'ObjectId', username: String } },
     detail: { type: String, required: true, maxlength: constraint.detail.max },
     status: { type: String, enum: ComplaintStatus, required: true },
   },
