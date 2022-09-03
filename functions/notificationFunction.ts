@@ -25,8 +25,8 @@ export const createNotification = async (detail: {
     if (exist) {
       await exist.deleteOne();
 
-      const newUser = detail.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/);
-      const oldUser = exist.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/);
+      const newUser = detail.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/g);
+      const oldUser = exist.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/g);
       const commentType =
         exist.caption.match(/(?<=ได้แสดงความคิดเห็นบน)(.*?)(?=ของคุณ)/)?.[0] === 'สูตรอาหาร' ? 'recipe' : 'snapshot';
       if (newUser && oldUser && commentType)
