@@ -7,6 +7,7 @@ import {
   seedIngredientType,
   seedUnit,
   seedImage,
+  seedRecipe,
 } from '@utils/seedUtil';
 
 const seedRouter = express.Router();
@@ -17,8 +18,10 @@ seedRouter.get(
   seedAccount(true),
   seedCookingMethod(true),
   seedUnit(true),
-  seedIngredientType(true),
   seedImage('ingredients'),
+  seedIngredientType(true),
+  seedImage('recipes'),
+  seedRecipe(true),
   seedIngredient()
 );
 
@@ -29,6 +32,8 @@ seedRouter.get('/ingredients', seedImage('ingredients'), seedIngredient());
 seedRouter.get('/ingredients/types', seedIngredientType());
 
 seedRouter.get('/ingredients/units', seedUnit());
+
+seedRouter.get('/recipes', seedImage('recipes'), seedRecipe());
 
 seedRouter.get('/recipes/methods', seedCookingMethod());
 

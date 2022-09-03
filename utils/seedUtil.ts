@@ -16,6 +16,9 @@ import seedIngredientTypes from '@mock/seedIngredientTypes';
 import { Unit } from '@models/unit';
 import seedUnits from '@mock/seedUnits';
 
+import { Recipe } from '@models/recipe';
+import seedRecipes from '@mock/seedRecipes';
+
 import createRestAPIError from '@error/createRestAPIError';
 
 const seedData: (model: Model<any>, data: any[], hasNext: boolean) => RequestHandler =
@@ -59,3 +62,5 @@ export const seedIngredient = (hasNext: boolean = false) => seedData(Ingredient,
 export const seedIngredientType = (hasNext: boolean = false) => seedData(IngredientType, seedIngredientTypes, hasNext);
 
 export const seedUnit = (hasNext: boolean = false) => seedData(Unit, seedUnits, hasNext);
+
+export const seedRecipe = (hasNext: boolean = false) => seedData(Recipe, seedRecipes, hasNext);
