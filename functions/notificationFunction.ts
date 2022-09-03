@@ -16,7 +16,12 @@ export const createNotification = async (detail: {
   }
 
   if (detail.type === 'comment') {
-    const exist = await Notification.findOne({ receiver: detail.receiver, type: 'comment', link: detail.link }).exec();
+    const exist = await Notification.findOne({
+      receiver: detail.receiver,
+      type: 'comment',
+      link: detail.link,
+      read: false,
+    }).exec();
     if (exist) {
       await exist.deleteOne();
 
@@ -30,7 +35,7 @@ export const createNotification = async (detail: {
   }
 
   const count = await Notification.find({ receiver: detail.receiver }).count().exec();
-  if (count === 30) await Notification.deleteOne({ receiver: detail.receiver }).sort('-createdAt').exec();
+  if (count === 30) await Notification.deleteOne({ receiver: detail.receiver }).sort('createdAt').exec();
 
   const notification = new Notification(detail);
 
