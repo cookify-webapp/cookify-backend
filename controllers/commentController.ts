@@ -101,10 +101,10 @@ export const createComment: RequestHandler = async (req, res, next) => {
     comment.author.image = account.image;
 
     receiver &&
-      account._id.equals(receiver) &&
+      !account._id.equals(receiver) &&
       (await createNotification({
         type: 'comment',
-        caption: createCommentNotification(type as 'recipe' | 'snapshot', account.username),
+        caption: createCommentNotification(type as 'recipe' | 'snapshot', [account.username]),
         link: `/${type}s/${id}`,
         receiver,
       }));

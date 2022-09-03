@@ -123,11 +123,11 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     const oldImage = ingredient.image;
 
     ingredient.set({
-      name: data?.name || ingredient.name,
-      queryKey: data?.queryKey || ingredient.queryKey,
-      type: data?.type || ingredient.type,
+      name: data?.name,
+      queryKey: data?.queryKey,
+      type: data?.type,
       image: req.file?.filename || ingredient.image,
-      shopUrl: data?.shopUrl || ingredient.shopUrl,
+      shopUrl: data?.shopUrl,
     });
     if (data?.unit && ingredient.unit.toString() !== data?.unit) ingredient.set('unit', data?.unit);
 

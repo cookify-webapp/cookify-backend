@@ -323,8 +323,8 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     const oldImage = account.image || '';
 
     account.set({
-      email: data?.email || account.email,
-      allergy: data?.allergy || account.allergy,
+      email: data?.email,
+      allergy: data?.allergy,
       image: req.file?.filename || account.image,
     });
 
@@ -348,7 +348,7 @@ export const registerAdmin: RequestHandler = async (req, res, next) => {
       username: data?.username,
       email: data?.email || account.email,
       password: data?.password,
-      allergy: data?.allergy || account.allergy,
+      allergy: data?.allergy,
       accountType: 'admin',
     });
     await account.hashPassword();

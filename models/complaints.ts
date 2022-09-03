@@ -8,10 +8,10 @@ import { SnapshotInstanceInterface } from './snapshot';
 //   CONFIG
 //---------------------
 export enum ComplaintStatus {
-  FILED = 'filed',
-  EXAMINING = 'examining',
+  FILED = 'filed', //Complaint is filed but not chosen
+  EXAMINING = 'examining', //Complaint is chosen by admin and is being revised
   REJECTED = 'rejected',
-  IN_PROGRESS = 'in progress',
+  IN_PROGRESS = 'in progress', //Complaint is sent back to author for action
   COMPLETED = 'completed',
 }
 
@@ -24,6 +24,7 @@ export interface ComplaintInterface extends Document {
   type: 'Recipe' | 'Snapshot';
   reporter: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
   moderator: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
+  remarks: string[];
   detail: string;
   status: ComplaintStatus;
 }
@@ -54,6 +55,7 @@ export const complaintSchema = new Schema<
     post: { type: 'ObjectId', refPath: 'type', required: true },
     reporter: { type: { _id: 'ObjectId', username: String }, required: true },
     moderator: { type: { _id: 'ObjectId', username: String } },
+    remarks: [{ type: String, maxlength: constraint.detail.max }],
     detail: { type: String, required: true, maxlength: constraint.detail.max },
     status: { type: String, enum: ComplaintStatus, required: true },
   },

@@ -230,13 +230,13 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     const oldImage = recipe.image;
 
     recipe.set({
-      name: data?.name || recipe.name,
-      desc: data?.desc || recipe.desc,
-      method: data?.method || recipe.method,
+      name: data?.name,
+      desc: data?.desc,
+      method: data?.method,
       image: req.file?.filename || recipe.image,
-      serving: data?.serving || recipe.serving,
-      subIngredients: data?.subIngredients || recipe.subIngredients,
-      steps: data?.steps || recipe.steps,
+      serving: data?.serving,
+      subIngredients: data?.subIngredients,
+      steps: data?.steps,
     });
 
     let isSame = false;
