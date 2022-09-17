@@ -2,42 +2,47 @@ import _ from 'lodash';
 import { Types } from 'mongoose';
 
 import { Notification } from '@models/notifications';
-import { createCommentNotification } from '@config/notificationTemplate';
+import { createCommentNotification, createFollowNotification } from '@config/notificationTemplate';
 
-export const createNotification = async (detail: {
-  type: 'complaint' | 'follow' | 'comment';
-  caption: string;
-  link: string;
-  receiver: Types.ObjectId | null;
-}) => {
-  if (detail.type === 'follow') {
-    const exist = await Notification.findOne({ receiver: detail.receiver, type: 'follow', link: detail.link }).exec();
+export const createNotification = async (
+  type: 'complaint' | 'follow' | 'recipe' | 'snapshot' | 'comment',
+  username: string,
+  link: string,
+  receiver: Types.ObjectId | null
+) => {
+  let caption = '';
+
+  if (type === 'follow') {
+    caption = createFollowNotification(username);
+
+    const exist = await Notification.findOne({ receiver, type, link }).exec();
     if (exist) await exist.deleteOne();
   }
 
-  if (detail.type === 'comment') {
+  if (type === 'recipe' || type === 'snapshot') {
+    caption = createCommentNotification(type, [username]);
+
     const exist = await Notification.findOne({
-      receiver: detail.receiver,
+      receiver,
       type: 'comment',
-      link: detail.link,
+      link,
       read: false,
     }).exec();
+
     if (exist) {
       await exist.deleteOne();
 
-      const newUser = detail.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/g);
       const oldUser = exist.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/g);
-      const commentType =
-        exist.caption.match(/(?<=ได้แสดงความคิดเห็นบน)(.*?)(?=ของคุณ)/)?.[0] === 'สูตรอาหาร' ? 'recipe' : 'snapshot';
-      if (newUser && oldUser && commentType)
-        detail.caption = createCommentNotification(commentType, _.uniq([...newUser, ...oldUser]));
+      if (oldUser) caption = createCommentNotification(type, _.uniq([username, ...oldUser]));
     }
+
+    type = 'comment';
   }
 
-  const count = await Notification.find({ receiver: detail.receiver }).count().exec();
-  if (count === 30) await Notification.deleteOne({ receiver: detail.receiver }).sort('createdAt').exec();
+  const count = await Notification.find({ receiver }).count().exec();
+  if (count === 30) await Notification.deleteOne({ receiver }).sort('createdAt').exec();
 
-  const notification = new Notification(detail);
+  const notification = new Notification({ type, caption, link, receiver });
 
   await notification.save();
 };

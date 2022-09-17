@@ -9,7 +9,7 @@ export const listAll: (
   username: string
 ) => Promise<AggregatePaginateResult<SnapshotInstanceInterface>> = async function (page, perPage, username) {
   const aggregate = this.aggregate<SnapshotInstanceInterface>()
-    .match(username ? { 'author.username': username } : {})
+    .match(username ? { 'author.username': username, isHidden: false } : { isHidden: false })
     .lookup({
       from: 'accounts',
       localField: 'author._id',

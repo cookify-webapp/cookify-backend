@@ -12,7 +12,7 @@ const genericListRecipe: (
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async (model, withSnapshot, page, perPage, match) => {
   const aggregate = model
     .aggregate<RecipeInstanceInterface>()
-    .match(match)
+    .match({ ...match, isHidden: false })
     .lookup({
       from: 'cookingmethods',
       localField: 'method',
@@ -96,7 +96,7 @@ const genericListRecipe: (
       .unionWith({
         coll: 'snapshots',
         pipeline: [
-          { $match: match },
+          { $match: { ...match, isHidden: false } },
           {
             $lookup: {
               from: 'accounts',

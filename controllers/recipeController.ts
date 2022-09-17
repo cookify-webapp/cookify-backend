@@ -165,10 +165,10 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(id).populate('comments').lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const { username, bookmark } = await Account.findOne()
+    const { username, bookmark, accountType } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
-      .select('username bookmark')
+      .select('username bookmark accountType')
       .lean()
       .exec();
     const account = await Account.findById(recipe.author._id).select('image').lean().exec();
@@ -179,6 +179,8 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     recipe.author.image = account?.image || '';
 
     delete recipe.comments;
+
+    if (recipe.isHidden && (!recipe.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
 
     res.status(200).send({ recipe });
   } catch (err) {

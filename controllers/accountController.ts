@@ -10,7 +10,6 @@ import { deleteImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 import { includesId } from '@utils/includesIdUtil';
 import { Notification } from '@models/notifications';
-import { createFollowNotification } from '@config/notificationTemplate';
 import { createNotification } from '@functions/notificationFunction';
 
 //---------------------
@@ -300,13 +299,7 @@ export const setFollow: RequestHandler = async (req, res, next) => {
 
     await account.save({ validateModifiedOnly: true });
 
-    !exist &&
-      (await createNotification({
-        type: 'follow',
-        caption: createFollowNotification(account.username),
-        link: `/users/${account.id}`,
-        receiver: target.id,
-      }));
+    !exist && (await createNotification('follow', account.username, `/users/${account.id}`, target.id));
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

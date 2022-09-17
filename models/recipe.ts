@@ -5,7 +5,12 @@ import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
 import { UnitInstanceInterface, unitSchema } from '@models/unit';
 import { IngredientInstanceInterface } from '@models/ingredient';
-import { listRecipeAndSnapshotByAuthors, listRecipeByAuthors, listRecipeByIds, listRecipeByQuery } from '@functions/recipeFunction';
+import {
+  listRecipeAndSnapshotByAuthors,
+  listRecipeByAuthors,
+  listRecipeByIds,
+  listRecipeByQuery,
+} from '@functions/recipeFunction';
 import constraint from '@config/constraint';
 
 //---------------------
@@ -32,6 +37,7 @@ export interface RecipeInterface extends Document {
   averageRating?: number;
   bookmarked?: boolean;
   isMe?: boolean;
+  isHidden: boolean;
   createdAt: Date;
   nutritionalDetail: Object;
 }
@@ -123,6 +129,7 @@ export const recipeSchema = new Schema<
     steps: [{ type: String, required: true }],
     image: { type: String, required: true },
     author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
+    isHidden: { type: Boolean, required: true, default: false },
     nutritionalDetail: {},
   },
   {

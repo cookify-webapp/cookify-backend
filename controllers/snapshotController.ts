@@ -46,10 +46,18 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
     const snapshot = await Snapshot.findById(id).lean().exec();
     if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
 
+    const { accountType } = await Account.findOne()
+      .setOptions({ autopopulate: false })
+      .byName(res.locals.username)
+      .select('accountType')
+      .lean()
+      .exec();
     const account = await Account.findById(snapshot.author._id).select('image').lean().exec();
 
     snapshot.isMe = res.locals.username === snapshot.author.username;
     snapshot.author.image = account?.image || '';
+
+    if (snapshot.isHidden && (!snapshot.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
 
     res.status(200).send({ snapshot });
   } catch (err) {
