@@ -47,7 +47,7 @@ export const createComplaint: RequestHandler = async (req, res, next) => {
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
     data.type = _.capitalize(data.type);
-    
+
     if (data.type === 'Recipe') {
       const post = await Recipe.findById(data?.post).exec();
       if (!post) throw createRestAPIError('DOC_NOT_FOUND');
@@ -83,6 +83,13 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
 
     const complaint = await Complaint.findById(id).setOptions({ autopopulate: false }).exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+    if (
+      (data.status === ComplaintStatus.COMPLETED && complaint.status !== ComplaintStatus.VERIFYING) ||
+      ((data.status === ComplaintStatus.REJECTED || data.status === ComplaintStatus.EXAMINING) &&
+        complaint.status !== ComplaintStatus.FILED)
+    )
+      throw createRestAPIError('INVALID_FLOW');
 
     if (data.status === ComplaintStatus.EXAMINING) data.moderator = { _id: account._id, username: account.username };
     complaint.set(data);

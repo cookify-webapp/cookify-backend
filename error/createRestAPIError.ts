@@ -30,6 +30,7 @@ const ErrorResponse = Object.freeze({
   DUP_COMMENT: { ...ErrorDetail.FORBIDDEN, msg: 'You have already commented on this post' },
   FOLLOW_SELF: { ...ErrorDetail.FORBIDDEN, msg: 'You cannot follow yourself' },
   INCOMPLETE_COMPLAINT: { ...ErrorDetail.FORBIDDEN, msg: 'Incomplete complaints cannot be deleted' },
+  INVALID_FLOW: { ...ErrorDetail.FORBIDDEN, msg: 'Requested action will break the flow of complaint system' },
   NOT_OWNER: { ...ErrorDetail.FORBIDDEN, msg: 'You are not the owner of this document' },
   WRONG_PASSWORD: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect password' },
   WRONG_USERNAME: { ...ErrorDetail.FORBIDDEN, msg: 'Incorrect username' },
