@@ -10,7 +10,7 @@ import { deleteImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 import { includesId } from '@utils/includesIdUtil';
 import { Notification } from '@models/notifications';
-import { createNotification } from '@functions/notificationFunction';
+import { createFollowNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -175,7 +175,7 @@ export const getMe: RequestHandler = async (_req, res, next) => {
 
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const unreadNotification = await Notification.find({ receiver: account._id, read: false }).count().exec();
+    const unreadNotification = await Notification.find({ receiver: account._id, new: true }).count().exec();
 
     const followingCount = _.size(account.following);
     const followerCount = await Account.find({ following: account._id }).select('username').lean().count().exec();
@@ -299,7 +299,7 @@ export const setFollow: RequestHandler = async (req, res, next) => {
 
     await account.save({ validateModifiedOnly: true });
 
-    !exist && (await createNotification('follow', account.username, `/users/${account.id}`, target.id));
+    !exist && (await createFollowNotification(account.username, `/users/${account.id}`, target.id));
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

@@ -6,7 +6,7 @@ import { Account } from '@models/account';
 import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
-import { createNotification } from '@functions/notificationFunction';
+import { createCommentNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -101,7 +101,7 @@ export const createComment: RequestHandler = async (req, res, next) => {
 
     receiver &&
       !account._id.equals(receiver) &&
-      (await createNotification(type as 'recipe' | 'snapshot', account.username, `/${type}s/${id}`, receiver));
+      (await createCommentNotification(type as 'recipe' | 'snapshot', account.username, `/${type}s/${id}`, receiver));
     res.status(200).send({ comment });
   } catch (err) {
     return next(err);

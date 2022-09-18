@@ -7,6 +7,7 @@ import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
 import { deleteImage } from '@utils/imageUtil';
+import { Complaint, ComplaintStatus } from '@models/complaints';
 
 //---------------------
 //   FETCH MANY
@@ -58,6 +59,10 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
     snapshot.author.image = account?.image || '';
 
     if (snapshot.isHidden && (!snapshot.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
+
+    const complaint = await Complaint.findOne({ post: snapshot.id, status: ComplaintStatus.IN_PROGRESS }).exec();
+
+    res.status(200).send({ snapshot: complaint ? { ...snapshot, remark: complaint.remarks.pop() } : snapshot });
 
     res.status(200).send({ snapshot });
   } catch (err) {
