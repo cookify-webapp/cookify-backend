@@ -81,7 +81,7 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const complaint = await Complaint.findById(id).setOptions({ autopopulate: false }).exec();
+    const complaint = await Complaint.findById(id).populate('post').exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
     if (
@@ -99,7 +99,14 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
       if (exist) throw createRestAPIError('COMPLAINT_TAKEN');
 
       data.moderator = { _id: account._id, username: account.username };
+
+      complaint.post.set({ isHidden: true });
+      await complaint.post.save();
     }
+
+    if (data.status === ComplaintStatus.COMPLETED || data.status === ComplaintStatus.REJECTED)
+      data.expiresAt = Date.now();
+
     complaint.set(data);
 
     await complaint.save();
@@ -109,7 +116,7 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
         complaint.type.toLowerCase() as 'recipe' | 'snapshot',
         ComplaintStatus.COMPLETED,
         `/${complaint.type.toLowerCase()}/${complaint.post.id}`,
-        complaint.post.author.username
+        complaint.post.author._id
       );
 
     res.status(200).send({ message: 'success' });
@@ -127,7 +134,7 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const complaint = await Complaint.findById(id).exec();
+    const complaint = await Complaint.findById(id).populate('post').exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
     if (complaint.status !== ComplaintStatus.EXAMINING && complaint.status !== ComplaintStatus.VERIFYING)
@@ -143,7 +150,7 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
         complaint.type.toLowerCase() as 'recipe' | 'snapshot',
         ComplaintStatus.IN_PROGRESS,
         `/${complaint.type.toLowerCase()}/${complaint.post.id}`,
-        complaint.post.author.username
+        complaint.post.author._id
       ));
 
     res.status(200).send({ message: 'success' });

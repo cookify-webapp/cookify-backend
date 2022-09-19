@@ -59,5 +59,5 @@ export const createComplaintNotification = async (
   type: 'recipe' | 'snapshot',
   status: ComplaintStatus,
   link: string,
-  receiver: string
+  receiver: string | Types.ObjectId | null
 ) => await saveNotification('complaint', createComplaintNotificationTemplate(type, status), link, receiver);

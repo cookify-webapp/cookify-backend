@@ -181,7 +181,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     delete recipe.comments;
 
-    if (recipe.isHidden && (!recipe.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
+    if (recipe.isHidden && !recipe.isMe && accountType !== 'admin') throw createRestAPIError('DOC_NOT_FOUND');
 
     const complaint = await Complaint.findOne({ post: recipe.id, status: ComplaintStatus.IN_PROGRESS }).exec();
 

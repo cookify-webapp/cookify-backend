@@ -30,6 +30,7 @@ export interface ComplaintInterface extends Document {
   remarks: string[];
   detail: string;
   status: ComplaintStatus;
+  expiresAt?: Date;
 }
 
 export interface ComplaintInstanceMethods {
@@ -68,6 +69,7 @@ export const complaintSchema = new Schema<
     remarks: [{ type: String, maxlength: constraint.detail.max }],
     detail: { type: String, required: true, maxlength: constraint.detail.max },
     status: { type: String, enum: ComplaintStatus, required: true, default: ComplaintStatus.FILED },
+    expiresAt: { type: Date, expires: '30d' },
   },
   {
     autoCreate: process.env.NODE_ENV !== 'production',

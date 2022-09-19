@@ -26,13 +26,13 @@ export const listComplaint: (
           ? ComplaintStatus.FILED
           : status === 'processing'
           ? { $in: [ComplaintStatus.EXAMINING, ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] }
-          : { $in: [ComplaintStatus.COMPLETED, ComplaintStatus.DELETED] },
+          : { $in: [ComplaintStatus.COMPLETED, ComplaintStatus.DELETED, ComplaintStatus.REJECTED] },
     })
     .project({ post_string: 0 });
 
   if (status === 'processing')
     aggregate.addFields({
-      isMe: { $eq: ['moderator.username', moderator] },
+      isMe: { $eq: ['$moderator.username', moderator] },
     });
 
   return this.aggregatePaginate(aggregate, {
