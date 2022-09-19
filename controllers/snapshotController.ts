@@ -8,6 +8,7 @@ import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
 import { deleteImage } from '@utils/imageUtil';
 import { Complaint, ComplaintStatus } from '@models/complaints';
+import { createVerifyNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -127,6 +128,23 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
 
     await snapshot.save();
     oldImage && snapshot.image !== oldImage && deleteImage('snapshots', oldImage);
+
+    if (snapshot.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Snapshot', post: snapshot.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.VERIFYING }
+      );
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        snapshot.author.username,
+        ComplaintStatus.VERIFYING,
+        `complaints?id=${snapshot.id}`,
+        complaint.moderator._id
+      );
+    }
+
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -148,6 +166,22 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
 
     await Comment.deleteMany({ post: snapshot._id }).exec();
     snapshot.image && deleteImage('snapshots', snapshot.image);
+
+    if (snapshot.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Snapshot', post: snapshot.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.DELETED }
+      );
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        snapshot.author.username,
+        ComplaintStatus.DELETED,
+        `complaints?id=${snapshot.id}`,
+        complaint.moderator._id
+      );
+    }
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

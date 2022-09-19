@@ -6,6 +6,7 @@ import {
   createComplaintNotificationTemplate,
   createCommentNotificationTemplate,
   createFollowNotificationTemplate,
+  createReviewNotificationTemplate,
 } from '@config/notificationTemplate';
 import { ComplaintStatus } from '@models/complaints';
 
@@ -61,3 +62,11 @@ export const createComplaintNotification = async (
   link: string,
   receiver: string | Types.ObjectId | null
 ) => await saveNotification('complaint', createComplaintNotificationTemplate(type, status), link, receiver);
+
+export const createVerifyNotification = async (
+  type: 'recipe' | 'snapshot',
+  username: string,
+  status: ComplaintStatus,
+  link: string,
+  receiver: string | Types.ObjectId | null
+) => await saveNotification('complaint', createReviewNotificationTemplate(type, username, status), link, receiver);

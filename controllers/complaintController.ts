@@ -93,7 +93,7 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
 
     if (data.status === ComplaintStatus.EXAMINING) {
       const exist = await Complaint.findOne({
-        post: data.post,
+        post: complaint.post,
         status: { $in: [ComplaintStatus.EXAMINING, ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] },
       }).exec();
       if (exist) throw createRestAPIError('COMPLAINT_TAKEN');
@@ -104,8 +104,14 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
       await complaint.post.save();
     }
 
-    if (data.status === ComplaintStatus.COMPLETED || data.status === ComplaintStatus.REJECTED)
+    if (data.status === ComplaintStatus.COMPLETED || data.status === ComplaintStatus.REJECTED) {
       data.expiresAt = Date.now();
+
+      if (data.status === ComplaintStatus.COMPLETED) {
+        complaint.post.set({ isHidden: false });
+        await complaint.post.save();
+      }
+    }
 
     complaint.set(data);
 

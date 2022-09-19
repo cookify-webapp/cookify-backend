@@ -15,6 +15,7 @@ import { Comment } from '@models/comment';
 import { Unit } from '@models/unit';
 import { includesId } from '@utils/includesIdUtil';
 import { Complaint, ComplaintStatus } from '@models/complaints';
+import { createVerifyNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   UTILITY
@@ -270,6 +271,23 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
 
     await recipe.save({ validateModifiedOnly: true });
     oldImage && recipe.image !== oldImage && deleteImage('recipes', oldImage);
+
+    if (recipe.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.VERIFYING }
+      );
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        recipe.author.username,
+        ComplaintStatus.VERIFYING,
+        `complaints?id=${recipe.id}`,
+        complaint.moderator._id
+      );
+    }
+
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -291,6 +309,22 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
 
     await Comment.deleteMany({ post: recipe._id }).exec();
     recipe.image && deleteImage('recipes', recipe.image);
+
+    if (recipe.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.DELETED }
+      );
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        recipe.author.username,
+        ComplaintStatus.DELETED,
+        `complaints?id=${recipe.id}`,
+        complaint.moderator._id
+      );
+    }
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
