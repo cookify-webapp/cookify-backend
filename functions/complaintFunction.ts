@@ -16,26 +16,11 @@ export const listComplaint: (
   moderator
 ) {
   const aggregate = this.aggregate()
-    .lookup({
-      from: 'recipes',
-      localField: 'post',
-      foreignField: '_id',
-      as: 'postOrigin',
-      pipeline: [{ $project: { _id: 0, name: 1 } }],
+    .addFields({
+      post_string: { $toString: '$post' },
     })
     .match({
-      $cond: [
-        { $eq: ['$type', 'Recipe'] },
-        {
-          $or: [
-            { 'postOrigin.name': { $regex: searchWord, $options: 'i' } },
-            { post: { $regex: searchWord, $options: 'i' } },
-          ],
-        },
-        { post: { $regex: searchWord, $options: 'i' } },
-      ],
-    })
-    .match({
+      post_string: { $regex: searchWord, $options: 'i' },
       status:
         status === 'new'
           ? ComplaintStatus.FILED
@@ -43,9 +28,7 @@ export const listComplaint: (
           ? { $in: [ComplaintStatus.EXAMINING, ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] }
           : { $in: [ComplaintStatus.COMPLETED, ComplaintStatus.DELETED] },
     })
-    .project({
-      postOrigin: 0,
-    });
+    .project({ post_string: 0 });
 
   if (status === 'processing')
     aggregate.addFields({

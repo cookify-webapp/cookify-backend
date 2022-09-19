@@ -91,7 +91,15 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
     )
       throw createRestAPIError('INVALID_FLOW');
 
-    if (data.status === ComplaintStatus.EXAMINING) data.moderator = { _id: account._id, username: account.username };
+    if (data.status === ComplaintStatus.EXAMINING) {
+      const exist = await Complaint.findOne({
+        post: data.post,
+        status: { $in: [ComplaintStatus.EXAMINING, ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] },
+      }).exec();
+      if (exist) throw createRestAPIError('COMPLAINT_TAKEN');
+
+      data.moderator = { _id: account._id, username: account.username };
+    }
     complaint.set(data);
 
     await complaint.save();
@@ -122,11 +130,10 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
     const complaint = await Complaint.findById(id).exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
-    if (complaint.status === ComplaintStatus.EXAMINING || complaint.status === ComplaintStatus.VERIFYING)
-      complaint.set({
-        status: ComplaintStatus.IN_PROGRESS,
-      });
+    if (complaint.status !== ComplaintStatus.EXAMINING && complaint.status !== ComplaintStatus.VERIFYING)
+      throw createRestAPIError('INVALID_FLOW');
 
+    complaint.set({ status: ComplaintStatus.IN_PROGRESS });
     complaint.remarks.push(data.remark);
 
     await complaint.save();
