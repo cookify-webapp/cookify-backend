@@ -115,7 +115,7 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
       await createComplaintNotification(
         complaint.type.toLowerCase() as 'recipe' | 'snapshot',
         ComplaintStatus.COMPLETED,
-        `/${complaint.type.toLowerCase()}/${complaint.post.id}`,
+        `/${complaint.type.toLowerCase()}s/${complaint.post.id}`,
         complaint.post.author._id
       );
 
@@ -149,7 +149,7 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
       (await createComplaintNotification(
         complaint.type.toLowerCase() as 'recipe' | 'snapshot',
         ComplaintStatus.IN_PROGRESS,
-        `/${complaint.type.toLowerCase()}/${complaint.post.id}`,
+        `/${complaint.type.toLowerCase()}s/${complaint.post.id}`,
         complaint.post.author._id
       ));
 
