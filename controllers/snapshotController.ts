@@ -140,7 +140,7 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
         'recipe',
         snapshot.author.username,
         ComplaintStatus.VERIFYING,
-        `complaints?id=${snapshot.id}`,
+        `/complaints?id=${snapshot.id}`,
         complaint.moderator._id
       );
     }
@@ -178,7 +178,7 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
         'recipe',
         snapshot.author.username,
         ComplaintStatus.DELETED,
-        `complaints?id=${snapshot.id}`,
+        `/complaints?id=${snapshot.id}`,
         complaint.moderator._id
       );
     }

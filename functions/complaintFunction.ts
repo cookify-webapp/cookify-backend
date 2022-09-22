@@ -28,7 +28,7 @@ export const listComplaint: (
           ? { $in: [ComplaintStatus.EXAMINING, ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] }
           : { $in: [ComplaintStatus.COMPLETED, ComplaintStatus.DELETED, ComplaintStatus.REJECTED] },
     })
-    .project({ post_string: 0 });
+    .project({ post_string: 0, expiresAt: 0 });
 
   if (status === 'processing')
     aggregate.addFields({

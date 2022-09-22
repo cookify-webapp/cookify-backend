@@ -283,7 +283,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
         'recipe',
         recipe.author.username,
         ComplaintStatus.VERIFYING,
-        `complaints?id=${recipe.id}`,
+        `/complaints?id=${recipe.id}`,
         complaint.moderator._id
       );
     }
@@ -321,7 +321,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
         'recipe',
         recipe.author.username,
         ComplaintStatus.DELETED,
-        `complaints?id=${recipe.id}`,
+        `/complaints?id=${recipe.id}`,
         complaint.moderator._id
       );
     }
