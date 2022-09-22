@@ -174,7 +174,8 @@ export const deleteComplaint: RequestHandler = async (req, res, next) => {
 
     const complaint = await Complaint.findById(id).exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
-    if (complaint.status !== ComplaintStatus.COMPLETED) throw createRestAPIError('INCOMPLETE_COMPLAINT');
+    if (!_.includes([ComplaintStatus.COMPLETED, ComplaintStatus.DELETED, ComplaintStatus.REJECTED], complaint.status))
+      throw createRestAPIError('INCOMPLETE_COMPLAINT');
 
     await complaint.deleteOne();
 
