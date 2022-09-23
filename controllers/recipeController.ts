@@ -184,7 +184,11 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     if (recipe.isHidden && !recipe.isMe && accountType !== 'admin') throw createRestAPIError('DOC_NOT_FOUND');
 
-    const complaint = await Complaint.findOne({ post: recipe.id, status: ComplaintStatus.IN_PROGRESS }).exec();
+    const complaint = await Complaint.findOne({
+      type: 'Recipe',
+      post: recipe.id,
+      status: ComplaintStatus.IN_PROGRESS,
+    }).exec();
 
     res.status(200).send({ recipe: complaint ? { ...recipe, remark: complaint.remarks.pop() } : recipe });
   } catch (err) {

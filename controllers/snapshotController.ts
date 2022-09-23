@@ -61,7 +61,11 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
 
     if (snapshot.isHidden && (!snapshot.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const complaint = await Complaint.findOne({ post: snapshot.id, status: ComplaintStatus.IN_PROGRESS }).exec();
+    const complaint = await Complaint.findOne({
+      type: 'Snapshot',
+      post: snapshot.id,
+      status: ComplaintStatus.IN_PROGRESS,
+    }).exec();
 
     res.status(200).send({ snapshot: complaint ? { ...snapshot, remark: complaint.remarks.pop() } : snapshot });
 
