@@ -1,11 +1,18 @@
 import express from 'express';
 
 import { auth } from '@middleware/auth';
-import { listNotification, readAllNotification, readNotification } from '@controllers/notificationController';
+import {
+  countUnread,
+  listNotification,
+  readAllNotification,
+  readNotification,
+} from '@controllers/notificationController';
 
 const notificationRouter = express.Router();
 
 notificationRouter.get('/list', auth, listNotification);
+
+notificationRouter.get('/unread', auth, countUnread);
 
 notificationRouter.get('/read', auth, readAllNotification);
 

@@ -24,6 +24,19 @@ export const listNotification: RequestHandler = async (_req, res, next) => {
   }
 };
 
+export const countUnread: RequestHandler = async (_req, res, next) => {
+  try {
+    const account = await Account.findOne().byName(res.locals.username).exec();
+    if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
+
+    const count = await Notification.find({ receiver: account._id, new: true, read: false }).count().exec();
+
+    res.status(200).send({ count });
+  } catch (err) {
+    return next(err);
+  }
+};
+
 //---------------------
 //   EDIT
 //---------------------
