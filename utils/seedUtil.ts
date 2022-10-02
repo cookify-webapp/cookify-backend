@@ -2,6 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import { Model } from 'mongoose';
 import { RequestHandler } from 'express';
+import { deleteObject, listAll, ref } from 'firebase/storage';
 
 import { Account } from '@models/account';
 import seedAccounts from '@mock/seedAccounts';
@@ -19,48 +20,62 @@ import seedUnits from '@mock/seedUnits';
 import { Recipe } from '@models/recipe';
 import seedRecipes from '@mock/seedRecipes';
 
+import { uploadImage } from './imageUtil';
+import { firebaseStorage } from '@services/firebaseManager';
 import createRestAPIError from '@error/createRestAPIError';
 
-const seedData: (model: Model<any>, data: any[], hasNext: boolean) => RequestHandler =
-  (model, data, hasNext) => async (_req, res, next) => {
-    try {
-      await model.deleteMany().exec();
-      await model.insertMany(data);
-      return hasNext ? next() : res.status(200).send({ message: 'success' });
-    } catch (err) {
-      return next(err);
-    }
-  };
-
-export const seedImage: (imageType: string) => RequestHandler = (imageType) => async (_req, _res, next) => {
+const seedData: (model: Model<any>, data: any[]) => RequestHandler = (model, data) => async (_req, _res, next) => {
   try {
-    const dir = process.env.IMAGE_DIR;
-    if (!dir) throw createRestAPIError('MISSING_IMAGE_DIR');
-    fs.rm(path.resolve(process.cwd(), 'public', 'images', imageType), { recursive: true, force: true }, (errRm) => {
-      if (errRm) throw errRm;
-      fs.cp(
-        path.resolve(dir, imageType),
-        path.resolve(process.cwd(), 'public', 'images', imageType),
-        { errorOnExist: true, recursive: true },
-        (errCp) => {
-          if (errCp) throw errCp;
-          return next();
-        }
-      );
-    });
+    await model.deleteMany().exec();
+    await model.insertMany(data);
+    return next();
   } catch (err) {
     return next(err);
   }
 };
 
-export const seedAccount = (hasNext: boolean = false) => seedData(Account, seedAccounts, hasNext);
+const seedImage: (model: Model<any>, imageType: string) => RequestHandler =
+  (model, imageType) => async (_req, _res, next) => {
+    try {
+      const storageRef = ref(firebaseStorage, `images/${process.env.NODE_ENV}/${imageType}`);
+      const { items } = await listAll(storageRef);
+      for (const imagesRef of items) {
+        await deleteObject(imagesRef);
+      }
 
-export const seedCookingMethod = (hasNext: boolean = false) => seedData(CookingMethod, seedCookingMethods, hasNext);
+      const dir = process.env.IMAGE_DIR;
+      if (!dir) throw createRestAPIError('MISSING_IMAGE_DIR');
 
-export const seedIngredient = (hasNext: boolean = false) => seedData(Ingredient, seedIngredients, hasNext);
+      fs.readdir(path.resolve(dir, imageType), (err, files) => {
+        if (err) throw err;
+        for (const fileName of files) {
+          fs.readFile(path.resolve(dir, imageType, fileName), async (err, file) => {
+            if (err) throw err;
+            const image = await uploadImage(imageType, fileName, file);
+            await model.findOneAndUpdate({ imageName: fileName }, { image }).exec();
+          });
+        }
+        return next();
+      });
+    } catch (err) {
+      return next(err);
+    }
+  };
 
-export const seedIngredientType = (hasNext: boolean = false) => seedData(IngredientType, seedIngredientTypes, hasNext);
+export const seedAccount = seedData(Account, seedAccounts);
 
-export const seedUnit = (hasNext: boolean = false) => seedData(Unit, seedUnits, hasNext);
+export const seedCookingMethod = seedData(CookingMethod, seedCookingMethods);
 
-export const seedRecipe = (hasNext: boolean = false) => seedData(Recipe, seedRecipes, hasNext);
+export const seedIngredient = seedData(Ingredient, seedIngredients);
+
+export const seedIngredientType = seedData(IngredientType, seedIngredientTypes);
+
+export const seedUnit = seedData(Unit, seedUnits);
+
+export const seedRecipe = seedData(Recipe, seedRecipes);
+
+export const seedAccountImages = seedImage(Account, 'accounts');
+
+export const seedIngredientImages = seedImage(Ingredient, 'ingredients');
+
+export const seedRecipeImages = seedImage(Recipe, 'recipes');

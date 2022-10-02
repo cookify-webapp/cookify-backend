@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 
 import {
   seedAccount,
@@ -6,35 +6,48 @@ import {
   seedIngredient,
   seedIngredientType,
   seedUnit,
-  seedImage,
   seedRecipe,
+  seedAccountImages,
+  seedRecipeImages,
+  seedIngredientImages,
 } from '@utils/seedUtil';
+
+const sendMessage: RequestHandler = async (_req, res, next) => {
+  try {
+    res.status(200).send({ message: 'success' });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 const seedRouter = express.Router();
 
 seedRouter.get(
   '/',
-  seedImage('accounts'),
-  seedAccount(true),
-  seedCookingMethod(true),
-  seedUnit(true),
-  seedImage('ingredients'),
-  seedIngredientType(true),
-  seedImage('recipes'),
-  seedRecipe(true),
-  seedIngredient()
+  seedAccount,
+  seedAccountImages,
+  seedCookingMethod,
+  seedUnit,
+  seedIngredientType,
+  seedRecipe,
+  seedRecipeImages,
+  seedIngredient,
+  seedIngredientImages,
+  sendMessage
 );
 
-seedRouter.get('/accounts', seedImage('accounts'), seedAccount());
+seedRouter.get('/accounts', seedAccount, seedAccountImages, sendMessage);
 
-seedRouter.get('/ingredients', seedImage('ingredients'), seedIngredient());
+seedRouter.get('/ingredients', seedIngredient, seedIngredientImages, sendMessage);
 
-seedRouter.get('/ingredients/types', seedIngredientType());
+seedRouter.get('/ingredients/types', seedIngredientType, sendMessage);
 
-seedRouter.get('/ingredients/units', seedUnit());
+seedRouter.get('/ingredients/units', seedUnit, sendMessage);
 
-seedRouter.get('/recipes', seedImage('recipes'), seedRecipe());
+seedRouter.get('/recipes', seedRecipe, seedRecipeImages, sendMessage);
 
-seedRouter.get('/recipes/methods', seedCookingMethod());
+seedRouter.get('/recipes/methods', seedCookingMethod, sendMessage);
+
+seedRouter.get('/images/accounts', seedAccountImages, sendMessage);
 
 export default seedRouter;
