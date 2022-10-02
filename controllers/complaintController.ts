@@ -140,7 +140,9 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
     const complaint = await Complaint.findById(id).populate('post').exec();
     if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
-    if (complaint.status !== ComplaintStatus.EXAMINING && complaint.status !== ComplaintStatus.VERIFYING)
+    const status = complaint.status;
+
+    if (status !== ComplaintStatus.EXAMINING && status !== ComplaintStatus.VERIFYING)
       throw createRestAPIError('INVALID_FLOW');
 
     complaint.set({ status: ComplaintStatus.IN_PROGRESS });
@@ -148,18 +150,17 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
 
     await complaint.save();
 
-    if (complaint.status === ComplaintStatus.EXAMINING) {
+    if (status === ComplaintStatus.EXAMINING) {
       complaint.post.set({ isHidden: true });
       await complaint.post.save();
-    }
 
-    _.size(complaint.remarks) === 1 &&
-      (await createComplaintNotification(
+      await createComplaintNotification(
         complaint.type.toLowerCase() as 'recipe' | 'snapshot',
         ComplaintStatus.IN_PROGRESS,
         `/${complaint.type.toLowerCase()}s/${complaint.post.id}`,
         complaint.post.author._id
-      ));
+      );
+    }
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
