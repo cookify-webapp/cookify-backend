@@ -6,7 +6,7 @@ import { Account } from '@models/account';
 import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 import { includesId } from '@utils/includesIdUtil';
 import { Notification } from '@models/notifications';
@@ -311,16 +311,16 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const oldImage = account.image || '';
+    const imageName = account.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     account.set({
       email: data?.email,
       allergy: data?.allergy,
-      image: req.file?.filename || account.image,
+      imageName,
+      image: req.file ? await uploadImage('accounts', imageName, req.file) : account.image,
     });
 
     await account.save({ validateModifiedOnly: true });
-    oldImage && account.image !== oldImage && deleteImage('accounts', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -363,7 +363,7 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
 
     await Notification.deleteMany({ receiver: account.id }).exec();
 
-    account.image && deleteImage('accounts', account.image);
+    account.image && (await deleteImage('accounts', account.imageName));
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

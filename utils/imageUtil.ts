@@ -1,28 +1,40 @@
 import _ from 'lodash';
-import multer from 'multer';
+import multer, { memoryStorage } from 'multer';
 import path from 'path';
-import fs from 'fs';
 import crypto from 'crypto';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
+import { firebaseStorage } from '@services/firebaseManager';
 import createRestAPIError from '@error/createRestAPIError';
 
 const maxSize = 5 * 1024 * 1024;
 
 export const allowedExt = ['.png', '.jpg', '.gif', '.jpeg'];
 
-const storage = multer.diskStorage({
-  destination: (req, _file, cb) => {
-    const dir = path.resolve(process.cwd(), `public/images${req.baseUrl}`);
-    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    cb(null, dir);
-  },
-  filename: (_req, file, cb) => {
-    cb(null, `${crypto.randomBytes(8).toString('hex')}${path.extname(file.originalname)}`);
-  },
-});
+const storage = memoryStorage();
 
-export const deleteImage = (imageType: string, fileName: string) =>
-  fs.unlinkSync(path.resolve(process.cwd(), 'public', 'images', imageType, fileName));
+export const generateFileName = (fileName?: string) => {
+  if (!fileName) throw createRestAPIError('MISSING_IMG');
+  return crypto.randomBytes(8).toString('hex') + path.extname(fileName);
+};
+
+export const uploadImage = async (folder: string, fileName: string, file?: Express.Multer.File | Buffer) => {
+  if (!file) throw createRestAPIError('MISSING_IMG');
+
+  const imagesRef = ref(firebaseStorage, `images/${process.env.NODE_ENV}/${folder}/${fileName}`);
+
+  const task = await uploadBytes(imagesRef, file instanceof Buffer ? file : file.buffer);
+
+  const downloadURL = await getDownloadURL(task.ref);
+
+  return downloadURL;
+};
+
+export const deleteImage = async (imageType: string, fileName: string) => {
+  const imagesRef = ref(firebaseStorage, `images/${process.env.NODE_ENV}/${imageType}/${fileName}`);
+
+  await deleteObject(imagesRef);
+};
 
 export default multer({
   storage,

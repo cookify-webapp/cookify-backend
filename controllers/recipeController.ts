@@ -1,15 +1,13 @@
-import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
 import { Account } from '@models/account';
 import { CookingMethod } from '@models/type';
-import { Snapshot } from '@models/snapshot';
 
 import createRestAPIError from '@error/createRestAPIError';
 import nutritionDetailService from '@services/nutritionDetailService';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 import { RecipeInstanceInterface } from '../models/recipe';
 import { Comment } from '@models/comment';
 import { Unit } from '@models/unit';
@@ -61,6 +59,23 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     } else {
       res.status(204).send();
     }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const randomizeRecipe: RequestHandler = async (_req, res, next) => {
+  try {
+    const { allergy } = await Account.findOne()
+      .setOptions({ autopopulate: false })
+      .byName(res.locals.username)
+      .select('allergy')
+      .exec();
+
+    const recipes = await Recipe.randomizeRecipe(allergy, 1);
+    if (!recipes) res.status(204).send();
+
+    res.status(200).send({ recipes });
   } catch (err) {
     return next(err);
   }
@@ -186,7 +201,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     const complaint = await Complaint.findOne({
       type: 'Recipe',
-      post: recipe.id,
+      post: recipe._id,
       status: ComplaintStatus.IN_PROGRESS,
     }).exec();
 
@@ -211,7 +226,8 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
       ingredient.unit = unit;
     }
 
-    data.image = req.file?.filename;
+    data.imageName = generateFileName(req.file?.originalname);
+    data.image = await uploadImage('recipes', data.imageName, req.file);
     data.author = { _id: account._id, username: account.username };
 
     const recipe = new Recipe(data);
@@ -237,13 +253,14 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
-    const oldImage = recipe.image;
+    const imageName = recipe.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     recipe.set({
       name: data?.name,
       desc: data?.desc,
       method: data?.method,
-      image: req.file?.filename || recipe.image,
+      imageName,
+      image: req.file ? await uploadImage('recipes', imageName, req.file) : recipe.image,
       serving: data?.serving,
       subIngredients: data?.subIngredients,
       steps: data?.steps,
@@ -274,7 +291,6 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     }
 
     await recipe.save({ validateModifiedOnly: true });
-    oldImage && recipe.image !== oldImage && deleteImage('recipes', oldImage);
 
     if (recipe.isHidden) {
       const complaint = await Complaint.findOneAndUpdate(
@@ -287,7 +303,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
         'recipe',
         recipe.author.username,
         ComplaintStatus.VERIFYING,
-        `/complaints?id=${recipe.id}`,
+        `/complaints?id=${recipe.id}&tabType=inprogress`,
         complaint.moderator._id
       );
     }
@@ -312,7 +328,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     await recipe.deleteOne();
 
     await Comment.deleteMany({ post: recipe._id }).exec();
-    recipe.image && deleteImage('recipes', recipe.image);
+    recipe.image && (await deleteImage('recipes', recipe.imageName));
 
     if (recipe.isHidden) {
       const complaint = await Complaint.findOneAndUpdate(
@@ -325,7 +341,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
         'recipe',
         recipe.author.username,
         ComplaintStatus.DELETED,
-        `/complaints?id=${recipe.id}`,
+        `/complaints?id=${recipe.id}&tabType=completed`,
         complaint.moderator._id
       );
     }

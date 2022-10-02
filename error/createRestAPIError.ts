@@ -21,6 +21,7 @@ const ErrorResponse = Object.freeze({
   IMG_EXT: { ...ErrorDetail.BAD_REQUEST, msg: `Invalid image extension, only ${allowedExt?.join(' ')} are allowed` },
   INCOMPLETE_COMPLAINT: { ...ErrorDetail.BAD_REQUEST, msg: 'Incomplete complaints cannot be deleted' },
   INVALID_FLOW: { ...ErrorDetail.BAD_REQUEST, msg: 'Requested action will break the flow of complaint system' },
+  MISSING_IMG: { ...ErrorDetail.BAD_REQUEST, msg: `Missing image` },
 
   //---------------------
   //   401

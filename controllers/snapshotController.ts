@@ -6,7 +6,7 @@ import { Account } from '@models/account';
 import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 import { Complaint, ComplaintStatus } from '@models/complaints';
 import { createVerifyNotification } from '@functions/notificationFunction';
 
@@ -63,7 +63,7 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
 
     const complaint = await Complaint.findOne({
       type: 'Snapshot',
-      post: snapshot.id,
+      post: snapshot._id,
       status: ComplaintStatus.IN_PROGRESS,
     }).exec();
 
@@ -88,7 +88,9 @@ export const createSnapshot: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(data?.recipe).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    data.image = req.file?.filename;
+    data.imageName = generateFileName(req.file?.originalname);
+    data.image = await uploadImage('snapshots', data.imageName, req.file);
+
     data.recipe = { _id: recipe._id, name: recipe.name };
     data.author = { _id: account._id, username: account.username };
 
@@ -114,11 +116,12 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
     if (!snapshot) throw createRestAPIError('DOC_NOT_FOUND');
     if (snapshot.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
-    const oldImage = snapshot.image;
+    const imageName = snapshot.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     snapshot.set({
       caption: data.caption,
-      image: req.file?.filename || snapshot.image,
+      imageName,
+      image: req.file ? await uploadImage('snapshots', imageName, req.file) : snapshot.image,
     });
 
     if (data.recipe !== snapshot.recipe._id.toHexString()) {
@@ -131,7 +134,6 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
     }
 
     await snapshot.save();
-    oldImage && snapshot.image !== oldImage && deleteImage('snapshots', oldImage);
 
     if (snapshot.isHidden) {
       const complaint = await Complaint.findOneAndUpdate(
@@ -144,7 +146,7 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
         'recipe',
         snapshot.author.username,
         ComplaintStatus.VERIFYING,
-        `/complaints?id=${snapshot.id}`,
+        `/complaints?id=${snapshot.id}&tabType=inprogress`,
         complaint.moderator._id
       );
     }
@@ -169,7 +171,7 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
     await snapshot.deleteOne();
 
     await Comment.deleteMany({ post: snapshot._id }).exec();
-    snapshot.image && deleteImage('snapshots', snapshot.image);
+    snapshot.image && (await deleteImage('snapshots', snapshot.imageName));
 
     if (snapshot.isHidden) {
       const complaint = await Complaint.findOneAndUpdate(
@@ -182,7 +184,7 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
         'recipe',
         snapshot.author.username,
         ComplaintStatus.DELETED,
-        `/complaints?id=${snapshot.id}`,
+        `/complaints?id=${snapshot.id}&tabType=completed`,
         complaint.moderator._id
       );
     }

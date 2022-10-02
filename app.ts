@@ -67,12 +67,11 @@ app.use('/snapshots', snapshotRouter);
 app.use('/comments', commentRouter);
 app.use('/notifications', notificationRouter);
 app.use('/complaints', complaintRouter);
-if (app.get('env') === 'development') {
+
+if (process.env.NODE_ENV === 'development') {
   app.use('/seed', seedRouter);
   app.use('/coverage', express.static('coverage'));
 }
-
-app.use('/images', express.static('public/images'));
 
 app.get('/health', (_req, res) => {
   res.send({ status: 'This service is healthy.' });

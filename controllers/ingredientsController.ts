@@ -5,7 +5,7 @@ import { Ingredient } from '@models/ingredient';
 import { IngredientType } from '@models/type';
 import { Recipe } from '@models/recipe';
 import { Unit, UnitInstanceInterface } from '@models/unit';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 
 import createRestAPIError from '@error/createRestAPIError';
 import NutritionDetailService from '@services/nutritionDetailService';
@@ -92,7 +92,9 @@ export const getIngredientDetail: RequestHandler = async (req, res, next) => {
 export const createIngredient: RequestHandler = async (req, res, next) => {
   try {
     const data = req.body?.data;
-    data.image = req.file?.filename;
+
+    data.imageName = generateFileName(req.file?.originalname);
+    data.image = await uploadImage('ingredients', data.imageName, req.file);
 
     const ingredient = new Ingredient(data);
 
@@ -120,13 +122,14 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     const ingredient = await Ingredient.findById(id).setOptions({ autopopulate: false }).exec();
     if (!ingredient) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const oldImage = ingredient.image;
+    const imageName = ingredient.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     ingredient.set({
       name: data?.name,
       queryKey: data?.queryKey,
       type: data?.type,
-      image: req.file?.filename || ingredient.image,
+      imageName,
+      image: req.file ? await uploadImage('ingredients', imageName, req.file) : ingredient.image,
       shopUrl: data?.shopUrl,
     });
     if (data?.unit && ingredient.unit.toString() !== data?.unit) ingredient.set('unit', data?.unit);
@@ -140,7 +143,6 @@ export const editIngredient: RequestHandler = async (req, res, next) => {
     }
 
     await ingredient.save({ validateModifiedOnly: true });
-    oldImage && ingredient.image !== oldImage && deleteImage('ingredients', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -160,7 +162,7 @@ export const deleteIngredient: RequestHandler = async (req, res, next) => {
     const result = await Ingredient.findByIdAndDelete(id).exec();
     if (!result) throw createRestAPIError('DOC_NOT_FOUND');
 
-    result.image && deleteImage('ingredients', result.image);
+    result.image && (await deleteImage('ingredients', result.imageName));
 
     res.status(200).send({ message: 'success' });
   } catch (err) {
