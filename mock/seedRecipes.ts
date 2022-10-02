@@ -29,7 +29,7 @@ export default [
     subIngredients: [new Types.ObjectId('62740f93154458bb976009b8')],
     method: new Types.ObjectId('626c3a279c65b3a236797b53'),
     steps: ['Cut', 'Grill'],
-    image: '6066800dc109d56a.jpg',
+    imageName: '6066800dc109d56a.jpg',
     author: {
       _id: new Types.ObjectId('625ec5d9cb848302931ce63f'),
       username: 'MrnDew',
@@ -193,7 +193,7 @@ export default [
       'นำไก่ที่หมักไปผัดในกระทะให้สุก',
       'นำไก่มาวางบนข้าว โรยต้นหอมและงา พร้อมเสิร์ฟได้เลย',
     ],
-    image: '64ce2e564210c88f.jpg',
+    imageName: '64ce2e564210c88f.jpg',
     author: {
       _id: new Types.ObjectId('625ec5d04605c1d046c0c2ae'),
       username: 'MeLoLonJiNo',

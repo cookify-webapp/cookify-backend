@@ -7,7 +7,7 @@ export default [
     queryKey: 'egg',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47bf130242373ba8d680'),
-    image: 'e7a477885742d8ff.jpg',
+    imageName: 'e7a477885742d8ff.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 61,
@@ -67,7 +67,7 @@ export default [
     queryKey: 'whole milk',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: '66878f069c6d21e4.jpg',
+    imageName: '66878f069c6d21e4.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 6,
@@ -126,7 +126,7 @@ export default [
     queryKey: 'sweetened condensed milk',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '65be11a1e59f7f90.jpg',
+    imageName: '65be11a1e59f7f90.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 61,
@@ -185,7 +185,7 @@ export default [
     queryKey: 'salted butter',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '3db1eb4d2426196d.jpg',
+    imageName: '3db1eb4d2426196d.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 717,
@@ -245,7 +245,7 @@ export default [
     queryKey: 'cheese',
     type: new Types.ObjectId('62642648a293bd52a72832e0'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'c40bbc652436e8d4.jpg',
+    imageName: 'c40bbc652436e8d4.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 406,

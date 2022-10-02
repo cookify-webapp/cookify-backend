@@ -7,7 +7,7 @@ export default [
     queryKey: 'fish ball',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '916aa48d887bd403.jpg',
+    imageName: '916aa48d887bd403.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 96,
@@ -66,7 +66,7 @@ export default [
     queryKey: 'dried prune',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'a1e82c6691bbbff0.jpg',
+    imageName: 'a1e82c6691bbbff0.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 240,
@@ -125,7 +125,7 @@ export default [
     queryKey: 'mackerel in tomato sauce',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '07f0e57f3bcf1c49.jpg',
+    imageName: '07f0e57f3bcf1c49.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 156,
@@ -184,7 +184,7 @@ export default [
     queryKey: 'sausage',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d47b08d3599ea80a665ad'),
-    image: 'e24eec1f4bbf41e6.png',
+    imageName: 'e24eec1f4bbf41e6.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 71,
@@ -244,7 +244,7 @@ export default [
     queryKey: 'raisin',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '2fdc12a38829bce9.jpg',
+    imageName: '2fdc12a38829bce9.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 299,

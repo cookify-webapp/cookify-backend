@@ -7,7 +7,7 @@ export default [
     queryKey: 'fish sauce',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '999520fae7aa34e5.jpg',
+    imageName: '999520fae7aa34e5.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 6,
@@ -66,7 +66,7 @@ export default [
     queryKey: 'sugar',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '12aa1e6bd305a1b6.jpg',
+    imageName: '12aa1e6bd305a1b6.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 48,
@@ -125,7 +125,7 @@ export default [
     queryKey: 'oil',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: 'c3c5578b26b8bc87.jpg',
+    imageName: 'c3c5578b26b8bc87.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 81,
@@ -185,7 +185,7 @@ export default [
     queryKey: 'salt',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '23b8313f6920498a.jpg',
+    imageName: '23b8313f6920498a.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 0,
@@ -244,7 +244,7 @@ export default [
     queryKey: 'chili powder',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: 'ed1f9310c2929666.jpg',
+    imageName: 'ed1f9310c2929666.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 22,
@@ -304,7 +304,7 @@ export default [
     queryKey: 'vinegar',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '743bdc4a57e1c6aa.jpg',
+    imageName: '743bdc4a57e1c6aa.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 2,
@@ -364,7 +364,7 @@ export default [
     queryKey: 'pepper',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47aabd8906bf6a69eaf9'),
-    image: 'cd7d077e16757469.png',
+    imageName: 'cd7d077e16757469.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 7,
@@ -424,7 +424,7 @@ export default [
     queryKey: 'honey',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: 'f41815ff0911af60.jpeg',
+    imageName: 'f41815ff0911af60.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 4,
@@ -483,7 +483,7 @@ export default [
     queryKey: 'chili sauce',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '01beff0a44f3706c.jpg',
+    imageName: '01beff0a44f3706c.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 17,
@@ -542,7 +542,7 @@ export default [
     queryKey: 'ketchup',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a5f4bb34e56d6b05d6'),
-    image: '54e6f581ed0c2456.jpg',
+    imageName: '54e6f581ed0c2456.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 17,
@@ -601,7 +601,7 @@ export default [
     queryKey: 'water',
     type: new Types.ObjectId('62642656b7f4830a426bf24f'),
     unit: new Types.ObjectId('626d47a2d94a44efb5ab6ab6'),
-    image: 'b785c940de195593.jpg',
+    imageName: 'b785c940de195593.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 0,
