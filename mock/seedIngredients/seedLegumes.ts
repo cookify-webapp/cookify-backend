@@ -7,6 +7,7 @@ export default [
     queryKey: 'cooked rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'c4c3509f5b3cc378.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -66,6 +67,7 @@ export default [
     queryKey: 'sticky rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'b3f85a395c017d91.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -126,6 +128,7 @@ export default [
     queryKey: 'cashew nut',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'd010f085240875e8.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -185,6 +188,7 @@ export default [
     queryKey: 'sesame',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '8ea17117ac0b8aee.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -244,6 +248,7 @@ export default [
     queryKey: 'almond',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'ad16220b761f8fbd.jpeg',
     shopUrl: '',
     nutritionalDetail: {

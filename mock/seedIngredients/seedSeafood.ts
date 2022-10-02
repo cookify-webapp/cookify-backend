@@ -7,6 +7,7 @@ export default [
     queryKey: 'shrimp',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'c90be4c9600d1601.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -67,6 +68,7 @@ export default [
     queryKey: 'salmon',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '3632dc3a3ba70305.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -123,6 +125,7 @@ export default [
     queryKey: 'squid',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'f38c65cc031f2c86.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -182,6 +185,7 @@ export default [
     queryKey: 'oyster',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '1f2c68ff25f2f8a5.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -237,6 +241,7 @@ export default [
     queryKey: 'snapper fish',
     type: new Types.ObjectId('62642635ccd41f53ec5c09b9'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'eda8def3238f1756.jpg',
     shopUrl: '',
     nutritionalDetail: {

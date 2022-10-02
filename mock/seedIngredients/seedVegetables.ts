@@ -7,6 +7,7 @@ export default [
     queryKey: 'peach',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '435601f1b8c13caf.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -66,6 +67,7 @@ export default [
     queryKey: 'cabbage',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '7d60454ca11a0b56.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -125,6 +127,7 @@ export default [
     queryKey: 'garlic',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '6c421c03e87bfe12.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -184,6 +187,7 @@ export default [
     queryKey: 'lime',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '1b88946e46e65f21.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -243,6 +247,7 @@ export default [
     queryKey: 'chinese broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '69eb0f5609e1bb92.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -302,6 +307,7 @@ export default [
     queryKey: 'carrot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '3e509832173a8057.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -362,6 +368,7 @@ export default [
     queryKey: 'apple',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: 'f7faaaa2bc6e0b06.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -421,6 +428,7 @@ export default [
     queryKey: 'orange',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '2d96cc7368c0a7d0.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -480,6 +488,7 @@ export default [
     queryKey: 'banana',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '28e88523de0507cc.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -539,6 +548,7 @@ export default [
     queryKey: 'shiitake mushroom',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '3c279d55bd789c50.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -587,6 +597,7 @@ export default [
     queryKey: 'spring onion',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'd5e370ff8776613b.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -646,6 +657,7 @@ export default [
     queryKey: 'broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '7a3dc2818605ee89.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -705,6 +717,7 @@ export default [
     queryKey: 'baby corn',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '9ae9bd6712c5458e.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -765,6 +778,7 @@ export default [
     queryKey: 'lettuce',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '6b297f9bf0dfa925.jpeg',
     shopUrl: '',
     nutritionalDetail: {
@@ -824,6 +838,7 @@ export default [
     queryKey: 'lemon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: 'cdb17b3a6bafea04.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -883,6 +898,7 @@ export default [
     queryKey: 'shallot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '3a3a07b6d4192ec9.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -942,6 +958,7 @@ export default [
     queryKey: 'potato',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '0a068b82023eaf97.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -1001,6 +1018,7 @@ export default [
     queryKey: 'melon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '9580c19923cef684.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -1060,6 +1078,7 @@ export default [
     queryKey: 'pomegranate',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '81422358621d0086.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -1119,6 +1138,7 @@ export default [
     queryKey: 'strawberry',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
+    image: 'mock',
     imageName: '7133f3bdf1bfbed9.jpg',
     shopUrl: '',
     nutritionalDetail: {

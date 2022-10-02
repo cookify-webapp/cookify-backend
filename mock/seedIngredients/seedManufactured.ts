@@ -7,6 +7,7 @@ export default [
     queryKey: 'fish ball',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '916aa48d887bd403.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -66,6 +67,7 @@ export default [
     queryKey: 'dried prune',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'a1e82c6691bbbff0.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -125,6 +127,7 @@ export default [
     queryKey: 'mackerel in tomato sauce',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '07f0e57f3bcf1c49.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -184,6 +187,7 @@ export default [
     queryKey: 'sausage',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d47b08d3599ea80a665ad'),
+    image: 'mock',
     imageName: 'e24eec1f4bbf41e6.png',
     shopUrl: '',
     nutritionalDetail: {
@@ -244,6 +248,7 @@ export default [
     queryKey: 'raisin',
     type: new Types.ObjectId('6264264220403a1e86e3ab48'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '2fdc12a38829bce9.jpg',
     shopUrl: '',
     nutritionalDetail: {

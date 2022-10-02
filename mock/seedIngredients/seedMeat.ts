@@ -7,6 +7,7 @@ export default [
     queryKey: 'beef collar',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '57f53ad892a1d150.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -67,6 +68,7 @@ export default [
     queryKey: 'beef sirloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'fac181c848928fda.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -125,6 +127,7 @@ export default [
     queryKey: 'beef tenderloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'dd57c61f2fd45d4a.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -183,6 +186,7 @@ export default [
     queryKey: 'chicken breast',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'febca8d4d96fe483.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -243,6 +247,7 @@ export default [
     queryKey: 'pork tenderloin',
     type: new Types.ObjectId('6264262a2242c09a90109b52'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '975bdaecb8a9dcf1.png',
     shopUrl: '',
     nutritionalDetail: {

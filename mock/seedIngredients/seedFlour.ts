@@ -7,6 +7,7 @@ export default [
     queryKey: 'white bread',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d47bb14dd0301cbd72d94'),
+    image: 'mock',
     imageName: '6beb9ad8cb444b11.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -67,6 +68,7 @@ export default [
     queryKey: 'instant noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '47c72ba81e4dd565.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -127,6 +129,7 @@ export default [
     queryKey: 'cooked egg noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'f3f71ff8e6a12e6a.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -187,6 +190,7 @@ export default [
     queryKey: 'all purpose flour',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: 'e9735d7bc10b142d.jpg',
     shopUrl: '',
     nutritionalDetail: {
@@ -246,6 +250,7 @@ export default [
     queryKey: 'cooked udon',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
+    image: 'mock',
     imageName: '3a964617e13af686.jpeg',
     shopUrl: '',
     nutritionalDetail: {
