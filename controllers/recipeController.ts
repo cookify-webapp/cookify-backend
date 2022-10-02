@@ -202,7 +202,7 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     const complaint = await Complaint.findOne({
       type: 'Recipe',
       post: recipe._id,
-      status: ComplaintStatus.IN_PROGRESS,
+      status: { $in: [ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] },
     }).exec();
 
     res.status(200).send({ recipe: complaint ? { ...recipe, remark: complaint.remarks.pop() } : recipe });
