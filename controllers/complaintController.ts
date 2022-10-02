@@ -99,9 +99,6 @@ export const updateComplaintStatus: RequestHandler = async (req, res, next) => {
       if (exist) throw createRestAPIError('COMPLAINT_TAKEN');
 
       data.moderator = { _id: account._id, username: account.username };
-
-      complaint.post.set({ isHidden: true });
-      await complaint.post.save();
     }
 
     if (data.status === ComplaintStatus.COMPLETED || data.status === ComplaintStatus.REJECTED) {
@@ -150,6 +147,11 @@ export const contactAuthor: RequestHandler = async (req, res, next) => {
     complaint.remarks.push(data.remark);
 
     await complaint.save();
+
+    if (complaint.status === ComplaintStatus.EXAMINING) {
+      complaint.post.set({ isHidden: true });
+      await complaint.post.save();
+    }
 
     _.size(complaint.remarks) === 1 &&
       (await createComplaintNotification(
