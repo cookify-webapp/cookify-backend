@@ -21,7 +21,7 @@ const url = 'https://api.edamam.com/api';
 const getByIngredient = async (unit: string, ingredient: string) => {
   const res = await axios.get(
     `${url}/nutrition-data?app_id=${process.env.EDAMAM_APP_ID}&app_key=${process.env.EDAMAM_APP_KEY}&ingr=${
-      unit === 'gram' ? 100 : unit === 'milliliter' ? 10 : 1
+      unit === 'gram' || unit === 'milliliter' ? 100 : 1
     } ${unit} ${ingredient}`
   );
   if (res.status === 200) {
