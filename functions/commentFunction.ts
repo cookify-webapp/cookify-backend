@@ -42,6 +42,6 @@ export const listAll: (
   return this.aggregatePaginate(aggregate, {
     page,
     limit: perPage,
-    sort: '-createdAt',
+    sort: type === 'snapshot' ? 'createdAt' : '-createdAt',
   });
 };
