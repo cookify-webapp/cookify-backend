@@ -5,4 +5,5 @@ export default {
   caption: { max: 500 },
   comment: { max: 500 },
   detail: { max: 200 },
+  remark: { max: 500 },
 };

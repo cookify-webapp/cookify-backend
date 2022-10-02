@@ -66,7 +66,7 @@ export const complaintSchema = new Schema<
     post: { type: 'ObjectId', refPath: 'type', required: true },
     reporter: { type: { _id: 'ObjectId', username: String }, required: true },
     moderator: { type: { _id: 'ObjectId', username: String } },
-    remarks: [{ type: String, maxlength: constraint.detail.max }],
+    remarks: [{ type: String, maxlength: constraint.remark.max }],
     detail: { type: String, required: true, maxlength: constraint.detail.max },
     status: { type: String, enum: ComplaintStatus, required: true, default: ComplaintStatus.FILED },
     expiresAt: { type: Date, expires: '30d' },

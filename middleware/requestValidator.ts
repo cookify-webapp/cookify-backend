@@ -187,7 +187,7 @@ export const updateComplaintValidator = celebrate(
 export const contactAuthorValidator = celebrate(
   {
     [Segments.BODY]: baseBody({
-      remark: Joi.string().required().max(constraint.detail.max),
+      remark: Joi.string().required().max(constraint.remark.max),
     }),
   },
   opts
