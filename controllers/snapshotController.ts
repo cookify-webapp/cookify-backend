@@ -59,7 +59,7 @@ export const getSnapshotDetail: RequestHandler = async (req, res, next) => {
     snapshot.isMe = res.locals.username === snapshot.author.username;
     snapshot.author.image = account?.image || '';
 
-    if (snapshot.isHidden && (!snapshot.isMe || accountType !== 'admin')) throw createRestAPIError('DOC_NOT_FOUND');
+    if (snapshot.isHidden && !snapshot.isMe && accountType !== 'admin') throw createRestAPIError('DOC_NOT_FOUND');
 
     const complaint = await Complaint.findOne({
       type: 'Snapshot',
