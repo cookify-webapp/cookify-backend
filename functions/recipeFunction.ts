@@ -204,7 +204,12 @@ export const randomizeRecipe: (
   allergy: Types.ObjectId[],
   rand: number
 ) => Promise<RecipeInstanceInterface[]> = async function (allergy, rand) {
-  const aggregate = genericListRecipe(this, { 'ingredients.ingredient': { $nin: allergy } });
-
-  return aggregate.sample(rand).exec();
+  return this.aggregate<RecipeInstanceInterface>()
+    .match({ 'ingredients.ingredient': { $nin: allergy }, isHidden: false })
+    .project({
+      name: 1,
+      image: 1,
+    })
+    .sample(rand)
+    .exec();
 };
