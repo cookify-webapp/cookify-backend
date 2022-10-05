@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs';
+import fs from 'fs/promises';
 import { Model } from 'mongoose';
 import { RequestHandler } from 'express';
 import { deleteObject, listAll, ref } from 'firebase/storage';
@@ -46,17 +46,15 @@ const seedImage: (model: Model<any>, imageType: string) => RequestHandler =
       const dir = process.env.IMAGE_DIR;
       if (!dir) throw createRestAPIError('MISSING_IMAGE_DIR');
 
-      fs.readdir(path.resolve(dir, imageType), (err, files) => {
-        if (err) throw err;
-        for (const fileName of files) {
-          fs.readFile(path.resolve(dir, imageType, fileName), async (err, file) => {
-            if (err) throw err;
-            const image = await uploadImage(imageType, fileName, file);
-            await model.findOneAndUpdate({ imageName: fileName }, { image }).exec();
-          });
-        }
-        return next();
-      });
+      const files = await fs.readdir(path.resolve(dir, imageType));
+      
+      for (const fileName of files) {
+        const file = await fs.readFile(path.resolve(dir, imageType, fileName));
+        const image = await uploadImage(imageType, fileName, file);
+        await model.findOneAndUpdate({ imageName: fileName }, { image }).exec();
+      }
+
+      return next();
     } catch (err) {
       return next(err);
     }
