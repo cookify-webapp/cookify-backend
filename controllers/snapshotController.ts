@@ -139,7 +139,7 @@ export const editSnapshot: RequestHandler = async (req, res, next) => {
       const complaint = await Complaint.findOneAndUpdate(
         { type: 'Snapshot', post: snapshot.id, status: ComplaintStatus.IN_PROGRESS },
         { status: ComplaintStatus.VERIFYING }
-      );
+      ).exec();
       if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
       await createVerifyNotification(
@@ -177,7 +177,7 @@ export const deleteSnapshot: RequestHandler = async (req, res, next) => {
       const complaint = await Complaint.findOneAndUpdate(
         { type: 'Snapshot', post: snapshot.id, status: ComplaintStatus.IN_PROGRESS },
         { status: ComplaintStatus.DELETED }
-      );
+      ).exec();
       if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
       await createVerifyNotification(

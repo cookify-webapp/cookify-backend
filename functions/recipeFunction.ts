@@ -140,7 +140,7 @@ export const listRecipeByQuery: (
   };
   if (method) match.method = new Types.ObjectId(method);
   if (_.size(ingredients))
-    match['ingredients.ingredient'] = { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) };
+    match['ingredients.ingredient'].$all = _.map(ingredients, (item) => new Types.ObjectId(item));
 
   const aggregate = genericListRecipe(this, match);
 

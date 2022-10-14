@@ -29,6 +29,32 @@ const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
   );
 };
 
+const checkIsSameIngredients = async (data: any, recipe: RecipeInstanceInterface) => {
+  let isSame = false;
+
+  if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
+    const mapped = recipe.ingredients.map((item) => ({
+      ingredient: item.ingredient.toString(),
+      quantity: item.quantity,
+      unit: item.unit._id.toString(),
+    }));
+
+    for (const item of data?.ingredients) {
+      isSame = _.some(mapped, item);
+      if (!isSame) break;
+    }
+  }
+
+  if (!isSame) {
+    for (const ingredient of data.ingredients) {
+      const unit = await Unit.findById(ingredient?.unit).lean().exec();
+      ingredient.unit = unit;
+    }
+    recipe.set('ingredients', data?.ingredients);
+    await getNutritionalDetail(recipe);
+  }
+};
+
 //---------------------
 //   FETCH MANY
 //---------------------
@@ -266,29 +292,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
       steps: data?.steps,
     });
 
-    let isSame = false;
-
-    if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
-      const mapped = recipe.ingredients.map((item) => ({
-        ingredient: item.ingredient.toString(),
-        quantity: item.quantity,
-        unit: item.unit._id.toString(),
-      }));
-
-      for (const item of data?.ingredients) {
-        isSame = _.some(mapped, item);
-        if (!isSame) break;
-      }
-    }
-
-    if (!isSame) {
-      for (const ingredient of data.ingredients) {
-        const unit = await Unit.findById(ingredient?.unit).lean().exec();
-        ingredient.unit = unit;
-      }
-      recipe.set('ingredients', data?.ingredients);
-      await getNutritionalDetail(recipe);
-    }
+    await checkIsSameIngredients(data, recipe);
 
     await recipe.save({ validateModifiedOnly: true });
 
@@ -296,7 +300,7 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
       const complaint = await Complaint.findOneAndUpdate(
         { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
         { status: ComplaintStatus.VERIFYING }
-      );
+      ).exec();
       if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
       await createVerifyNotification(
@@ -334,7 +338,7 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
       const complaint = await Complaint.findOneAndUpdate(
         { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
         { status: ComplaintStatus.DELETED }
-      );
+      ).exec();
       if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
 
       await createVerifyNotification(
