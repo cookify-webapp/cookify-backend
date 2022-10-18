@@ -7,7 +7,8 @@ export default [
     queryKey: 'cooked rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'c4c3509f5b3cc378.png',
+    image: 'mock',
+    imageName: 'c4c3509f5b3cc378.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 130,
@@ -66,7 +67,8 @@ export default [
     queryKey: 'sticky rice',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'b3f85a395c017d91.png',
+    image: 'mock',
+    imageName: 'b3f85a395c017d91.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 154,
@@ -126,7 +128,8 @@ export default [
     queryKey: 'cashew nut',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'd010f085240875e8.jpg',
+    image: 'mock',
+    imageName: 'd010f085240875e8.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 553,
@@ -185,7 +188,8 @@ export default [
     queryKey: 'sesame',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '8ea17117ac0b8aee.jpg',
+    image: 'mock',
+    imageName: '8ea17117ac0b8aee.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 573,
@@ -244,7 +248,8 @@ export default [
     queryKey: 'almond',
     type: new Types.ObjectId('6264265286380372ce46e81b'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'ad16220b761f8fbd.jpeg',
+    image: 'mock',
+    imageName: 'ad16220b761f8fbd.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 579,

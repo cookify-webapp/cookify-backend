@@ -10,6 +10,7 @@ import {
   editRecipe,
   getUserRecipeList,
   getMyBookmarkedRecipe,
+  randomizeRecipe,
 } from '@controllers/recipeController';
 import { auth, byPassAuth } from '@middleware/auth';
 import { genericListValidator, recipeListValidator, recipeValidator } from '@middleware/requestValidator';
@@ -27,6 +28,8 @@ recipeRouter.get('/list/:username', genericListValidator, getUserRecipeList);
 recipeRouter.get('/bookmark', auth, genericListValidator, getMyBookmarkedRecipe);
 
 recipeRouter.get('/methods', getCookingMethods);
+
+recipeRouter.get('/randomize', byPassAuth, randomizeRecipe);
 
 recipeRouter.get('/:recipeId', byPassAuth, getRecipeDetail);
 

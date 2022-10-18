@@ -6,12 +6,11 @@ import { Account } from '@models/account';
 import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
 import { includesId } from '@utils/includesIdUtil';
 import { Notification } from '@models/notifications';
-import { createFollowNotification } from '@config/notificationTemplate';
-import { createNotification } from '@functions/notificationFunction';
+import { createFollowNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -176,14 +175,12 @@ export const getMe: RequestHandler = async (_req, res, next) => {
 
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const unreadNotification = await Notification.find({ receiver: account._id, read: false }).count().exec();
-
     const followingCount = _.size(account.following);
     const followerCount = await Account.find({ following: account._id }).select('username').lean().count().exec();
 
     delete account.following;
 
-    res.status(200).send({ account, followingCount, followerCount, unreadNotification });
+    res.status(200).send({ account, followingCount, followerCount });
   } catch (err) {
     return next(err);
   }
@@ -300,13 +297,7 @@ export const setFollow: RequestHandler = async (req, res, next) => {
 
     await account.save({ validateModifiedOnly: true });
 
-    !exist &&
-      (await createNotification({
-        type: 'follow',
-        caption: createFollowNotification(account.username),
-        link: `/users/${account.id}`,
-        receiver: target.id,
-      }));
+    !exist && (await createFollowNotification(account.username, `/users/${account.id}`, target.id));
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -320,16 +311,16 @@ export const editProfile: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).setOptions({ autopopulate: false }).exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const oldImage = account.image || '';
+    const imageName = account.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     account.set({
-      email: data?.email || account.email,
-      allergy: data?.allergy || account.allergy,
-      image: req.file?.filename || account.image,
+      email: data?.email,
+      allergy: data?.allergy,
+      imageName,
+      image: req.file ? await uploadImage('accounts', imageName, req.file) : account.image,
     });
 
     await account.save({ validateModifiedOnly: true });
-    oldImage && account.image !== oldImage && deleteImage('accounts', oldImage);
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -348,7 +339,7 @@ export const registerAdmin: RequestHandler = async (req, res, next) => {
       username: data?.username,
       email: data?.email || account.email,
       password: data?.password,
-      allergy: data?.allergy || account.allergy,
+      allergy: data?.allergy,
       accountType: 'admin',
     });
     await account.hashPassword();
@@ -372,7 +363,7 @@ export const deleteProfile: RequestHandler = async (req, res, next) => {
 
     await Notification.deleteMany({ receiver: account.id }).exec();
 
-    account.image && deleteImage('accounts', account.image);
+    account.image && (await deleteImage('accounts', account.imageName));
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);

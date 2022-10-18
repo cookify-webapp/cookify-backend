@@ -1,19 +1,19 @@
-import { Types } from 'mongoose';
 import { RequestHandler } from 'express';
 import _ from 'lodash';
 
 import { Recipe } from '@models/recipe';
 import { Account } from '@models/account';
 import { CookingMethod } from '@models/type';
-import { Snapshot } from '@models/snapshot';
 
 import createRestAPIError from '@error/createRestAPIError';
 import nutritionDetailService from '@services/nutritionDetailService';
-import { deleteImage } from '@utils/imageUtil';
+import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
 import { RecipeInstanceInterface } from '../models/recipe';
 import { Comment } from '@models/comment';
 import { Unit } from '@models/unit';
 import { includesId } from '@utils/includesIdUtil';
+import { Complaint, ComplaintStatus } from '@models/complaints';
+import { createVerifyNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   UTILITY
@@ -27,6 +27,32 @@ const getNutritionalDetail = async (recipe: RecipeInstanceInterface) => {
       unit: item.unit.queryKey,
     }))
   );
+};
+
+const checkIsSameIngredients = async (data: any, recipe: RecipeInstanceInterface) => {
+  let isSame = false;
+
+  if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
+    const mapped = recipe.ingredients.map((item) => ({
+      ingredient: item.ingredient.toString(),
+      quantity: item.quantity,
+      unit: item.unit._id.toString(),
+    }));
+
+    for (const item of data?.ingredients) {
+      isSame = _.some(mapped, item);
+      if (!isSame) break;
+    }
+  }
+
+  if (!isSame) {
+    for (const ingredient of data.ingredients) {
+      const unit = await Unit.findById(ingredient?.unit).lean().exec();
+      ingredient.unit = unit;
+    }
+    recipe.set('ingredients', data?.ingredients);
+    await getNutritionalDetail(recipe);
+  }
 };
 
 //---------------------
@@ -59,6 +85,23 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     } else {
       res.status(204).send();
     }
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const randomizeRecipe: RequestHandler = async (_req, res, next) => {
+  try {
+    const { allergy } = await Account.findOne()
+      .setOptions({ autopopulate: false })
+      .byName(res.locals.username)
+      .select('allergy')
+      .exec();
+
+    const recipes = await Recipe.randomizeRecipe(allergy, 1);
+    if (!recipes) res.status(204).send();
+
+    res.status(200).send({ recipes });
   } catch (err) {
     return next(err);
   }
@@ -165,10 +208,10 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
     const recipe = await Recipe.findById(id).populate('comments').lean({ autopopulate: true }).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
 
-    const { username, bookmark } = await Account.findOne()
+    const { username, bookmark, accountType } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
-      .select('username bookmark')
+      .select('username bookmark accountType')
       .lean()
       .exec();
     const account = await Account.findById(recipe.author._id).select('image').lean().exec();
@@ -180,7 +223,15 @@ export const getRecipeDetail: RequestHandler = async (req, res, next) => {
 
     delete recipe.comments;
 
-    res.status(200).send({ recipe });
+    if (recipe.isHidden && !recipe.isMe && accountType !== 'admin') throw createRestAPIError('DOC_NOT_FOUND');
+
+    const complaint = await Complaint.findOne({
+      type: 'Recipe',
+      post: recipe._id,
+      status: { $in: [ComplaintStatus.IN_PROGRESS, ComplaintStatus.VERIFYING] },
+    }).exec();
+
+    res.status(200).send({ recipe: complaint ? { ...recipe, remark: complaint.remarks.pop() } : recipe });
   } catch (err) {
     return next(err);
   }
@@ -201,7 +252,8 @@ export const createRecipe: RequestHandler = async (req, res, next) => {
       ingredient.unit = unit;
     }
 
-    data.image = req.file?.filename;
+    data.imageName = generateFileName(req.file?.originalname);
+    data.image = await uploadImage('recipes', data.imageName, req.file);
     data.author = { _id: account._id, username: account.username };
 
     const recipe = new Recipe(data);
@@ -227,42 +279,39 @@ export const editRecipe: RequestHandler = async (req, res, next) => {
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
 
-    const oldImage = recipe.image;
+    const imageName = recipe.imageName || (req.file ? generateFileName(req.file?.originalname) : '');
 
     recipe.set({
-      name: data?.name || recipe.name,
-      desc: data?.desc || recipe.desc,
-      method: data?.method || recipe.method,
-      image: req.file?.filename || recipe.image,
-      serving: data?.serving || recipe.serving,
-      subIngredients: data?.subIngredients || recipe.subIngredients,
-      steps: data?.steps || recipe.steps,
+      name: data?.name,
+      desc: data?.desc,
+      method: data?.method,
+      imageName,
+      image: req.file ? await uploadImage('recipes', imageName, req.file) : recipe.image,
+      serving: data?.serving,
+      subIngredients: data?.subIngredients,
+      steps: data?.steps,
     });
 
-    let isSame = false;
-
-    if (_.size(data?.ingredients) === _.size(recipe.ingredients)) {
-      const mapped = recipe.ingredients.map((item) => ({
-        ingredient: item.ingredient.toString(),
-        quantity: item.quantity,
-        unit: item.unit._id.toString(),
-      }));
-      _.forEach(data?.ingredients, (item) => {
-        isSame = _.some(mapped, item);
-      });
-    }
-
-    if (!isSame) {
-      for (const ingredient of data.ingredients) {
-        const unit = await Unit.findById(ingredient?.unit).lean().exec();
-        ingredient.unit = unit;
-      }
-      recipe.set('ingredients', data?.ingredients);
-      await getNutritionalDetail(recipe);
-    }
+    await checkIsSameIngredients(data, recipe);
 
     await recipe.save({ validateModifiedOnly: true });
-    oldImage && recipe.image !== oldImage && deleteImage('recipes', oldImage);
+
+    if (recipe.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.VERIFYING }
+      ).exec();
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        recipe.author.username,
+        ComplaintStatus.VERIFYING,
+        `/complaints?id=${recipe.id}&tabType=inprogress`,
+        complaint.moderator._id
+      );
+    }
+
     res.status(200).send({ message: 'success' });
   } catch (err) {
     return next(err);
@@ -276,9 +325,6 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
   try {
     const id = req.params?.recipeId;
 
-    const ref = await Snapshot.exists({ recipe: new Types.ObjectId(id) }).exec();
-    if (ref) throw createRestAPIError('DEL_REFERENCE');
-
     const recipe = await Recipe.findById(id).exec();
     if (!recipe) throw createRestAPIError('DOC_NOT_FOUND');
     if (recipe.author.username !== res.locals.username) throw createRestAPIError('NOT_OWNER');
@@ -286,7 +332,23 @@ export const deleteRecipe: RequestHandler = async (req, res, next) => {
     await recipe.deleteOne();
 
     await Comment.deleteMany({ post: recipe._id }).exec();
-    recipe.image && deleteImage('recipes', recipe.image);
+    recipe.image && (await deleteImage('recipes', recipe.imageName));
+
+    if (recipe.isHidden) {
+      const complaint = await Complaint.findOneAndUpdate(
+        { type: 'Recipe', post: recipe.id, status: ComplaintStatus.IN_PROGRESS },
+        { status: ComplaintStatus.DELETED }
+      ).exec();
+      if (!complaint) throw createRestAPIError('DOC_NOT_FOUND');
+
+      await createVerifyNotification(
+        'recipe',
+        recipe.author.username,
+        ComplaintStatus.DELETED,
+        `/complaints?id=${recipe.id}&tabType=completed`,
+        complaint.moderator._id
+      );
+    }
 
     res.status(200).send({ message: 'success' });
   } catch (err) {

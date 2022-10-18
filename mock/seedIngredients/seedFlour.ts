@@ -7,7 +7,8 @@ export default [
     queryKey: 'white bread',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d47bb14dd0301cbd72d94'),
-    image: '6beb9ad8cb444b11.jpg',
+    image: 'mock',
+    imageName: '6beb9ad8cb444b11.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 77,
@@ -67,7 +68,8 @@ export default [
     queryKey: 'instant noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '47c72ba81e4dd565.jpg',
+    image: 'mock',
+    imageName: '47c72ba81e4dd565.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 384,
@@ -127,7 +129,8 @@ export default [
     queryKey: 'cooked egg noodles',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'f3f71ff8e6a12e6a.jpg',
+    image: 'mock',
+    imageName: 'f3f71ff8e6a12e6a.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 138,
@@ -187,7 +190,8 @@ export default [
     queryKey: 'all purpose flour',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'e9735d7bc10b142d.jpg',
+    image: 'mock',
+    imageName: 'e9735d7bc10b142d.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 364,
@@ -246,7 +250,8 @@ export default [
     queryKey: 'cooked udon',
     type: new Types.ObjectId('6264264d1e6c93c6d70d63cc'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '3a964617e13af686.jpeg',
+    image: 'mock',
+    imageName: '3a964617e13af686.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 158,

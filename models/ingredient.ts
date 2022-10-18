@@ -14,6 +14,7 @@ export interface IngredientInterface extends Document {
   unit: Types.ObjectId & UnitInstanceInterface;
   type: Types.ObjectId & TypeInstanceInterface;
   image: string;
+  imageName: string;
   shopUrl?: string;
   nutritionalDetail: any;
 }
@@ -58,6 +59,7 @@ export const ingredientSchema = new Schema<
       autopopulate: true,
     },
     image: { type: String, required: true },
+    imageName: { type: String, required: true },
     shopUrl: { type: String, default: '' },
     nutritionalDetail: {},
   },

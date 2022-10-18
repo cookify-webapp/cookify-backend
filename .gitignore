@@ -31,3 +31,5 @@ yarn-error.log*
 /log
 
 seed-image
+
+log-history.txt

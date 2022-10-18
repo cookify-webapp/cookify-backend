@@ -11,6 +11,7 @@ const ingredientData = {
   unit: '626d479e5b4bfde4d83361b9',
   type: '6264263d50eda11fe1a2b8f4',
   image: 'image.jpeg',
+  imageName: "imageName"
 };
 
 describe('Ingredient model', () => {

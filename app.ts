@@ -14,6 +14,7 @@ import recipeRouter from '@routes/recipeRouter';
 import snapshotRouter from '@routes/snapshotRouter';
 import commentRouter from '@routes/commentRouter';
 import notificationRouter from '@routes/notificationRouter';
+import complaintRouter from '@routes/complaintRouter';
 import seedRouter from '@routes/seedRouter';
 
 import { accessLogger, errorLogger, seedLogger } from '@utils/logUtil';
@@ -65,12 +66,12 @@ app.use('/recipes', recipeRouter);
 app.use('/snapshots', snapshotRouter);
 app.use('/comments', commentRouter);
 app.use('/notifications', notificationRouter);
-if (app.get('env') === 'development') {
+app.use('/complaints', complaintRouter);
+
+if (process.env.NODE_ENV === 'development') {
   app.use('/seed', seedRouter);
   app.use('/coverage', express.static('coverage'));
 }
-
-app.use('/images', express.static('public/images'));
 
 app.get('/health', (_req, res) => {
   res.send({ status: 'This service is healthy.' });

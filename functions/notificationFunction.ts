@@ -1,18 +1,72 @@
 import _ from 'lodash';
-import { Types } from 'mongoose';
+import { AggregatePaginateResult, Types } from 'mongoose';
 
-import { Notification } from '@models/notifications';
+import { Notification, NotificationInstanceInterface, NotificationModelInterface } from '@models/notifications';
+import {
+  createComplaintNotificationTemplate,
+  createCommentNotificationTemplate,
+  createFollowNotificationTemplate,
+  createReviewNotificationTemplate,
+} from '@config/notificationTemplate';
+import { ComplaintStatus } from '@models/complaints';
 
-export const createNotification = async (detail: {
-  type: 'complaint' | 'follow' | 'comment';
-  caption: string;
-  link: string;
-  receiver: Types.ObjectId | null;
-}) => {
-  const count = await Notification.find({ receiver: detail.receiver }).count().exec();
-  if (count >= 30) await Notification.deleteOne({ receiver: detail.receiver }).sort('-createdAt').exec();
+const saveNotification = async (
+  type: string,
+  caption: string,
+  link: string,
+  receiver: string | Types.ObjectId | null
+) => {
+  const count = await Notification.find({ receiver }).count().exec();
+  if (count === 30) await Notification.deleteOne({ receiver }).sort('createdAt').exec();
 
-  const notification = new Notification(detail);
+  const notification = new Notification({ type, caption, link, receiver });
 
   await notification.save();
 };
+
+export const createFollowNotification = async (username: string, link: string, receiver: Types.ObjectId | null) => {
+  const exist = await Notification.findOne({ receiver, type: 'follow', link }).exec();
+  if (exist) await exist.deleteOne();
+
+  await saveNotification('follow', createFollowNotificationTemplate(username), link, receiver);
+};
+
+export const createCommentNotification = async (
+  type: 'recipe' | 'snapshot',
+  username: string,
+  link: string,
+  receiver: Types.ObjectId | null
+) => {
+  let caption = createCommentNotificationTemplate(type, [username]);
+
+  const exist = await Notification.findOne({
+    receiver,
+    type: 'comment',
+    link,
+    read: false,
+  }).exec();
+
+  if (exist) {
+    await exist.deleteOne();
+
+    const oldUser = exist.caption.match(/(?<=<b>)(.*?)(?=<\/b>)/g);
+    if (oldUser) caption = createCommentNotificationTemplate(type, _.uniq([username, ...oldUser]));
+  }
+
+  await saveNotification('comment', caption, link, receiver);
+};
+
+export const createComplaintNotification = async (
+  type: 'recipe' | 'snapshot',
+  status: ComplaintStatus,
+  link: string,
+  receiver: string | Types.ObjectId | null
+) => await saveNotification('complaint', createComplaintNotificationTemplate(type, status), link, receiver);
+
+export const createVerifyNotification = async (
+  type: 'recipe' | 'snapshot',
+  username: string,
+  status: ComplaintStatus,
+  link: string,
+  receiver: string | Types.ObjectId | null
+) => await saveNotification('complaint', createReviewNotificationTemplate(type, username, status), link, receiver);

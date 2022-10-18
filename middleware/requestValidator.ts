@@ -3,6 +3,7 @@ import oJoi from 'joi';
 import mongoose from 'mongoose';
 
 import constraint from '@config/constraint';
+import { ComplaintStatus } from '@models/complaints';
 
 const opts: oJoi.ValidationOptions = {
   stripUnknown: true,
@@ -161,6 +162,37 @@ export const adminValidator = celebrate(
   opts
 );
 
+export const createComplaintValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      type: Joi.string().required().valid('recipe', 'snapshot'),
+      post: Joi.string().required().custom(objectIdVal),
+      detail: Joi.string().required().max(constraint.detail.max),
+    }),
+  },
+  opts
+);
+
+export const updateComplaintValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      status: Joi.string()
+        .required()
+        .valid(ComplaintStatus.EXAMINING, ComplaintStatus.COMPLETED, ComplaintStatus.REJECTED),
+    }),
+  },
+  opts
+);
+
+export const contactAuthorValidator = celebrate(
+  {
+    [Segments.BODY]: baseBody({
+      remark: Joi.string().required().max(constraint.remark.max),
+    }),
+  },
+  opts
+);
+
 //---------------------
 //   QUERY
 //---------------------
@@ -199,6 +231,16 @@ export const adminListValidator = celebrate(
   {
     [Segments.QUERY]: paginateQuery({
       searchWord: Joi.string().required().allow(''),
+    }),
+  },
+  opts
+);
+
+export const complaintListValidator = celebrate(
+  {
+    [Segments.QUERY]: paginateQuery({
+      searchWord: Joi.string().required().allow(''),
+      status: Joi.string().required().valid('new', 'processing', 'done'),
     }),
   },
   opts

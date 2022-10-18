@@ -29,6 +29,7 @@ const recipeData = {
   steps: ['Cut', 'Grill'],
   author: { _id: '6264263d50eda11fe1a2b8f6', username: 'John Doe' },
   image: 'image',
+  imageName: 'imageName'
 };
 
 describe('Recipe model', () => {

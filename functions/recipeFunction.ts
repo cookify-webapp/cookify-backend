@@ -1,18 +1,15 @@
 import _ from 'lodash';
-import { Types, AggregatePaginateResult, AnyObject } from 'mongoose';
+import { Types, AggregatePaginateResult, AnyObject, Aggregate } from 'mongoose';
 
 import { RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
 
-const genericListRecipe: (
-  model: RecipeModelInterface,
-  withSnapshot: boolean,
-  page: number,
-  perPage: number,
-  match: AnyObject
-) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async (model, withSnapshot, page, perPage, match) => {
-  const aggregate = model
+const genericListRecipe: (model: RecipeModelInterface, match: AnyObject) => Aggregate<RecipeInstanceInterface[]> = (
+  model,
+  match
+) =>
+  model
     .aggregate<RecipeInstanceInterface>()
-    .match(match)
+    .match({ ...match, isHidden: false })
     .lookup({
       from: 'cookingmethods',
       localField: 'method',
@@ -69,78 +66,58 @@ const genericListRecipe: (
         ],
       },
     })
-    .project(
-      withSnapshot
-        ? {
-            name: 1,
-            image: 1,
-            author: 1,
-            createdAt: 1,
-            desc: 1,
-          }
-        : {
-            name: 1,
-            method: 1,
-            image: 1,
-            averageRating: 1,
-            author: 1,
-            createdAt: 1,
-          }
-    );
+    .project({
+      name: 1,
+      method: 1,
+      image: 1,
+      averageRating: 1,
+      author: 1,
+      createdAt: 1,
+    });
 
-  withSnapshot &&
-    aggregate
-      .addFields({
-        type: 'recipe',
-      })
-      .unionWith({
-        coll: 'snapshots',
-        pipeline: [
-          { $match: match },
-          {
-            $lookup: {
-              from: 'accounts',
-              localField: 'author._id',
-              foreignField: '_id',
-              as: 'author_image',
-              pipeline: [{ $project: { _id: 0, image: 1 } }],
-            },
+const unionSnapshot = (aggregate: Aggregate<RecipeInstanceInterface[]>, match: AnyObject) =>
+  aggregate
+    .project({ averageRating: 0 })
+    .addFields({
+      type: 'recipe',
+    })
+    .unionWith({
+      coll: 'snapshots',
+      pipeline: [
+        { $match: { ...match, isHidden: false } },
+        {
+          $lookup: {
+            from: 'accounts',
+            localField: 'author._id',
+            foreignField: '_id',
+            as: 'author_image',
+            pipeline: [{ $project: { _id: 0, image: 1 } }],
           },
-          {
-            $unwind: {
-              path: '$author_image',
-              preserveNullAndEmptyArrays: true,
-            },
+        },
+        {
+          $unwind: {
+            path: '$author_image',
+            preserveNullAndEmptyArrays: true,
           },
-          {
-            $addFields: {
-              desc: '$caption',
-              'author.image': {
-                $cond: [
-                  {
-                    $cond: [
-                      { $isArray: '$author_image.image' },
-                      { $size: '$author_image.image' },
-                      '$author_image.image',
-                    ],
-                  },
-                  '$author_image.image',
-                  '',
-                ],
-              },
-              type: 'snapshot',
+        },
+        {
+          $addFields: {
+            desc: '$caption',
+            'author.image': {
+              $cond: [
+                {
+                  $cond: [{ $isArray: '$author_image.image' }, { $size: '$author_image.image' }, '$author_image.image'],
+                },
+                '$author_image.image',
+                '',
+              ],
             },
+            type: 'snapshot',
           },
-          { $project: { author_image: 0, caption: 0 } },
-        ],
-      });
-
-  return model.aggregatePaginate(aggregate, {
-    page: page,
-    limit: perPage,
-    sort: '-createdAt',
-  });
-};
+        },
+        { $project: { author_image: 0, caption: 0, isHidden: 0 } },
+      ],
+    });
 
 export const listRecipeByQuery: (
   this: RecipeModelInterface,
@@ -163,9 +140,15 @@ export const listRecipeByQuery: (
   };
   if (method) match.method = new Types.ObjectId(method);
   if (_.size(ingredients))
-    match['ingredients.ingredient'] = { $all: _.map(ingredients, (item) => new Types.ObjectId(item)) };
+    match['ingredients.ingredient'].$all = _.map(ingredients, (item) => new Types.ObjectId(item));
 
-  return genericListRecipe(this, false, page, perPage, match);
+  const aggregate = genericListRecipe(this, match);
+
+  return this.aggregatePaginate(aggregate, {
+    page: page,
+    limit: perPage,
+    sort: '-createdAt',
+  });
 };
 
 export const listRecipeByAuthors: (
@@ -174,7 +157,13 @@ export const listRecipeByAuthors: (
   perPage: number,
   author: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
-  return genericListRecipe(this, false, page, perPage, { 'author._id': { $in: author } });
+  const aggregate = genericListRecipe(this, { 'author._id': { $in: author } });
+
+  return this.aggregatePaginate(aggregate, {
+    page: page,
+    limit: perPage,
+    sort: '-createdAt',
+  });
 };
 
 export const listRecipeAndSnapshotByAuthors: (
@@ -183,7 +172,16 @@ export const listRecipeAndSnapshotByAuthors: (
   perPage: number,
   author: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
-  return genericListRecipe(this, true, page, perPage, { 'author._id': { $in: author } });
+  const match = { 'author._id': { $in: author } };
+  const aggregate = genericListRecipe(this, match);
+
+  unionSnapshot(aggregate, match);
+
+  return this.aggregatePaginate(aggregate, {
+    page: page,
+    limit: perPage,
+    sort: '-createdAt',
+  });
 };
 
 export const listRecipeByIds: (
@@ -192,5 +190,26 @@ export const listRecipeByIds: (
   perPage: number,
   only: Types.ObjectId[]
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, only) {
-  return genericListRecipe(this, false, page, perPage, { _id: { $in: only } });
+  const aggregate = genericListRecipe(this, { _id: { $in: only } });
+
+  return this.aggregatePaginate(aggregate, {
+    page: page,
+    limit: perPage,
+    sort: '-createdAt',
+  });
+};
+
+export const randomizeRecipe: (
+  this: RecipeModelInterface,
+  allergy: Types.ObjectId[],
+  rand: number
+) => Promise<RecipeInstanceInterface[]> = async function (allergy, rand) {
+  return this.aggregate<RecipeInstanceInterface>()
+    .match({ 'ingredients.ingredient': { $nin: allergy }, isHidden: false })
+    .project({
+      name: 1,
+      image: 1,
+    })
+    .sample(rand)
+    .exec();
 };

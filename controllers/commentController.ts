@@ -6,8 +6,7 @@ import { Account } from '@models/account';
 import createRestAPIError from '@error/createRestAPIError';
 import { Recipe } from '@models/recipe';
 import { Snapshot } from '@models/snapshot';
-import { createCommentNotification } from '@config/notificationTemplate';
-import { createNotification } from '@functions/notificationFunction';
+import { createCommentNotification } from '@functions/notificationFunction';
 
 //---------------------
 //   FETCH MANY
@@ -101,13 +100,8 @@ export const createComment: RequestHandler = async (req, res, next) => {
     comment.author.image = account.image;
 
     receiver &&
-      account._id.equals(receiver) &&
-      (await createNotification({
-        type: 'comment',
-        caption: createCommentNotification(type as 'recipe' | 'snapshot', account.username),
-        link: `/${type}s/${id}`,
-        receiver,
-      }));
+      !account._id.equals(receiver) &&
+      (await createCommentNotification(type as 'recipe' | 'snapshot', account.username, `/${type}s/${id}`, receiver));
     res.status(200).send({ comment });
   } catch (err) {
     return next(err);

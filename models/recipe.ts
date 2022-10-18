@@ -5,7 +5,13 @@ import { AccountInstanceInterface } from '@models/account';
 import { TypeInstanceInterface } from '@models/type';
 import { UnitInstanceInterface, unitSchema } from '@models/unit';
 import { IngredientInstanceInterface } from '@models/ingredient';
-import { listRecipeAndSnapshotByAuthors, listRecipeByAuthors, listRecipeByIds, listRecipeByQuery } from '@functions/recipeFunction';
+import {
+  listRecipeAndSnapshotByAuthors,
+  listRecipeByAuthors,
+  listRecipeByIds,
+  listRecipeByQuery,
+  randomizeRecipe,
+} from '@functions/recipeFunction';
 import constraint from '@config/constraint';
 
 //---------------------
@@ -27,11 +33,13 @@ export interface RecipeInterface extends Document {
   method: Types.ObjectId & TypeInstanceInterface;
   steps: Types.Array<string>;
   image: string;
+  imageName: string;
   author: Pick<AccountInstanceInterface, '_id' | 'username' | 'image'>;
   comments?: Types.DocumentArray<CommentInstanceInterface>;
   averageRating?: number;
   bookmarked?: boolean;
   isMe?: boolean;
+  isHidden: boolean;
   createdAt: Date;
   nutritionalDetail: Object;
 }
@@ -72,6 +80,8 @@ export interface RecipeModelInterface extends AggregatePaginateModel<RecipeInsta
       allergy: Types.ObjectId[];
     }
   ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>>;
+
+  randomizeRecipe: (allergy: Types.ObjectId[], rand: number) => Promise<RecipeInstanceInterface[]>;
 }
 
 interface RecipeQueryHelpers {}
@@ -122,7 +132,9 @@ export const recipeSchema = new Schema<
     },
     steps: [{ type: String, required: true }],
     image: { type: String, required: true },
+    imageName: { type: String, required: true },
     author: { type: { _id: 'ObjectId', username: String, image: String }, required: true },
+    isHidden: { type: Boolean, required: true, default: false },
     nutritionalDetail: {},
   },
   {
@@ -140,6 +152,7 @@ recipeSchema.statics.listRecipeByIds = listRecipeByIds;
 recipeSchema.statics.listRecipeByAuthors = listRecipeByAuthors;
 recipeSchema.statics.listRecipeByQuery = listRecipeByQuery;
 recipeSchema.statics.listRecipeAndSnapshotByAuthors = listRecipeAndSnapshotByAuthors;
+recipeSchema.statics.randomizeRecipe = randomizeRecipe;
 
 //---------------------
 //   VIRTUALS

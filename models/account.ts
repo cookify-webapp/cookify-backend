@@ -15,6 +15,7 @@ export interface AccountInterface extends Document {
   password: string;
   accountType: 'user' | 'admin' | 'pending';
   image: string;
+  imageName: string;
   following?: Types.Array<Types.ObjectId>;
   allergy: Types.Array<Types.ObjectId>;
   bookmark: Types.Array<Types.ObjectId>;
@@ -73,6 +74,7 @@ export const accountSchema = new Schema<
       default: 'user',
     },
     image: { type: String, default: '' },
+    imageName: { type: String, default: '' },
     following: [{ type: 'ObjectId', ref: 'Account' }],
     allergy: [{ type: 'ObjectId', ref: 'Ingredient' }],
     bookmark: [{ type: 'ObjectId', ref: 'Recipe' }],

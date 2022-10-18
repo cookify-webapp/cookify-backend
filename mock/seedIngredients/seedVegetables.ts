@@ -7,7 +7,8 @@ export default [
     queryKey: 'peach',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '435601f1b8c13caf.jpg',
+    image: 'mock',
+    imageName: '435601f1b8c13caf.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 59,
@@ -66,7 +67,8 @@ export default [
     queryKey: 'cabbage',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '7d60454ca11a0b56.jpg',
+    image: 'mock',
+    imageName: '7d60454ca11a0b56.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 25,
@@ -125,7 +127,8 @@ export default [
     queryKey: 'garlic',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '6c421c03e87bfe12.jpg',
+    image: 'mock',
+    imageName: '6c421c03e87bfe12.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 149,
@@ -184,7 +187,8 @@ export default [
     queryKey: 'lime',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '1b88946e46e65f21.png',
+    image: 'mock',
+    imageName: '1b88946e46e65f21.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 20,
@@ -243,7 +247,8 @@ export default [
     queryKey: 'chinese broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '69eb0f5609e1bb92.jpg',
+    image: 'mock',
+    imageName: '69eb0f5609e1bb92.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -302,7 +307,8 @@ export default [
     queryKey: 'carrot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '3e509832173a8057.jpg',
+    image: 'mock',
+    imageName: '3e509832173a8057.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 41,
@@ -362,7 +368,8 @@ export default [
     queryKey: 'apple',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: 'f7faaaa2bc6e0b06.jpg',
+    image: 'mock',
+    imageName: 'f7faaaa2bc6e0b06.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 94,
@@ -421,7 +428,8 @@ export default [
     queryKey: 'orange',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '2d96cc7368c0a7d0.png',
+    image: 'mock',
+    imageName: '2d96cc7368c0a7d0.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 61,
@@ -480,7 +488,8 @@ export default [
     queryKey: 'banana',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '28e88523de0507cc.jpg',
+    image: 'mock',
+    imageName: '28e88523de0507cc.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 102,
@@ -539,7 +548,8 @@ export default [
     queryKey: 'shiitake mushroom',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '3c279d55bd789c50.jpg',
+    image: 'mock',
+    imageName: '3c279d55bd789c50.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -587,7 +597,8 @@ export default [
     queryKey: 'spring onion',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: 'd5e370ff8776613b.jpg',
+    image: 'mock',
+    imageName: 'd5e370ff8776613b.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 32,
@@ -646,7 +657,8 @@ export default [
     queryKey: 'broccoli',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '7a3dc2818605ee89.jpg',
+    image: 'mock',
+    imageName: '7a3dc2818605ee89.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 34,
@@ -705,7 +717,8 @@ export default [
     queryKey: 'baby corn',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '9ae9bd6712c5458e.png',
+    image: 'mock',
+    imageName: '9ae9bd6712c5458e.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 86,
@@ -765,7 +778,8 @@ export default [
     queryKey: 'lettuce',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '6b297f9bf0dfa925.jpeg',
+    image: 'mock',
+    imageName: '6b297f9bf0dfa925.jpeg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 13,
@@ -824,7 +838,8 @@ export default [
     queryKey: 'lemon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: 'cdb17b3a6bafea04.jpg',
+    image: 'mock',
+    imageName: 'cdb17b3a6bafea04.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 16,
@@ -883,7 +898,8 @@ export default [
     queryKey: 'shallot',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '3a3a07b6d4192ec9.png',
+    image: 'mock',
+    imageName: '3a3a07b6d4192ec9.png',
     shopUrl: '',
     nutritionalDetail: {
       calories: 72,
@@ -942,7 +958,8 @@ export default [
     queryKey: 'potato',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d479e5b4bfde4d83361b9'),
-    image: '0a068b82023eaf97.jpg',
+    image: 'mock',
+    imageName: '0a068b82023eaf97.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 77,
@@ -1001,7 +1018,8 @@ export default [
     queryKey: 'melon',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '9580c19923cef684.jpg',
+    image: 'mock',
+    imageName: '9580c19923cef684.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 187,
@@ -1060,7 +1078,8 @@ export default [
     queryKey: 'pomegranate',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '81422358621d0086.jpg',
+    image: 'mock',
+    imageName: '81422358621d0086.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 234,
@@ -1119,7 +1138,8 @@ export default [
     queryKey: 'strawberry',
     type: new Types.ObjectId('6264263d50eda11fe1a2b8f4'),
     unit: new Types.ObjectId('626d47b7554f62e715d6d05a'),
-    image: '7133f3bdf1bfbed9.jpg',
+    image: 'mock',
+    imageName: '7133f3bdf1bfbed9.jpg',
     shopUrl: '',
     nutritionalDetail: {
       calories: 4,
