@@ -66,13 +66,13 @@ export const getRecipeList: RequestHandler = async (req, res, next) => {
     const ingredients = req.query?.ingredientId as string[];
     const method = req.query?.methodId as string;
 
-    const { allergy } = await Account.findOne()
+    const { username, allergy } = await Account.findOne()
       .setOptions({ autopopulate: false })
       .byName(res.locals.username)
-      .select('allergy')
+      .select('allergy username')
       .exec();
 
-    const recipes = await Recipe.listRecipeByQuery(page, perPage, { name, method, ingredients, allergy });
+    const recipes = await Recipe.listRecipeByQuery(page, perPage, { name, method, ingredients, allergy }, username);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -117,7 +117,7 @@ export const getUserRecipeList: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(username).select('_id').lean().exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const recipes = await Recipe.listRecipeByAuthors(page, perPage, [account._id]);
+    const recipes = await Recipe.listRecipeByAuthors(page, perPage, [account._id], res.locals.username);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -143,7 +143,12 @@ export const getFollowingRecipeAndSnapshot: RequestHandler = async (req, res, ne
     const account = await Account.findOne().byName(res.locals.username).select('_id following').lean().exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const recipes = await Recipe.listRecipeAndSnapshotByAuthors(page, perPage, account.following || []);
+    const recipes = await Recipe.listRecipeAndSnapshotByAuthors(
+      page,
+      perPage,
+      account.following || [],
+      account.username
+    );
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
@@ -169,7 +174,7 @@ export const getMyBookmarkedRecipe: RequestHandler = async (req, res, next) => {
     const account = await Account.findOne().byName(res.locals.username).select('bookmark').exec();
     if (!account) throw createRestAPIError('ACCOUNT_NOT_FOUND');
 
-    const recipes = await Recipe.listRecipeByIds(page, perPage, account.bookmark);
+    const recipes = await Recipe.listRecipeByIds(page, perPage, account.bookmark, account.username);
 
     if (_.size(recipes.docs) > 0 || recipes.totalDocs > 0) {
       res.status(200).send({
