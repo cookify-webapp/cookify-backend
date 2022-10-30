@@ -3,13 +3,14 @@ import { Types, AggregatePaginateResult, AnyObject, Aggregate } from 'mongoose';
 
 import { RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
 
-const genericListRecipe: (model: RecipeModelInterface, match: AnyObject) => Aggregate<RecipeInstanceInterface[]> = (
-  model,
-  match
-) =>
+const genericListRecipe: (
+  model: RecipeModelInterface,
+  match: AnyObject,
+  me: string
+) => Aggregate<RecipeInstanceInterface[]> = (model, match, me) =>
   model
     .aggregate<RecipeInstanceInterface>()
-    .match({ ...match, isHidden: false })
+    .match({ $and: [match, { $or: [{ $expr: { $eq: ['$author.username', me] } }, { isHidden: false }] }] })
     .lookup({
       from: 'cookingmethods',
       localField: 'method',
@@ -75,7 +76,7 @@ const genericListRecipe: (model: RecipeModelInterface, match: AnyObject) => Aggr
       createdAt: 1,
     });
 
-const unionSnapshot = (aggregate: Aggregate<RecipeInstanceInterface[]>, match: AnyObject) =>
+const unionSnapshot = (aggregate: Aggregate<RecipeInstanceInterface[]>, match: AnyObject, me: string) =>
   aggregate
     .project({ averageRating: 0 })
     .addFields({
@@ -84,7 +85,7 @@ const unionSnapshot = (aggregate: Aggregate<RecipeInstanceInterface[]>, match: A
     .unionWith({
       coll: 'snapshots',
       pipeline: [
-        { $match: { ...match, isHidden: false } },
+        { $match: { $and: [match, { $or: [{ $expr: { $eq: ['$author.username', me] } }, { isHidden: false }] }] } },
         {
           $lookup: {
             from: 'accounts',
@@ -128,12 +129,15 @@ export const listRecipeByQuery: (
     method: string;
     ingredients: string[] | '';
     allergy: Types.ObjectId[];
-  }
+  },
+  me: string
 ) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (
   page,
   perPage,
-  { name, method, ingredients, allergy }
+  { name, method, ingredients, allergy },
+  me
 ) {
+  console.log(me);
   const match: AnyObject = {
     name: { $regex: name, $options: 'i' },
     'ingredients.ingredient': { $nin: allergy },
@@ -142,7 +146,7 @@ export const listRecipeByQuery: (
   if (_.size(ingredients))
     match['ingredients.ingredient'].$all = _.map(ingredients, (item) => new Types.ObjectId(item));
 
-  const aggregate = genericListRecipe(this, match);
+  const aggregate = genericListRecipe(this, match, me);
 
   return this.aggregatePaginate(aggregate, {
     page: page,
@@ -155,9 +159,10 @@ export const listRecipeByAuthors: (
   this: RecipeModelInterface,
   page: number,
   perPage: number,
-  author: Types.ObjectId[]
-) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
-  const aggregate = genericListRecipe(this, { 'author._id': { $in: author } });
+  author: Types.ObjectId[],
+  me: string
+) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author, me) {
+  const aggregate = genericListRecipe(this, { 'author._id': { $in: author } }, me);
 
   return this.aggregatePaginate(aggregate, {
     page: page,
@@ -166,16 +171,18 @@ export const listRecipeByAuthors: (
   });
 };
 
+// Following
 export const listRecipeAndSnapshotByAuthors: (
   this: RecipeModelInterface,
   page: number,
   perPage: number,
-  author: Types.ObjectId[]
-) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author) {
+  author: Types.ObjectId[],
+  me: string
+) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, author, me) {
   const match = { 'author._id': { $in: author } };
-  const aggregate = genericListRecipe(this, match);
+  const aggregate = genericListRecipe(this, match, me);
 
-  unionSnapshot(aggregate, match);
+  unionSnapshot(aggregate, match, me);
 
   return this.aggregatePaginate(aggregate, {
     page: page,
@@ -184,13 +191,15 @@ export const listRecipeAndSnapshotByAuthors: (
   });
 };
 
+// Bookmark
 export const listRecipeByIds: (
   this: RecipeModelInterface,
   page: number,
   perPage: number,
-  only: Types.ObjectId[]
-) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, only) {
-  const aggregate = genericListRecipe(this, { _id: { $in: only } });
+  only: Types.ObjectId[],
+  me: string
+) => Promise<AggregatePaginateResult<RecipeInstanceInterface>> = async function (page, perPage, only, me) {
+  const aggregate = genericListRecipe(this, { _id: { $in: only } }, me);
 
   return this.aggregatePaginate(aggregate, {
     page: page,

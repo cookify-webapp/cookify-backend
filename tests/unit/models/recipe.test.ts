@@ -67,7 +67,7 @@ describe('Recipe model', () => {
       method: '',
       ingredients: ['6264263d50eda11fe1a2b8f4', '6264263d50eda11fe1a2b8f5'],
       allergy: [],
-    });
+    }, recipeData.author.username);
 
     expect(foundRecipe.totalDocs).toStrictEqual(1);
     expect(foundRecipe.docs[0]._id.toString()).toStrictEqual(savedRecipe.id);
