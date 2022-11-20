@@ -7,8 +7,8 @@ import { Recipe } from '@models/recipe';
 
 import createRestAPIError from '@error/createRestAPIError';
 import { deleteImage, generateFileName, uploadImage } from '@utils/imageUtil';
+import { escapeRegex, includesId } from '@utils/utilFuncs';
 import { sendAdminConfirmation, sendAdminRevocation } from '@services/mailService';
-import { includesId } from '@utils/includesIdUtil';
 import { Notification } from '@models/notifications';
 import { createFollowNotification } from '@functions/notificationFunction';
 
@@ -24,7 +24,7 @@ export const getAdmins: RequestHandler = async (req, res, next) => {
     const accounts = await Account.paginate(
       {
         accountType: 'admin',
-        $or: [{ username: { $regex: searchWord, $options: 'i' } }, { email: { $regex: searchWord, $options: 'i' } }],
+        $or: [{ username: { $regex: escapeRegex(searchWord), $options: 'i' } }, { email: { $regex: escapeRegex(searchWord), $options: 'i' } }],
       },
       { page: page, limit: perPage, select: 'image username email', sort: 'username', lean: true, leanWithId: false }
     );
