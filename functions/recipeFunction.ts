@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { Types, AggregatePaginateResult, AnyObject, Aggregate } from 'mongoose';
 
 import { RecipeInstanceInterface, RecipeModelInterface } from '@models/recipe';
+import { escapeRegex } from '@utils/utilFuncs';
 
 const genericListRecipe: (
   model: RecipeModelInterface,
@@ -137,9 +138,8 @@ export const listRecipeByQuery: (
   { name, method, ingredients, allergy },
   me
 ) {
-  console.log(me);
   const match: AnyObject = {
-    name: { $regex: name, $options: 'i' },
+    name: { $regex: escapeRegex(name), $options: 'i' },
     'ingredients.ingredient': { $nin: allergy },
   };
   if (method) match.method = new Types.ObjectId(method);

@@ -1,5 +1,7 @@
-import { ComplaintInstanceInterface, ComplaintModelInterface, ComplaintStatus } from '@models/complaints';
 import { AggregatePaginateResult } from 'mongoose';
+
+import { ComplaintInstanceInterface, ComplaintModelInterface, ComplaintStatus } from '@models/complaints';
+import { escapeRegex } from '@utils/utilFuncs';
 
 export const listComplaint: (
   this: ComplaintModelInterface,
@@ -20,7 +22,7 @@ export const listComplaint: (
       post_string: { $toString: '$post' },
     })
     .match({
-      post_string: { $regex: searchWord, $options: 'i' },
+      post_string: { $regex: escapeRegex(searchWord), $options: 'i' },
       status:
         status === 'new'
           ? ComplaintStatus.FILED

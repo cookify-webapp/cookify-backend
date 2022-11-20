@@ -2,6 +2,7 @@ import { PaginateResult, FilterQuery, Types } from 'mongoose';
 
 import { IngredientInstanceInterface, IngredientModelInterface } from '@models/ingredient';
 
+import { escapeRegex } from '@utils/utilFuncs';
 import createRestAPIError from '@error/createRestAPIError';
 
 export const listAll: (
@@ -11,7 +12,7 @@ export const listAll: (
   searchWord: string,
   typeId: string
 ) => Promise<PaginateResult<IngredientInstanceInterface>> = async function (page, perPage, searchWord, typeId) {
-  const filter: FilterQuery<IngredientInstanceInterface> = { name: { $regex: searchWord, $options: 'i' } };
+  const filter: FilterQuery<IngredientInstanceInterface> = { name: { $regex: escapeRegex(searchWord), $options: 'i' } };
   if (typeId) filter.type = typeId;
 
   return this.paginate(filter, { page: page, limit: perPage, select: 'name type image unit', sort: '-createdAt name' });
