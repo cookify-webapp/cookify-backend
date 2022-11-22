@@ -3,6 +3,7 @@ import multer, { memoryStorage } from 'multer';
 import path from 'path';
 import crypto from 'crypto';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import sharp from 'sharp';
 
 import { firebaseStorage } from '@services/firebaseManager';
 import createRestAPIError from '@error/createRestAPIError';
@@ -23,7 +24,11 @@ export const uploadImage = async (folder: string, fileName: string, file?: Expre
 
   const imagesRef = ref(firebaseStorage, `images/${process.env.NODE_ENV}/${folder}/${fileName}`);
 
-  const task = await uploadBytes(imagesRef, file instanceof Buffer ? file : file.buffer);
+  const optimizedFile = await sharp(file instanceof Buffer ? file : file.buffer)
+    .jpeg({ quality: 65, mozjpeg: true })
+    .toBuffer();
+
+  const task = await uploadBytes(imagesRef, optimizedFile);
 
   const downloadURL = await getDownloadURL(task.ref);
 
