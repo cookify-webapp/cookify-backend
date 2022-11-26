@@ -25,6 +25,7 @@ export const uploadImage = async (folder: string, fileName: string, file?: Expre
   const imagesRef = ref(firebaseStorage, `images/${process.env.NODE_ENV}/${folder}/${fileName}`);
 
   const optimizedFile = await sharp(file instanceof Buffer ? file : file.buffer)
+    .resize(250, 250, { withoutEnlargement: true })
     .jpeg({ quality: 65, mozjpeg: true })
     .toBuffer();
 
